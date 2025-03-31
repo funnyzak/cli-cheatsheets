@@ -58,7 +58,7 @@ jobs:
           -F "tag=p" \
           -F "body=🚀 ${{ github.event.repository.name }} Pages 部署成功 #github
 
-          分支: ${{ github.ref }}"
+          分支: ${{ github.ref }}
 
           📎 相关链接
           • [仓库地址](https://github.com/${{ github.repository }})" \
