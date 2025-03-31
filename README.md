@@ -30,6 +30,8 @@
 
 ```bash
 curl https://cs.yycc.dev | bash -s -- git
+# 或者 显示所有支持的命令速查表
+curl -sSL https://cs.yycc.dev | bash -s -- -l
 ```
 
 或者使用 `wget` 命令：
