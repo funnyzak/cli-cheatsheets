@@ -17,6 +17,9 @@
 - **简单易用:** 脚本简洁明了，操作简单直观。
 - **多系统支持:** 兼容 Linux 和 macOS 系统。
 
+![交互式命令行界面](https://github.com/user-attachments/assets/af4ede39-5b74-4aa0-9c17-f58260c24448)
+
+
 ## 🚀 使用方法
 
 ### 1. 配置别名 (Bash/Zsh/Fish)
@@ -42,12 +45,11 @@ cs git
 cs
 ```
 
-**完整版本：** 支持交互式和自动中国区镜像。
+**完整版本：** 此方式包含交互式菜单。
 <details>
 <summary>点击展开完整版本别名配置</summary>
 
-原始版本：
-
+在 `~/.zshrc` 中添加以下代码：
 ```bash
 alias cs='() {
   echo -e "Command cheatsheet tool.\nUsage:\n cs [command] - View specific command usage\n cs -l - List all supported commands"
@@ -296,6 +298,7 @@ cli-cheatsheets/
 * `java-cheatsheet.txt`: Java 运行时和开发命令
 * `node-cheatsheet.txt`: Node.js 运行时命令
 * `python-cheatsheet.txt`: Python 运行时命令
+* `rust-cheatsheet.txt`: Rust 编程语言命令
 
 ### System
 
@@ -310,6 +313,7 @@ cli-cheatsheets/
 * `df-cheatsheet.txt`: 磁盘空间使用情况命令
 * `diff-cheatsheet.txt`: 文件比较命令
 * `du-cheatsheet.txt`: 磁盘使用情况命令
+* `find-cheatsheet.txt`: 文件查找命令
 * `free-cheatsheet.txt`: 内存使用情况命令
 * `grep-cheatsheet.txt`: 文本搜索命令
 * `gzip-cheatsheet.txt`: 文件压缩命令
@@ -321,6 +325,7 @@ cli-cheatsheets/
 * `killall-cheatsheet.txt`: 按名称终止进程命令
 * `less-cheatsheet.txt`: 文件分页命令
 * `ln-cheatsheet.txt`: 链接创建命令
+* `ls-cheatsheet.txt`: 目录内容列表命令
 * `lsof-cheatsheet.txt`: 列出打开文件命令
 * `mount-cheatsheet.txt`: 文件系统挂载命令
 * `nano-cheatsheet.txt`: Nano 文本编辑器命令
@@ -340,6 +345,7 @@ cli-cheatsheets/
 * `uptime-cheatsheet.txt`: 系统运行时间命令
 * `vim-cheatsheet.txt`: Vim 文本编辑器命令
 * `watch-cheatsheet.txt`: 命令执行监控命令
+* `xargs-cheatsheet.txt`: 从标准输入构建和执行命令
 * `yum-cheatsheet.txt`: Yellowdog Updater Modified 包管理器命令
 * `zip-cheatsheet.txt`: 归档创建命令
 
@@ -348,8 +354,10 @@ cli-cheatsheets/
 (`cheatsheets/tools/`) 通用开发工具
 
 * `docker-cheatsheet.txt`: Docker 容器平台命令
+* `docker-compose-cheatsheet.txt`: Docker Compose 多容器定义和运行工具命令
 * `git-cheatsheet.txt`: Git 版本控制系统命令
 * `jq-cheatsheet.txt`: JSON 处理器命令
+* `tmux-cheatsheet.txt`: 终端复用器命令
 * `yq-cheatsheet.txt`: YAML 处理器命令
 
 ### Web Servers
