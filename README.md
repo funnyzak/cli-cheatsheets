@@ -13,6 +13,7 @@
 - **本地和远程执行:** 既可以在本地下载脚本使用，也可以通过 `curl` 命令远程执行。
 - **别名支持:** 方便配置 Bash/Zsh/Fish 别名，实现更快速的调用。
 - **简单易用:** 脚本简洁明了，操作简单直观。
+- **多系统支持:** 兼容 Linux 和 macOS 系统。
 
 ## 🚀 使用方法
 
@@ -20,25 +21,75 @@
 
 为了更快速地调用速查表，建议配置 Shell 别名。
 
-**Bash/Zsh:**
+#### Bash/Zsh
 
 将以下代码添加到你的 `~/.bashrc` 或 `~/.zshrc` 文件中：
 
+**简化版本：**
+
+不支持交互式。
+
 ```bash
-alias cs='(){ 
-curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh | bash -s -- "$@" 
-}'
+alias cs='curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh | bash -s --'
 ```
 
-然后执行 `source ~/.bashrc` 或 `source ~/.zshrc` 使配置生效。
+**完整版本：** 支持交互式和中国区镜像。
+<details>
+<summary>点击展开完整版本别名配置</summary>
 
-**Fish:**
+```bash
+alias cs='() {
+  echo -e "Command cheatsheet tool.\nUsage:\n cs [command] - View specific command usage\n cs -l - List all supported commands"
+
+  # Initialize variables with local
+  local remote_url_prefix="https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/${REPO_BRANCH:-main}/"
+  local remote_url_prefix_cn="https://raw.gitcode.com/funnyzak/cli-cheatsheets/raw/${REPO_BRANCH:-main}/"
+  local cheatsheet_remote_url=""
+  local tmpfile=""
+
+  # Test connection to CN server with timeout to determine best URL
+  if curl -s --connect-timeout 2 "$remote_url_prefix_cn" >/dev/null 2>&1; then
+    cheatsheet_remote_url="${remote_url_prefix_cn}cheatsheet.sh"
+  else
+    cheatsheet_remote_url="${remote_url_prefix}cheatsheet.sh"
+  fi
+
+  # Handle different execution modes based on arguments
+  if [ $# -eq 0 ]; then
+    tmpfile=$(mktemp)
+    if ! curl -sSL "$cheatsheet_remote_url" -o "$tmpfile"; then
+      echo >&2 "Error: Failed to download cheatsheet script from $cheatsheet_remote_url"
+      return 1
+    fi
+
+    chmod +x "$tmpfile"
+    if ! "$tmpfile"; then
+      echo >&2 "Error: Failed to execute cheatsheet script"
+      rm -f "$tmpfile"
+      return 1
+    fi
+
+    # Clean up temporary file
+    rm -f "$tmpfile"
+  else
+    if ! curl -sSL "$cheatsheet_remote_url" | bash -s -- "$@"; then
+      echo >&2 "Error: Failed to execute command \"$*\" with cheatsheet script"
+      return 1
+    fi
+  fi
+}' # Shell command cheatsheet tool
+```
+</details>
+
+配置完成后，然后执行 `source ~/.bashrc` 或 `source ~/.zshrc` 使配置生效。
+
+#### Fish
 
 将以下代码添加到你的 `~/.config/fish/config.fish` 文件中：
 
 ```fish
 function cs
-curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh | bash -s -- $argv
+  curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh | bash -s -- $argv
 end
 ```
 

@@ -11,17 +11,17 @@
 #   ./cheatsheet.sh -h/--help      # 显示帮助信息
 #
 # 远程执行:
-#   curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/utilities/shell/cheatsheet.sh | bash
-#   curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/utilities/shell/cheatsheet.sh | bash -s -- git
-#   curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/utilities/shell/cheatsheet.sh | bash -s -- -l
+#   curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh | bash
+#   curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh | bash -s -- git
+#   curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh | bash -s -- -l
 
 # 脚本错误处理
 set -euo pipefail
 
 # 默认URL前缀
-DEFAULT_URL="https://github.com/funnyzak/cli-cheatsheets/raw/refs/heads/${REPO_BRANCH:-main}/docs/cli/"
+DEFAULT_URL="https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/${REPO_BRANCH:-main}/cheatsheets/"
 # 中国地区加速URL前缀
-CN_URL="https://raw.gitcode.com/funnyzak/cli-cheatsheets/raw/${REPO_BRANCH:-main}/docs/cli/"
+CN_URL="https://raw.gitcode.com/funnyzak/cli-cheatsheets/raw/${REPO_BRANCH:-main}/cheatsheets/"
 
 # 支持的命令列表及其描述和所属分类
 declare -A COMMANDS
