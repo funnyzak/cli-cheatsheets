@@ -1,0 +1,128 @@
+##############################################################################
+# watch 命令速查表 (watch Command Cheatsheet)
+# 监控程序输出变化 - Periodic command execution and output monitoring
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - COMMAND:     要执行的命令 (Command to execute)
+#   - INTERVAL:    监控间隔时间 (Interval time in seconds)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+watch [OPTIONS] COMMAND                         # 周期性执行命令并全屏显示输出
+                                                # Executes COMMAND periodically and displays output full-screen
+
+watch date                                      # 默认 2 秒间隔监控 `date` 命令输出
+                                                # Monitor `date` command output every 2 seconds (default)
+
+watch -n INTERVAL COMMAND                       # 指定 INTERVAL 秒间隔监控命令
+                                                # Monitor command at specified INTERVAL seconds
+
+watch -n 0.1 COMMAND                             # 极短间隔 (0.1 秒) 监控命令 (高 CPU 占用)
+                                                # Very short interval (0.1 sec), may use high CPU
+
+##############################################################################
+# 输出控制 (Output Control)
+##############################################################################
+
+watch -d, --differences[=cumulative] COMMAND   # 高亮显示每次输出与上次输出不同的地方
+                                                # Highlight changes between successive outputs
+
+watch -d=cumulative COMMAND                    # 累积高亮所有变化 (自首次执行)
+                                                # Cumulative highlighting of all changes since first run
+
+watch -t, --no-title COMMAND                     # 移除 watch 命令的标题栏 (只显示命令输出)
+                                                # Remove the header line (only show command output)
+
+watch -H, --header COMMAND                      # 在输出顶部显示 watch 标题栏 (默认行为)
+                                                # Show the header line on top (default behavior)
+
+watch -b, --beep                                # 当命令输出发生变化时发出提示音
+                                                # Beep if command has changed output
+
+watch -c, --color                              # 解释 ANSI 颜色序列 (如果命令输出包含颜色)
+                                                # Interpret ANSI color and style sequences
+
+##############################################################################
+# 退出控制 (Exit Control)
+##############################################################################
+
+watch -g, --chgexit                             # 当命令输出发生变化时退出 watch
+                                                # Exit when output from command changes
+
+watch -e, --errexit                             # 若命令退出状态非 0 则退出 watch
+                                                # Exit if command has a non-zero exit
+
+watch --exit-on-signal SIGNAL                   # 接收到指定信号时退出 (例如: SIGINT, SIGTERM)
+                                                # Exit on receipt of SIGNAL (e.g., SIGINT, SIGTERM)
+
+##############################################################################
+# 其他选项 (Other Options)
+##############################################################################
+
+watch -p, --precise                             # 尝试更精确的计时 (可能需要 root 权限)
+                                                # Attempt to run watch with subsecond precision
+
+watch -w, --no-wrap                              # 关闭输出折行 (适合查看长行输出)
+                                                # Turn off line wrapping/folding
+
+watch -x, --exec COMMAND                         # 将 COMMAND 传递给 sh -c 执行 (处理复杂命令)
+                                                # Pass COMMAND to 'sh -c' which will expand arguments
+
+watch -u, --interval <n>                        # 与 -n 相同，但 <n> 必须是整数
+                                                # Same as -n, but <n> must be an integer
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 结合 grep 过滤输出 (Filter output with grep):
+#   watch 'ps aux | grep process_name'
+
+# 结合 awk 处理输出 (Process output with awk):
+#   watch 'df -h | awk '{print $1, $5}'
+
+# 监控网络连接状态 (Monitor network connections):
+#   watch 'netstat -an | grep ESTABLISHED'
+
+# 监控文件变化 (Monitor file changes - using `ls -l` is not ideal for frequent changes, consider `inotifywait` for robust file monitoring):
+#   watch 'ls -l filename'  # 适用于不频繁变化的文件
+
+# 使用别名简化常用命令 (Create alias for frequent commands):
+#   alias watchdf='watch df -h'
+#   watchdf
+
+# 组合使用 -d 和 -n 快速查看变化 (Quickly see changes with -d and -n):
+#   watch -d -n 0.5 'free -m'
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 监控 CPU 负载 (Monitor CPU load):
+#   watch -n 1 'uptime'
+
+# 监控磁盘空间 (Monitor disk space):
+#   watch -n 5 'df -h'
+
+# 监控内存使用情况并高亮变化 (Monitor memory usage and highlight changes):
+#   watch -d 'free -m'
+
+# 监控指定进程的 CPU 和内存占用 (Monitor CPU and memory usage of a specific process):
+#   watch -n 2 'ps -o pid,pcpu,pmem,command ax | grep process_name'
+
+# 监控日志文件尾部 (Monitor the end of a log file, consider `tail -f` for more efficient log monitoring):
+#   watch 'tail /var/log/syslog'  #  `tail -f` is generally preferred for logs
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# man watch:  `man watch` (在终端中查看 watch 命令的完整手册)
+# Online man page: https://man7.org/linux/man-pages/man1/watch.1.html
+# TLDR pages: https://tldr.sh/watch (简洁的命令示例)
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

@@ -1,0 +1,121 @@
+##############################################################################
+# RubyGems (gem) 速查表 (RubyGems Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - GEM_NAME:     Gem 包名称 (Gem Package Name, 例如: rails, bundler)
+#   - VERSION:      Gem 包版本号 (Gem Package Version, 例如: 6.0.0, ~> 2.5)
+#   - PATH:         文件或目录路径 (File or Directory Path)
+#   - SOURCE_URL:   Gem 源 URL (Gem Source URL, 例如: https://rubygems.org)
+
+##############################################################################
+# Gem 包管理 (Gem Package Management)
+##############################################################################
+
+gem install GEM_NAME                              # 安装最新版本 gem 包
+gem install GEM_NAME -v VERSION                   # 安装指定版本 gem 包
+gem install GEM_NAME --version VERSION            # 安装指定版本 (长选项)
+gem install GEM_NAME --pre                        # 安装预发布版本 (beta, rc)
+gem install GEM_NAME --no-document                # 安装但不生成文档 (加速)
+gem install GEM_NAME --user-install              # 安装到用户目录 (非 root)
+gem install PATH                                  # 从本地路径安装 gem 包 (.gem 文件或目录)
+gem install SOURCE_URL                            # 从指定源 URL 安装 gem 包
+
+gem uninstall GEM_NAME                            # 卸载 gem 包
+gem uninstall GEM_NAME -v VERSION                 # 卸载指定版本 gem 包
+gem uninstall GEM_NAME --all                      # 卸载所有版本的 gem 包
+
+gem update                                      # 更新所有 gem 包到最新版本
+gem update GEM_NAME                               # 更新指定 gem 包到最新版本
+gem update --system                               # 更新 RubyGems 本身
+
+gem list                                        # 列出已安装的 gem 包
+gem list GEM_NAME                                 # 检查指定 gem 包是否安装
+gem list --local                                  # 列出本地已安装的 gem 包
+gem list --remote                                 # 列出远程可用的 gem 包
+gem list --all                                    # 列出所有已安装的 gem 包 (包括预发布)
+gem list PATTERN                                  # 使用模式匹配列出 gem 包 (例如: gem list rails*)
+
+gem cleanup                                     # 清理旧版本 gem 包，节省空间
+
+##############################################################################
+# Gem 包信息 (Gem Package Information)
+##############################################################################
+
+gem info GEM_NAME                                 # 显示 gem 包的详细信息 (远程源)
+gem info --local GEM_NAME                         # 显示本地已安装 gem 包的信息
+gem info --versions GEM_NAME                      # 显示 gem 包的所有可用版本
+
+gem contents GEM_NAME                             # 列出 gem 包包含的文件 (本地安装)
+gem contents GEM_NAME -v VERSION                  # 列出指定版本 gem 包的文件
+
+gem open GEM_NAME                                 # 在编辑器中打开 gem 包的源代码 (本地安装)
+gem open GEM_NAME -v VERSION                      # 打开指定版本 gem 包的源代码
+
+gem which EXECUTABLE                              # 查找 gem 提供的可执行文件路径 (例如: gem which rails)
+
+##############################################################################
+# Gem 环境与配置 (Gem Environment & Configuration)
+##############################################################################
+
+gem env                                         # 显示 gem 的环境变量信息
+gem env home                                      # 显示 gem 的安装目录
+
+gem sources                                     # 列出当前配置的 gem 源
+gem sources -a SOURCE_URL                         # 添加 gem 源
+gem sources -r SOURCE_URL                         # 移除 gem 源
+gem sources -l                                    # 列出当前 gem 源 (同 `gem sources`)
+gem sources --clear                               # 清空所有 gem 源
+gem sources --update                              # 更新 gem 源缓存
+
+gem server                                      # 启动本地 gem 服务器 (用于查看文档等)
+
+##############################################################################
+# Gem 打包与发布 (Gem Packaging & Publishing)  (简略)
+##############################################################################
+
+# (更详细的打包发布流程通常使用 Bundler 和 rake)
+
+gem build GEM_NAME.gemspec                       # 从 gemspec 文件构建 gem 包 (.gem)
+gem push GEM_NAME-VERSION.gem                    # 发布 gem 包到 rubygems.org (需要 API key)
+gem yank GEM_NAME -v VERSION                      # 从 rubygems.org 移除 (撤销) 指定版本 gem 包
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 Bundler 管理项目依赖 (推荐):
+#   - `bundle install`      安装 Gemfile.lock 中指定的依赖
+#   - `bundle update`       更新 Gemfile.lock 中的依赖到最新兼容版本
+#   - `bundle exec COMMAND` 在 Bundler 环境中执行命令 (例如: bundle exec rails server)
+
+# 指定安装源:
+#   gem install GEM_NAME -s SOURCE_URL  # 从特定源安装
+#   gem install GEM_NAME --source SOURCE_URL # 长选项形式
+
+# 查看 gem 文档:
+#   gem server  # 启动本地服务器后，浏览器访问 http://localhost:8808
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 安装 Rails 6.0.0 版本:
+#   gem install rails -v 6.0.0
+
+# 列出所有以 'rake' 开头的本地 gem 包:
+#   gem list --local rake*
+
+# 清理旧版本 gem 并更新所有 gem 包:
+#   gem cleanup && gem update
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://guides.rubygems.org/command-reference/
+# https://ruby-china.org/topics/27387 (Ruby China 社区 Gem 指南)
+# https://bundler.io/ (Bundler 官方网站 - 依赖管理)
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

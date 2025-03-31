@@ -1,0 +1,99 @@
+##############################################################################
+# uname 命令速查表 (uname Command Cheatsheet)
+# 用于显示系统信息
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 简要说明 (Description):
+#   uname 命令用于显示系统信息，包括内核名称、主机名、内核版本、机器硬件名称等等。
+#   通常用于脚本中判断操作系统类型和架构。
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+uname                                       # 显示操作系统内核名称 (默认)
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+uname -s                                    # 显示内核名称 (Kernel name)
+uname -n                                    # 显示主机名 (Nodename/Hostname)
+uname -r                                    # 显示内核发行号 (Kernel release)
+uname -v                                    # 显示内核版本 (Kernel version)
+uname -m                                    # 显示机器硬件名称 (Machine architecture)
+uname -p                                    # 显示处理器类型 (Processor type)
+uname -i                                    # 显示硬件平台 (Hardware platform)
+uname -o                                    # 显示操作系统名称 (Operating system name)
+
+uname -a                                    # 显示所有信息 (All information)
+uname --all                                 # 等同于 -a (Same as -a)
+
+##############################################################################
+# 长选项 (Long Options)
+##############################################################################
+
+uname --kernel-name                         # 等同于 -s
+uname --nodename                            # 等同于 -n
+uname --kernel-release                        # 等同于 -r
+uname --kernel-version                        # 等同于 -v
+uname --machine                             # 等同于 -m
+uname --processor                           # 等同于 -p
+uname --hardware-platform                     # 等同于 -i
+uname --operating-system                      # 等同于 -o
+
+uname --help                                # 显示帮助信息
+uname --version                             # 显示版本信息
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 组合选项:
+#   uname -rs                                 # 显示内核名称和发行号
+#   uname -mr                                 # 显示机器硬件名称和内核发行号
+
+# 在脚本中使用:
+#   OS=$(uname -s)                             # 获取操作系统名称到变量
+#   ARCH=$(uname -m)                           # 获取架构到变量
+#   if [[ "$OS" == "Linux" ]]; then           # 判断是否为 Linux 系统
+#       echo "当前系统是 Linux"
+#   fi
+
+# 结合 `if` 或 `case` 语句进行条件判断:
+#   case $(uname -s) in
+#       Linux)   echo "Linux 系统" ;;
+#       Darwin)  echo "macOS 系统" ;;
+#       *)       echo "其他系统" ;;
+#   esac
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 显示所有系统信息:
+#   uname -a
+#   # 例如输出: Linux myhost 5.15.0-76-generic #83-Ubuntu SMP Fri Jun 16 19:47:20 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+
+# 获取操作系统类型和架构:
+#   OS_TYPE=$(uname -s) && ARCH=$(uname -m)
+#   echo "操作系统类型: $OS_TYPE, 架构: $ARCH"
+#   # 例如输出: 操作系统类型: Linux, 架构: x86_64
+
+# 判断是否为 macOS 系统:
+#   if [[ "$(uname -s)" == "Darwin" ]]; then
+#       echo "当前是 macOS 系统"
+#   else
+#       echo "当前不是 macOS 系统"
+#   fi
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# GNU Coreutils `uname` 手册:
+#   https://www.gnu.org/software/coreutils/manual/html_node/uname-invocation.html
+# `uname` 命令 man page (在终端中执行 `man uname` 查看)
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

@@ -1,0 +1,177 @@
+##############################################################################
+# Go 命令速查表 (Go Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PKG_PATH:  Go 包路径 (Package path, 例如: example.com/mypkg 或 ./mypkg)
+#   - FILE_NAME: Go 文件名 (Go file name, 例如: main.go)
+#   - MODULE_PATH: Go 模块路径 (Go module path, 例如: example.com/mymodule)
+
+##############################################################################
+# 常用命令 (Common Commands)
+##############################################################################
+
+go version                                  # 显示 Go 版本
+go help                                     # 显示 Go 帮助信息
+go help <command>                            # 显示特定命令的帮助 (例如: go help build)
+
+##############################################################################
+# 模块管理 (Module Management, go mod)
+##############################################################################
+
+go mod init [MODULE_PATH]                    # 初始化新的模块 (在当前目录)
+go mod init example.com/myproject            # 初始化模块，指定模块路径
+go mod tidy                                   # 整理模块依赖，移除未使用的，添加需要的
+go mod vendor                                 # 将依赖复制到 vendor 目录 (本地依赖)
+go mod graph                                  # 以文本形式打印模块依赖图
+go mod edit -replace=old=new                 # 替换模块依赖 (用于本地路径替换)
+go mod edit -require=module@version          # 添加或更新特定模块版本
+go mod download [MODULE_PATH@VERSION]          # 下载模块到本地缓存
+go mod verify                                 # 验证模块依赖是否被篡改
+go mod why <dependency>                       # 解释为什么需要某个依赖
+
+# 提示:
+#   - `go.mod` 文件是模块定义文件，`go.sum` 记录依赖的校验和。
+#   - 建议使用 `go mod tidy` 管理依赖。
+#   - `vendor` 目录用于本地依赖管理，通常用于特定构建场景。
+
+##############################################################################
+# 构建与运行 (Building & Running, go build & go run)
+##############################################################################
+
+go build [PKG_PATH | FILE_NAME ...]         # 构建可执行文件 (当前目录或指定包)
+go build -o <output_name> [PKG_PATH]          # 指定输出文件名
+go build -race [PKG_PATH]                     # 启用竞态检测器构建
+go build -gcflags="-N -l" [PKG_PATH]           # 禁用优化和内联 (用于调试)
+go build -ldflags="-X 'main.version=1.0'" [PKG_PATH] # 设置链接器标志 (例如版本信息)
+
+go run FILE_NAME [arguments ...]              # 编译并运行 Go 程序 (不生成可执行文件)
+go run PKG_PATH [arguments ...]               # 编译并运行指定包的程序
+
+# 提示:
+#   - `go build` 在当前目录构建时，输出可执行文件名为目录名。
+#   - `go run` 适用于快速测试和脚本类程序。
+#   - 可以同时指定多个文件或包路径。
+
+##############################################################################
+# 包管理 (Package Management, go get)
+##############################################################################
+
+go get PKG_PATH                               # 下载并安装包及其依赖 (旧版，不推荐模块模式)
+go get MODULE_PATH@VERSION                    # 下载并更新模块到指定版本 (模块模式)
+go get -u PKG_PATH                            # 更新包及其依赖到最新版本 (旧版)
+go get -u=patch MODULE_PATH                   # 更新模块到最新的补丁版本 (模块模式)
+go get -t -v ./...                           # 下载测试依赖 (-t), 详细输出 (-v), 当前目录及子目录 (./...)
+
+# 注意:
+#   - `go get` 在模块模式下主要用于更新和下载依赖，包安装更多由模块管理完成。
+#   - 推荐使用 `go mod tidy` 和 `go mod edit` 管理依赖，而不是频繁使用 `go get`。
+
+##############################################################################
+# 测试 (Testing, go test)
+##############################################################################
+
+go test [PKG_PATH ...]                        # 运行包的测试 (当前目录或指定包)
+go test -v [PKG_PATH ...]                       # 详细输出测试信息
+go test -run <regexp> [PKG_PATH ...]           # 运行匹配正则表达式的测试
+go test -bench <regexp> [PKG_PATH ...]         # 运行基准测试 (benchmark)
+go test -cover [PKG_PATH ...]                    # 启用代码覆盖率分析
+go test -coverprofile=coverage.out [PKG_PATH ...] # 输出覆盖率到文件
+go test -cpuprofile=cpu.prof [PKG_PATH ...]      # CPU 性能分析
+go test -memprofile=mem.prof [PKG_PATH ...]      # 内存性能分析
+go test ./...                                  # 运行当前目录及子目录所有包的测试
+
+# 提示:
+#   - 测试文件命名约定: `*_test.go`
+#   - 基准测试函数命名约定: `Benchmark*`
+#   - 代码覆盖率分析可以帮助评估测试的充分性。
+#   - 性能分析工具可以帮助定位性能瓶颈。
+
+##############################################################################
+# 代码格式化与检查 (Formatting & Checking, go fmt & go vet & golangci-lint)
+##############################################################################
+
+go fmt [PKG_PATH ...]                          # 格式化 Go 代码 (gofmt)
+go fmt ./...                                   # 格式化当前目录及子目录所有包
+go fmt -w FILE_NAME.go                         # 将格式化结果写入文件
+
+go vet [PKG_PATH ...]                          # 静态代码分析，检查潜在错误
+go vet ./...                                   # 检查当前目录及子目录所有包
+
+# golangci-lint run [PKG_PATH ...]             # 更强大的代码检查工具 (需要单独安装)
+# golangci-lint run ./...                      # 检查当前目录及子目录所有包
+
+# 提示:
+#   - `go fmt` 是官方代码格式化工具，强制统一代码风格。
+#   - `go vet` 检查代码中潜在的错误和不规范写法。
+#   - `golangci-lint` 是一个集成多种 linters 的工具，提供更全面的代码质量检查。
+
+##############################################################################
+# 文档 (Documentation, go doc)
+##############################################################################
+
+go doc <package>                              # 显示包的文档 (例如: go doc fmt)
+go doc <package>.<name>                         # 显示包中特定类型/函数/变量的文档 (例如: go doc fmt.Printf)
+go doc -all <package>                          # 显示包的所有文档 (包括私有成员)
+go doc -http=:6060                             # 启动本地文档服务器 (浏览器访问 http://localhost:6060)
+
+# 提示:
+#   - Go 代码注释遵循特定格式，`go doc` 可以根据注释生成文档。
+#   - 使用 `-http` 可以方便地浏览本地文档。
+
+##############################################################################
+# 其他实用命令 (Other Useful Commands)
+##############################################################################
+
+go env                                      # 显示 Go 环境变量
+go env -w GO111MODULE=on                     # 设置 Go 环境变量 (例如启用模块模式)
+go clean                                    # 清理构建生成的文件 (可执行文件, 临时文件)
+go install [PKG_PATH]                         # 编译并安装包到 $GOPATH/bin 或 $GOBIN
+go list [PKG_PATH ...]                        # 列出包的信息 (例如依赖, 导入路径)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 `./...` 通配符:
+#   - `go test ./...`  运行所有子目录的测试
+#   - `go fmt ./...`   格式化所有子目录的代码
+#   - `go vet ./...`   检查所有子目录的代码
+
+# 结合 Shell 脚本:
+#   - 可以编写 Shell 脚本自动化构建、测试、部署等流程。
+
+# 使用 Makefile:
+#   - 对于复杂的项目，可以使用 Makefile 管理构建流程。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 初始化一个新的模块:
+#   mkdir myproject
+#   cd myproject
+#   go mod init example.com/myproject
+
+# 构建当前目录的程序:
+#   go build
+
+# 运行当前目录的 main.go 文件:
+#   go run main.go
+
+# 运行所有测试并生成覆盖率报告:
+#   go test ./... -coverprofile=coverage.out && go tool cover -html=coverage.out
+
+# 格式化当前项目所有 Go 代码:
+#   go fmt ./...
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Go 官方文档: https://go.dev/doc/
+# Go 命令文档: https://go.dev/ref/cli/go-command
+# Effective Go: https://go.dev/doc/effective_go
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

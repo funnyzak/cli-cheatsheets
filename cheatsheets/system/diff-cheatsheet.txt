@@ -1,0 +1,152 @@
+##############################################################################
+# DIFF 命令速查表 (DIFF Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - FILE1:  第一个文件路径 (Path to the first file)
+#   - FILE2:  第二个文件路径 (Path to the second file)
+#   - DIR1:   第一个目录路径 (Path to the first directory)
+#   - DIR2:   第二个目录路径 (Path to the second directory)
+#   - PATCHFILE:  补丁文件路径 (Path to the patch file, 通常由 diff -u 生成)
+
+##############################################################################
+# 基本比较 (Basic Comparison)
+##############################################################################
+
+diff FILE1 FILE2                             # 比较两个文件，输出差异
+diff -y FILE1 FILE2                          # 并排格式 (side-by-side)，易于阅读
+diff -c FILE1 FILE2                          # 上下文格式 (context format)
+diff -u FILE1 FILE2                          # 统一格式 (unified format, 常用补丁格式)
+diff --brief FILE1 FILE2                     # 仅报告文件是否不同 (brief output)
+diff --color=always FILE1 FILE2              # 彩色输出 (需要支持 color 输出的终端)
+
+# 提示:
+#   - diff 的默认输出格式为 "normal diff"，可读性稍差，常用 -u 或 -y 格式。
+#   - 使用 --color=always 可以强制输出颜色，即使输出到管道。
+
+##############################################################################
+# 统一格式 (Unified Format, -u)
+##############################################################################
+
+diff -u FILE1 FILE2                         # 生成统一格式 diff (常用补丁)
+diff -u -N FILE1 FILE2                      # 允许创建新文件 (用于添加新文件到补丁)
+diff -u -r DIR1 DIR2                        # 递归比较目录，生成统一格式 diff
+diff -u --ignore-space-change FILE1 FILE2   # 忽略空白字符变化
+diff -u --ignore-blank-lines FILE1 FILE2    # 忽略空白行变化
+
+# 提示:
+#   - 统一格式 diff 是 patch 命令的标准输入格式。
+#   - -N 或 --new-file 选项对于创建包含新增文件的补丁非常重要。
+
+##############################################################################
+# 上下文格式 (Context Format, -c)
+##############################################################################
+
+diff -c FILE1 FILE2                         # 生成上下文格式 diff
+diff -C NUM FILE1 FILE2                      # 设置上下文行数为 NUM (默认为 3)
+
+# 提示:
+#   - 上下文格式 diff 比统一格式 diff 稍微冗余，但某些旧工具可能更兼容。
+
+##############################################################################
+# 并排格式 (Side-by-Side, -y)
+##############################################################################
+
+diff -y FILE1 FILE2                         # 生成并排格式 diff
+diff -y -W NUM FILE1 FILE2                   # 设置输出宽度为 NUM (默认终端宽度)
+diff -y --left-column FILE1 FILE2            # 仅显示左侧不同部分
+diff -y --right-column FILE1 FILE2           # 仅显示右侧不同部分
+diff -y --suppress-common-lines FILE1 FILE2 # 隐藏相同行，只显示差异
+
+# 提示:
+#   - 并排格式非常直观，适合快速浏览文件差异。
+#   - -W 选项可以调整输出宽度以适应不同的终端。
+
+##############################################################################
+# 目录比较 (Directory Comparison, -r)
+##############################################################################
+
+diff -r DIR1 DIR2                           # 递归比较两个目录
+diff -qr DIR1 DIR2                          # 仅报告文件是否不同，不显示详细差异 (快速检查)
+diff -bur DIR1 DIR2                         # 递归比较目录，生成统一格式补丁 (常用)
+
+# 提示:
+#   - -r 选项是目录比较的关键，用于递归处理子目录。
+#   - -q 或 --brief 选项在只想知道目录是否完全一致时非常有用。
+
+##############################################################################
+# 补丁操作 (Patching)
+##############################################################################
+
+patch -p1 < PATCHFILE                        # 应用补丁文件 (移除路径前缀 1 级)
+patch -p0 < PATCHFILE                        # 应用补丁文件 (不移除路径前缀)
+patch --dry-run -p1 < PATCHFILE              # 模拟应用补丁，不实际修改文件 (dry run)
+patch -R < PATCHFILE                         # 反转应用补丁 (撤销更改)
+patch -E < PATCHFILE                         # 移除空文件 (如果补丁导致文件变为空)
+
+# 提示:
+#   - -pNUM 选项控制补丁文件路径前缀的移除级别，通常 -p1 适用于从项目根目录生成的补丁。
+#   - --dry-run 用于预览补丁效果，避免误操作。
+#   - -R 选项用于撤销之前应用的补丁。
+
+##############################################################################
+# 输出控制选项 (Output Control Options)
+##############################################################################
+
+diff -s FILE1 FILE2                          # 当文件相同时报告 (report identical files)
+diff -q FILE1 FILE2                          # 仅报告文件是否不同 (exit quickly if different)
+diff --from-file=FILE1 DIR2                  # 将 FILE1 与 DIR2 中的文件比较
+diff --to-file=FILE2 DIR1                    # 将 DIR1 中的文件与 FILE2 比较
+
+##############################################################################
+# 忽略差异选项 (Ignoring Differences Options)
+##############################################################################
+
+diff -b FILE1 FILE2                          # 忽略行尾空白字符变化
+diff -w FILE1 FILE2                          # 忽略空白字符变化 (包括行内空白)
+diff -B FILE1 FILE2                          # 忽略空白行变化
+diff -I REGEX FILE1 FILE2                     # 忽略匹配 REGEX 的行
+diff -x PATTERN DIR1 DIR2                    # 排除匹配 PATTERN 的文件/目录 (目录比较时)
+diff --exclude=PATTERN DIR1 DIR2             # 同 -x
+diff --exclude-from=FILE DIR1 DIR2          # 从文件读取排除模式列表
+
+# 提示:
+#   - 忽略空白字符和空白行变化在比较代码或文本文件时非常有用。
+#   - 使用 -I 或 --ignore-matching-lines 可以忽略特定模式的行，例如注释或版本号。
+#   - -x 或 --exclude 可以排除不需要比较的文件或目录。
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 结合 grep 过滤 diff 输出:
+#   diff -u FILE1 FILE2 | grep "^[+-]"        # 只显示添加和删除的行
+#   diff -y FILE1 FILE2 | grep "<"             # 只显示 FILE1 独有的行
+
+# 使用 diff 命令比较两个版本的配置文件，并生成补丁:
+#   diff -u config.old config.new > config.patch
+
+# 快速检查两个目录是否完全一致:
+#   diff -qr dir1 dir2 && echo "Directories are identical" || echo "Directories are different"
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 生成 unified diff 并应用补丁:
+#   diff -u original.txt modified.txt > my.patch
+#   patch -p0 < my.patch
+
+# 并排比较两个文件并显示彩色输出:
+#   diff -y --color=always file1.txt file2.txt
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# GNU diffutils 官方文档: https://www.gnu.org/software/diffutils/manual/diffutils.html
+# diff man page: `man diff`
+# patch man page: `man patch`
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

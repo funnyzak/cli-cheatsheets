@@ -1,0 +1,151 @@
+##############################################################################
+# DIG 命令速查表 (DIG Command Cheatsheet)
+# 用于 DNS 查找和诊断 (For DNS lookups and diagnostics)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - TYPE:   DNS 记录类型 (Record Type, 例如: A, AAAA, MX, TXT, NS, CNAME, SOA)
+#   - NAME:   域名 (Domain Name, 例如: google.com, www.example.org)
+#   - SERVER: DNS 服务器地址 (DNS Server Address, 例如: @8.8.8.8, @1.1.1.1)
+#   - +short: 简短输出 (Short output, only show the answer section)
+#   - +trace: 追踪 DNS 查询路径 (Trace DNS query path)
+#   - +noall: 清除所有输出选项 (Clear all output options)
+#   - +answer: 仅显示 Answer Section (Only show Answer Section)
+#   - +authority: 仅显示 Authority Section (Only show Authority Section)
+#   - +additional: 仅显示 Additional Section (Only show Additional Section)
+
+##############################################################################
+# 基本查询 (Basic Queries)
+##############################################################################
+
+dig NAME                                      # 查询域名的 A 记录 (默认)
+dig NAME TYPE                                 # 查询指定类型的记录 (例如: dig google.com MX)
+dig NAME @SERVER                              # 使用指定的 DNS 服务器查询 (例如: dig google.com @8.8.8.8)
+dig NAME TYPE @SERVER                         # 指定类型和服务器 (例如: dig google.com MX @8.8.8.8)
+dig -x ADDR                                   # 反向 DNS 查询 (PTR 记录, 例如: dig -x 8.8.8.8)
+
+# 提示:
+#   - 默认查询 A 记录，可省略 TYPE 参数
+#   - 使用 @server 指定 DNS 服务器，不指定则使用系统配置的 DNS 服务器
+
+##############################################################################
+# 常用查询类型 (Common Query Types)
+##############################################################################
+
+dig NAME A                                    # 查询 IPv4 地址记录 (A Record)
+dig NAME AAAA                                 # 查询 IPv6 地址记录 (AAAA Record)
+dig NAME MX                                    # 查询邮件交换记录 (MX Record)
+dig NAME TXT                                   # 查询文本记录 (TXT Record)
+dig NAME NS                                    # 查询域名服务器记录 (NS Record)
+dig NAME CNAME                                 # 查询别名记录 (CNAME Record)
+dig NAME SOA                                   # 查询起始授权机构记录 (SOA Record)
+dig NAME ANY                                   # 查询所有记录类型 (ANY Record, 谨慎使用)
+
+# 提示:
+#   - 常用 TYPE 包括 A, AAAA, MX, TXT, NS, CNAME, SOA
+#   - ANY 类型查询所有记录，但可能返回大量信息，不建议常用
+
+##############################################################################
+# 输出控制 (Output Control)
+##############################################################################
+
+dig +short NAME                               # 简短输出，仅显示 Answer Section
+dig +noall +answer NAME                       # 仅显示 Answer Section (更精确)
+dig +noall +authority NAME                    # 仅显示 Authority Section
+dig +noall +additional NAME                   # 仅显示 Additional Section
+dig +trace NAME                               # 追踪 DNS 查询路径 (查看中间过程)
+dig +noclall NAME                             # 显示调用方类记录
+dig +nocmd NAME                              # 不显示 dig 命令信息
+dig +noquestion NAME                          # 不显示 question section
+dig +noauthority NAME                        # 不显示 authority section
+dig +noadditional NAME                       # 不显示 additional section
+dig +nostats NAME                             # 不显示统计信息
+dig +time=T NAME                              # 设置超时时间为 T 秒 (默认 5 秒)
+dig +tries=NUM NAME                           # 设置重试次数为 NUM (默认 3 次)
+
+# 提示:
+#   - `+short` 用于快速获取 IP 或 MX 等记录值
+#   - `+trace` 用于排查 DNS 解析问题，查看解析路径
+#   - `+noall` 配合 `+answer`, `+authority`, `+additional` 精确控制输出
+
+##############################################################################
+# DNSSEC 相关 (DNSSEC Options)
+##############################################################################
+
+dig +dnssec NAME                              # 请求 DNSSEC 记录 (DO bit)
+dig +cd NAME                                  # 禁用 DNSSEC 验证 (CD flag)
+dig +adflag NAME                              # 设置 AD flag (Authenticated Data)
+dig +noadflag NAME                            # 清除 AD flag
+
+# 提示:
+#   - `+dnssec` 用于测试 DNSSEC 配置是否正确
+#   - `+cd` 在 DNSSEC 验证失败时，仍然显示结果 (用于调试)
+
+##############################################################################
+# 反向查询 (Reverse Lookups)
+##############################################################################
+
+dig -x IP_ADDRESS                             # 反向查询 IP 地址的 PTR 记录 (例如: dig -x 8.8.8.8)
+dig ptr IP_ADDRESS                            # 等同于 dig -x (PTR query)
+
+# 提示:
+#   - `-x` 或 `ptr` 参数用于反向 DNS 查询，查找 IP 地址对应的域名
+
+##############################################################################
+# 批量查询 (Batch Queries)
+##############################################################################
+
+# dig -f query_file                          # 从文件读取域名列表进行批量查询
+# 文件 query_file 格式: 每行一个查询，例如:
+# google.com A
+# example.org MX @8.8.8.8
+# ...
+
+# 提示:
+#   - `-f` 参数可以批量查询多个域名，方便自动化脚本
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 快速查询 IP 地址:
+#   dig +short google.com
+
+# 快速查询 MX 记录 (邮件服务器):
+#   dig +short MX google.com
+
+# 使用特定 DNS 服务器查询 (例如 Google Public DNS):
+#   dig google.com @8.8.8.8
+
+# 追踪 DNS 解析路径，排查问题:
+#   dig +trace google.com
+
+# 结合 grep 过滤输出:
+#   dig google.com | grep "ANSWER SECTION"
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 查询 google.com 的 A 记录 (默认服务器):
+#   dig google.com
+
+# 查询 google.com 的 MX 记录 (使用 8.8.8.8):
+#   dig MX google.com @8.8.8.8
+
+# 反向查询 8.8.8.8 的 PTR 记录:
+#   dig -x 8.8.8.8
+
+# 追踪 baidu.com 的 DNS 解析路径:
+#   dig +trace baidu.com
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# `man dig` (查看 dig 命令的完整手册)
+# https://www.isc.org/bind/ (BIND 官方网站, dig 是 BIND 工具套件的一部分)
+# https://shapeshed.com/dig-command-examples/ (Dig 命令示例)
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

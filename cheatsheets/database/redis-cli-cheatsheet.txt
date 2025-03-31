@@ -1,0 +1,254 @@
+##############################################################################
+# Redis CLI 速查表 (Redis CLI Cheatsheet)
+# 用于 Redis 命令行客户端 redis-cli 的快速参考
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - HOST:   Redis 服务器主机名或 IP 地址 (Hostname or IP Address, 例如: localhost, 192.168.1.100)
+#   - PORT:   Redis 服务器端口号 (Port number, 默认: 6379)
+#   - PASSWORD: Redis 服务器密码 (Password for authentication)
+#   - KEY:    Redis 键名 (Key name)
+#   - VALUE:  Redis 值 (Value)
+#   - FIELD:  Hash 字段名 (Hash field name)
+#   - MEMBER: Set 或 Sorted Set 成员 (Set or Sorted Set member)
+#   - CHANNEL: Pub/Sub 频道名 (Pub/Sub channel name)
+#   - PATTERN: 模式匹配 (Glob-style pattern, 例如: user*, item?)
+
+##############################################################################
+# 连接 (Connection)
+##############################################################################
+
+redis-cli                                     # 连接本地 Redis 服务器 (默认配置)
+redis-cli -h HOST                             # 连接指定主机 Redis 服务器
+redis-cli -p PORT                             # 连接指定端口 Redis 服务器
+redis-cli -h HOST -p PORT                     # 连接指定主机和端口
+redis-cli -a PASSWORD                         # 使用密码认证连接
+redis-cli -u redis://[USER:PASSWORD@]HOST:PORT[/DB] # 使用 URI 连接
+redis-cli --scan --pattern 'PATTERN'          # 扫描匹配模式的键 (大量键时使用)
+redis-cli --bigkeys                           # 分析并显示大键信息
+redis-cli ping                                  # 测试连接是否正常 (返回 PONG)
+redis-cli quit                                  # 关闭连接并退出
+
+##############################################################################
+# 键管理 (Key Management)
+##############################################################################
+
+redis-cli keys '*'                              # 列出所有键 (生产环境慎用)
+redis-cli keys 'PATTERN'                        # 列出匹配模式的键
+redis-cli dbsize                                # 返回当前数据库的键数量
+redis-cli exists KEY                            # 检查键是否存在 (1 存在, 0 不存在)
+redis-cli del KEY [KEY ...]                     # 删除一个或多个键
+redis-cli unlink KEY [KEY ...]                  # 非阻塞删除键 (后台异步删除)
+redis-cli rename KEY NEW_KEY                    # 重命名键
+redis-cli renamenx KEY NEW_KEY                  # 键不存在时重命名
+redis-cli type KEY                              # 返回键的数据结构类型 (string, list, set, zset, hash, stream)
+redis-cli ttl KEY                               # 获取键的剩余生存时间 (秒) (-1 永不过期, -2 不存在)
+redis-cli pttl KEY                              # 获取键的剩余生存时间 (毫秒)
+redis-cli expire KEY SECONDS                      # 设置键的过期时间 (秒)
+redis-cli pexpire KEY MILLISECONDS                 # 设置键的过期时间 (毫秒)
+redis-cli persist KEY                           # 移除键的过期时间，使其永不过期
+redis-cli randomkey                             # 随机返回一个键
+
+##############################################################################
+# 字符串 (Strings)
+##############################################################################
+
+redis-cli set KEY VALUE                           # 设置字符串键值
+redis-cli get KEY                               # 获取字符串键值
+redis-cli mget KEY [KEY ...]                      # 批量获取字符串键值
+redis-cli setnx KEY VALUE                         # 键不存在时设置值
+redis-cli mset KEY VALUE [KEY VALUE ...]          # 批量设置字符串键值对
+redis-cli msetnx KEY VALUE [KEY VALUE ...]        # 批量键不存在时设置值对
+redis-cli getset KEY NEW_VALUE                    # 获取旧值并设置新值
+redis-cli incr KEY                               # 值自增 1 (值需为整数)
+redis-cli decr KEY                               # 值自减 1 (值需为整数)
+redis-cli incrby KEY INCREMENT                     # 值增加指定整数
+redis-cli decrby KEY DECREMENT                     # 值减少指定整数
+redis-cli append KEY VALUE                        # 追加值到字符串末尾
+redis-cli strlen KEY                              # 获取字符串长度
+redis-cli getrange KEY START END                    # 获取字符串子串 (索引范围)
+redis-cli setrange KEY OFFSET VALUE                 # 替换字符串子串 (从偏移量开始)
+
+##############################################################################
+# 列表 (Lists)
+##############################################################################
+
+redis-cli lpush KEY VALUE [VALUE ...]              # 从列表头部添加元素
+redis-cli rpush KEY VALUE [VALUE ...]              # 从列表尾部添加元素
+redis-cli lpop KEY                                # 移除并返回列表头部元素
+redis-cli rpop KEY                                # 移除并返回列表尾部元素
+redis-cli lrange KEY START END                      # 获取列表指定范围元素
+redis-cli llen KEY                                # 获取列表长度
+redis-cli lindex KEY INDEX                          # 获取列表指定索引元素
+redis-cli lset KEY INDEX VALUE                      # 设置列表指定索引元素的值
+redis-cli ltrim KEY START END                       # 修剪列表，保留指定范围元素
+redis-cli lrem KEY COUNT VALUE                      # 从列表中删除指定数量的 VALUE 元素 (COUNT > 0: 从头删 COUNT 个, COUNT < 0: 从尾删 |COUNT| 个, COUNT = 0: 删除所有)
+redis-cli linsert KEY BEFORE|AFTER PIVOT VALUE    # 在列表中 PIVOT 元素前/后插入 VALUE
+redis-cli rpoplpush SOURCE DESTINATION             # 从 SOURCE 列表尾部弹出一个元素，推入 DESTINATION 列表头部
+
+##############################################################################
+# 哈希 (Hashes)
+##############################################################################
+
+redis-cli hset KEY FIELD VALUE [FIELD VALUE ...]    # 设置哈希字段值
+redis-cli hget KEY FIELD                            # 获取哈希字段值
+redis-cli hmget KEY FIELD [FIELD ...]               # 批量获取哈希字段值
+redis-cli hgetall KEY                             # 获取哈希所有字段和值
+redis-cli hkeys KEY                               # 获取哈希所有字段名
+redis-cli hvals KEY                               # 获取哈希所有字段值
+redis-cli hlen KEY                                # 获取哈希字段数量
+redis-cli hexists KEY FIELD                         # 检查哈希字段是否存在
+redis-cli hdel KEY FIELD [FIELD ...]                # 删除哈希字段
+redis-cli hincrby KEY FIELD INCREMENT               # 哈希字段值增加指定整数
+redis-cli hsetnx KEY FIELD VALUE                    # 哈希字段不存在时设置值
+
+##############################################################################
+# 集合 (Sets)
+##############################################################################
+
+redis-cli sadd KEY MEMBER [MEMBER ...]              # 向集合添加一个或多个成员
+redis-cli smembers KEY                             # 获取集合所有成员
+redis-cli scard KEY                                # 获取集合成员数量
+redis-cli sismember KEY MEMBER                       # 检查成员是否是集合的成员 (1 是, 0 否)
+redis-cli srem KEY MEMBER [MEMBER ...]              # 移除集合中一个或多个成员
+redis-cli spop KEY [COUNT]                          # 随机移除并返回集合中一个或多个成员
+redis-cli srandmember KEY [COUNT]                   # 随机返回集合中一个或多个成员 (不移除)
+redis-cli smove SOURCE DESTINATION MEMBER           # 将成员从 SOURCE 集合移动到 DESTINATION 集合
+redis-cli sdiff KEY [KEY ...]                       # 返回差集 (第一个集合有，后续集合没有)
+redis-cli sinter KEY [KEY ...]                      # 返回交集 (所有集合都有)
+redis-cli sunion KEY [KEY ...]                      # 返回并集 (所有集合的成员)
+
+##############################################################################
+# 有序集合 (Sorted Sets)
+##############################################################################
+
+redis-cli zadd KEY [NX|XX] [CH] [INCR] SCORE MEMBER [SCORE MEMBER ...] # 添加/更新有序集合成员和分数
+#   - NX: 仅在成员不存在时添加
+#   - XX: 仅在成员存在时更新
+#   - CH: 返回更改的成员数量 (添加或分数更新)
+#   - INCR: 将成员的分数加上 SCORE (而非设置新分数)
+redis-cli zrange KEY START END [WITHSCORES]         # 按分数升序返回指定范围成员
+redis-cli zrevrange KEY START END [WITHSCORES]      # 按分数降序返回指定范围成员
+redis-cli zrangebyscore KEY MIN MAX [WITHSCORES] [LIMIT offset count] # 按分数范围升序返回成员
+redis-cli zrevrangebyscore KEY MAX MIN [WITHSCORES] [LIMIT offset count] # 按分数范围降序返回成员
+redis-cli zrank KEY MEMBER                            # 返回成员在有序集合中的升序排名 (从 0 开始)
+redis-cli zrevrank KEY MEMBER                         # 返回成员在有序集合中的降序排名 (从 0 开始)
+redis-cli zcard KEY                                 # 获取有序集合成员数量
+redis-cli zcount KEY MIN MAX                          # 统计分数在给定范围内的成员数量
+redis-cli zincrby KEY INCREMENT MEMBER                # 增加成员分数
+redis-cli zscore KEY MEMBER                           # 获取成员分数
+redis-cli zrem KEY MEMBER [MEMBER ...]               # 移除有序集合中一个或多个成员
+redis-cli zremrangebyrank KEY START END              # 按排名范围移除成员
+redis-cli zremrangebyscore KEY MIN MAX             # 按分数范围移除成员
+redis-cli zinterstore DESTINATION NUMKEYS KEY [KEY ...] [WEIGHTS weight] [AGGREGATE SUM|MIN|MAX] # 交集并存储到新有序集合
+redis-cli zunionstore DESTINATION NUMKEYS KEY [KEY ...] [WEIGHTS weight] [AGGREGATE SUM|MIN|MAX] # 并集并存储到新有序集合
+
+##############################################################################
+# 发布/订阅 (Pub/Sub)
+##############################################################################
+
+redis-cli subscribe CHANNEL [CHANNEL ...]            # 订阅一个或多个频道
+redis-cli unsubscribe [CHANNEL [CHANNEL ...]]        # 取消订阅一个或多个频道 (或所有)
+redis-cli publish CHANNEL MESSAGE                     # 向指定频道发布消息
+redis-cli pubsub CHANNELS [PATTERN]                 # 列出活跃频道 (可选模式匹配)
+redis-cli pubsub NUMSUB [CHANNEL [CHANNEL ...]]      # 获取频道的订阅者数量
+redis-cli pubsub NUMPAT                             # 获取模式订阅的数量
+
+##############################################################################
+# 服务器 (Server)
+##############################################################################
+
+redis-cli info [section]                            # 获取服务器信息 (可选 section: server, clients, memory, persistence, stats, replication, cpu, commandstats, cluster, keyspace, all, default)
+redis-cli config get PARAMETER                      # 获取配置参数值 (例如: config get maxmemory)
+redis-cli config set PARAMETER VALUE                  # 设置配置参数值 (生产环境慎用，重启失效)
+redis-cli config rewrite                            # 重写配置文件 (持久化 config set 更改)
+redis-cli dbsize                                # 返回当前数据库的键数量
+redis-cli flushdb                                 # 清空当前数据库
+redis-cli flushall                                # 清空所有数据库 (慎用)
+redis-cli shutdown [NOSAVE|SAVE]                    # 安全关闭 Redis 服务器 (可选保存数据)
+redis-cli client list                             # 列出客户端连接信息
+redis-cli client kill ip:port                       # 关闭指定客户端连接
+redis-cli monitor                                 # 实时监控服务器接收到的命令 (Ctrl+C 退出)
+redis-cli slowlog get [number]                      # 获取慢查询日志 (默认 10 条)
+redis-cli slowlog len                               # 获取慢查询日志条数
+redis-cli slowlog reset                             # 清空慢查询日志
+
+##############################################################################
+# 脚本 (Scripting - Lua)
+##############################################################################
+
+redis-cli eval "SCRIPT" NUMKEYS KEY [KEY ...] ARG [ARG ...] # 执行 Lua 脚本
+#  - SCRIPT: Lua 脚本字符串
+#  - NUMKEYS: 脚本中用到的 KEY 参数的数量
+#  - KEY [KEY ...]: KEY 参数列表 (在 Lua 中通过 KEYS 数组访问)
+#  - ARG [ARG ...]: 其他参数列表 (在 Lua 中通过 ARGV 数组访问)
+redis-cli script load "SCRIPT"                       # 加载 Lua 脚本到缓存 (返回 SHA1 摘要)
+redis-cli evalsha SHA1 NUMKEYS KEY [KEY ...] ARG [ARG ...] # 通过 SHA1 摘要执行已缓存的脚本
+redis-cli script exists SHA1 [SHA1 ...]              # 检查脚本是否已缓存
+redis-cli script flush                               # 清空脚本缓存
+redis-cli script kill                                # 杀死当前正在执行的脚本
+
+##############################################################################
+# 事务 (Transactions)
+##############################################################################
+
+redis-cli multi                                   # 开启事务
+redis-cli exec                                    # 执行事务中的所有命令
+redis-cli discard                                 # 取消事务，放弃执行
+redis-cli watch KEY [KEY ...]                       # 监视一个或多个键，事务执行前键被修改则事务失败
+redis-cli unwatch                                 # 取消所有键的监视
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 --raw 输出原始格式 (例如，中文显示)
+#   redis-cli get mykey --raw
+
+# 使用 --pipe 批量发送命令 (提高性能)
+#   echo -e "set key1 val1\nset key2 val2\nget key1\nget key2" | redis-cli --pipe
+
+# 使用 redis-cli --interactive 进入交互模式
+#   redis-cli --interactive
+
+# 在交互模式中使用 help 命令查看命令帮助
+#   help @string  (查看 string 类型相关命令)
+#   help set      (查看 set 命令的详细帮助)
+
+# 使用 > 输出重定向命令结果到文件
+#   redis-cli keys '*' > keys.txt
+
+# 使用 < 输入重定向从文件读取命令
+#   redis-cli < commands.txt
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 连接本地 Redis 并设置键值对
+#   redis-cli set mykey "Hello Redis"
+#   redis-cli get mykey
+
+# 连接远程 Redis 服务器并使用密码认证
+#   redis-cli -h 192.168.1.100 -p 6379 -a "your_password" ping
+
+# 批量设置和获取键值对
+#   redis-cli mset user:1:name "Alice" user:1:age 30 user:2:name "Bob" user:2:age 25
+#   redis-cli mget user:1:name user:2:name
+
+# 发布订阅示例 (终端 1 订阅，终端 2 发布)
+#   # 终端 1:
+#   redis-cli subscribe mychannel
+#   # 终端 2:
+#   redis-cli publish mychannel "Hello Subscribers!"
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Redis 官方文档: https://redis.io/docs/
+# Redis 命令参考: https://redis.io/commands/
+# Redis CLI 文档: https://redis.io/docs/cli/
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

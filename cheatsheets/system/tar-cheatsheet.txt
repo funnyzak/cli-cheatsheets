@@ -1,0 +1,133 @@
+##############################################################################
+# TAR 命令速查表 (TAR Command Cheatsheet)
+# 归档、压缩和解压缩工具 (Archive, Compress, and Extract Files)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - ARCHIVE:  归档文件名 (Archive file name, 例如: archive.tar, archive.tar.gz)
+#   - FILE:     文件名 (File name, 例如: document.txt, image.jpg)
+#   - DIR:      目录名 (Directory name, 例如: documents/, images/)
+#   - [OPTIONS]:  tar 命令选项 (tar command options)
+
+##############################################################################
+# 常用操作模式 (Common Operation Modes)
+##############################################################################
+
+# 创建归档 (Create Archive)
+tar -cvf ARCHIVE FILE1 FILE2 DIR1 ...        # 创建 TAR 归档 (verbose 输出)
+tar -cf ARCHIVE FILE1 FILE2 DIR1 ...         # 创建 TAR 归档 (quiet 输出)
+
+# 提取归档 (Extract Archive)
+tar -xvf ARCHIVE                             # 提取 TAR 归档到当前目录 (verbose)
+tar -xf ARCHIVE                              # 提取 TAR 归档到当前目录 (quiet)
+tar -C /path/to/dest -xf ARCHIVE             # 提取到指定目录 (-C, --directory)
+
+# 列出归档内容 (List Archive Contents)
+tar -tvf ARCHIVE                             # 列出 TAR 归档内容 (verbose)
+tar -tf ARCHIVE                              # 列出 TAR 归档内容 (quiet)
+
+# 追加文件到归档 (Append Files to Archive)
+tar -rvf ARCHIVE FILE1 FILE2 ...              # 追加文件到 TAR 归档
+
+# 更新归档中的文件 (Update Files in Archive - 较少用)
+tar -uvf ARCHIVE FILE1 FILE2 ...              # 更新 TAR 归档中已存在的文件
+
+# 对比归档与文件系统 (Compare Archive with Filesystem)
+tar -dvf ARCHIVE                              # 对比归档与文件系统 (verbose)
+tar -df ARCHIVE                               # 对比归档与文件系统 (quiet)
+
+##############################################################################
+# 压缩选项 (Compression Options)
+##############################################################################
+
+# gzip 压缩 (通常后缀: .tar.gz 或 .tgz)
+tar -czvf ARCHIVE.tar.gz FILE1 DIR1 ...       # 创建 gzip 压缩归档 (-z, --gzip)
+tar -xzvf ARCHIVE.tar.gz                      # 提取 gzip 压缩归档
+
+# bzip2 压缩 (通常后缀: .tar.bz2 或 .tbz2)
+tar -cjvf ARCHIVE.tar.bz2 FILE1 DIR1 ...      # 创建 bzip2 压缩归档 (-j, --bzip2)
+tar -xjvf ARCHIVE.tar.bz2                     # 提取 bzip2 压缩归档
+
+# xz 压缩 (通常后缀: .tar.xz)
+tar -cJvf ARCHIVE.tar.xz FILE1 DIR1 ...       # 创建 xz 压缩归档 (-J, --xz)
+tar -xJvf ARCHIVE.tar.xz                      # 提取 xz 压缩归档
+
+# zstd 压缩 (通常后缀: .tar.zst) (需要较新版本 tar)
+tar --zstd -cvf ARCHIVE.tar.zst FILE1 DIR1 ... # 创建 zstd 压缩归档 (--zstd)
+tar --zstd -xvf ARCHIVE.tar.zst                # 提取 zstd 压缩归档
+
+# 提示:
+#   - 压缩选项通常放在操作模式之后，例如 `-czvf` (创建, gzip, verbose, 文件).
+#   - 根据压缩算法，压缩比和速度有所不同，gzip 速度快，xz/zstd 压缩比更高。
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+-c, --create                                # 创建新的归档文件
+-x, --extract, --get                        # 从归档文件中提取文件
+-t, --list                                  # 列出归档文件的内容
+-v, --verbose                               # 详细输出处理的文件名
+-f, --file=ARCHIVE                          # 指定归档文件名 (必须项，通常放最后)
+-z, --gzip, --gunzip, --ungzip              # 使用 gzip 压缩/解压缩
+-j, --bzip2, --bunzip2, --unbzip2            # 使用 bzip2 压缩/解压缩
+-J, --xz, --unxz                             # 使用 xz 压缩/解压缩
+--zstd                                      # 使用 zstd 压缩/解压缩 (较新版本)
+-C, --directory=DIR                         # 切换到指定目录 DIR
+-P, --absolute-names                        # 保留归档中的绝对路径 (默认相对路径)
+--exclude=PATTERN                           # 排除匹配 PATTERN 的文件或目录
+--exclude-vcs                               # 排除版本控制系统目录 (如 .git, .svn)
+--wildcards                                 # 允许使用通配符
+--no-wildcards                              # 禁用通配符
+--strip-components=NUM                      # 解压时去除 NUM 层目录前缀
+--transform='s/OLD/NEW/'                    # 解压时替换文件名 (sed 语法)
+--numeric-owner                             # 归档和解压时使用数字 UID/GID
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 排除特定文件类型:
+#   tar -czvf archive.tar.gz --exclude='*.log' DIR/
+
+# 排除多个目录:
+#   tar -czvf archive.tar.gz --exclude='DIR1/' --exclude='DIR2/' DIR/
+
+# 使用通配符批量归档:
+#   tar -czvf images.tar.gz images/*.jpg
+
+# 解压到指定目录并去除一层目录:
+#   tar -xzvf archive.tar.gz -C /tmp/dest --strip-components=1
+
+# 创建空的归档文件 (不包含任何文件):
+#   tar --create --file=empty.tar
+
+# 检查 tar 版本和压缩算法支持:
+#   tar --version
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 创建当前目录下所有文件和目录的 gzip 压缩归档 mybackup.tar.gz
+#   tar -czvf mybackup.tar.gz *
+
+# 2. 提取 mybackup.tar.gz 到 /tmp/restore 目录
+#   tar -xzvf mybackup.tar.gz -C /tmp/restore
+
+# 3. 列出 mybackup.tar.gz 的内容
+#   tar -tvf mybackup.tar.gz
+
+# 4. 创建 bzip2 压缩归档，排除 .cache 目录
+#   tar -cjvf mybackup.tar.bz2 --exclude='.cache/' *
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# GNU tar 官方手册: https://www.gnu.org/software/tar/manual/
+# tar(1) - Linux man page: https://man7.org/linux/man-pages/man1/tar.1.html
+# Arch Wiki - Tar: https://wiki.archlinux.org/title/Tar
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

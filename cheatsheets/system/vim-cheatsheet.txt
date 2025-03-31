@@ -1,0 +1,233 @@
+##############################################################################
+# Vim 编辑器速查表 (Vim Editor Cheatsheet)
+# 实时文本编辑器 (Real-time text editor)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - <Esc>:  Escape 键 (退出当前模式)
+#   - <CR>:   回车键 (Carriage Return, Enter)
+#   - :cmd:  Vim 命令模式命令 (在命令模式下输入)
+#   - COUNT:  数字，表示重复次数 (例如: 3j 向下移动 3 行)
+#   - MOTION: 光标移动命令 (例如: h, j, k, l, w, b, $, ^)
+#   - OBJECT: 文本对象 (例如: w-word, i"-引号内, a)-括号外)
+
+##############################################################################
+# 基本移动 (Basic Movement)
+##############################################################################
+
+# 字符移动 (Character-wise)
+h                       # 左 (Left)
+j                       # 下 (Down)
+k                       # 上 (Up)
+l                       # 右 (Right)
+
+# 单词移动 (Word-wise)
+w                       # 下一个单词词首 (Next word start)
+e                       # 当前/下一个单词词尾 (End of current/next word)
+b                       # 上一个单词词首 (Beginning of previous word)
+ge                      # 上一个单词词尾 (End of previous word)
+
+# 行移动 (Line-wise)
+0                       # 行首 (Beginning of line)
+^                       # 行首非空白字符 (First non-blank character of line)
+$                       # 行尾 (End of line)
+_                       # 当前行首字符 (First character of current line)
+nG                      # 第 N 行 (Line N, e.g., 10G 到第 10 行)
+gg                      # 文件首行 (First line of file)
+G                       # 文件末行 (Last line of file)
+
+# 屏幕移动 (Screen-wise)
+H                       # 屏幕顶行 (Top of screen)
+M                       # 屏幕中间行 (Middle of screen)
+L                       # 屏幕底行 (Bottom of screen)
+Ctrl+u                  # 上翻半页 (Scroll up half page)
+Ctrl+d                  # 下翻半页 (Scroll down half page)
+Ctrl+b                  # 上翻一页 (Scroll up one page)
+Ctrl+f                  # 下翻一页 (Scroll down one page)
+
+##############################################################################
+# 插入模式 (Insert Mode)
+##############################################################################
+
+i                       # 在光标前插入 (Insert before cursor)
+I                       # 在行首插入 (Insert at beginning of line)
+a                       # 在光标后插入 (Append after cursor)
+A                       # 在行尾插入 (Append at end of line)
+o                       # 在当前行下方插入新行 (Open new line below)
+O                       # 在当前行上方插入新行 (Open new line above)
+Esc                     # 退出插入模式 (Exit insert mode)
+
+##############################################################################
+# 删除 (Deletion)
+##############################################################################
+
+x                       # 删除光标处字符 (Delete character under cursor)
+X                       # 删除光标前字符 (Delete character before cursor)
+d{MOTION}               # 删除 MOTION 移动范围文本 (Delete text moved over by MOTION, e.g., dw 删除单词)
+dd                      # 删除当前行 (Delete current line)
+D                       # 删除到行尾 (Delete to end of line, d$)
+COUNTdd                 # 删除 COUNT 行 (Delete COUNT lines)
+
+##############################################################################
+# 修改 (Change)
+##############################################################################
+
+r{char}                 # 替换光标处字符为 char (Replace character under cursor with char)
+R                       # 进入替换模式 (Enter replace mode, overwrite text)
+c{MOTION}               # 修改 MOTION 移动范围文本 (Change text moved over by MOTION, e.g., cw 修改单词)
+cc                      # 修改当前行 (Change current line)
+C                       # 修改到行尾 (Change to end of line, c$)
+COUNTcc                 # 修改 COUNT 行 (Change COUNT lines)
+
+s                       # 删除光标处字符并进入插入模式 (Substitute character under cursor, cl)
+S                       # 删除当前行并进入插入模式 (Substitute line, cc)
+
+##############################################################################
+# 复制粘贴 (Yank and Paste)
+##############################################################################
+
+y{MOTION}               # 复制 MOTION 移动范围文本 (Yank text moved over by MOTION, e.g., yw 复制单词)
+yy                      # 复制当前行 (Yank current line)
+Y                       # 复制当前行 (Yank current line, yy)
+p                       # 在光标后粘贴 (Paste after cursor)
+P                       # 在光标前粘贴 (Paste before cursor)
+
+##############################################################################
+# 撤销与重做 (Undo and Redo)
+##############################################################################
+
+u                       # 撤销 (Undo)
+Ctrl+r                  # 重做 (Redo)
+U                       # 撤销整行修改 (Undo all changes on current line)
+
+##############################################################################
+# 查找 (Search)
+##############################################################################
+
+/{PATTERN}<CR>         # 向前查找 PATTERN (Search forward for PATTERN)
+?{PATTERN}<CR>         # 向后查找 PATTERN (Search backward for PATTERN)
+n                       # 下一个匹配 (Next match)
+N                       # 上一个匹配 (Previous match)
+*                       # 向前查找光标下单词 (Search forward for word under cursor)
+#                       # 向后查找光标下单词 (Search backward for word under cursor)
+
+##############################################################################
+# 替换 (Substitute)
+##############################################################################
+
+:s/old/new<CR>          # 替换当前行第一个 old 为 new (Substitute first occurrence of old with new in current line)
+:s/old/new/g<CR>         # 替换当前行所有 old 为 new (Substitute all occurrences of old with new in current line)
+:%s/old/new/g<CR>        # 替换整个文件所有 old 为 new (Substitute all occurrences of old with new in entire file)
+:%s/old/new/gc<CR>       # 替换整个文件所有 old 为 new, 每次替换前确认 (Substitute with confirmation)
+
+# 标志 (Flags for :s command):
+#   g:  全局替换 (global, replace all occurrences in line)
+#   c:  确认替换 (confirm, ask for confirmation before each substitution)
+#   i:  忽略大小写 (ignore case)
+
+##############################################################################
+# 可视模式 (Visual Mode)
+##############################################################################
+
+v                       # 进入字符可视模式 (Visual character mode)
+V                       # 进入行可视模式 (Visual line mode)
+Ctrl+v                  # 进入块可视模式 (Visual block mode)
+Esc                     # 退出可视模式 (Exit visual mode)
+
+# 可视模式下常用操作 (Operations in Visual Mode):
+d                       # 删除选中文本 (Delete selected text)
+y                       # 复制选中文本 (Yank selected text)
+c                       # 修改选中文本 (Change selected text)
+>                       # 缩进选中文本 (Indent selected text)
+<                       # 取消缩进选中文本 (Unindent selected text)
+=                       # 自动缩进选中文本 (Auto-indent selected text)
+
+##############################################################################
+# 保存和退出 (Saving and Exiting)
+##############################################################################
+
+:w<CR>                   # 保存 (Write, save file)
+:w {filename}<CR>       # 另存为 filename (Write to filename)
+:wq<CR>                  # 保存并退出 (Write and quit)
+:x<CR>                   # 保存并退出 (Write and quit, only if changes were made)
+:q<CR>                   # 退出 (Quit, exit if no changes since last save)
+:q!<CR>                  # 强制退出, 放弃修改 (Quit without saving, force quit)
+:e!                      # 重新加载文件，放弃所有修改 (Reload file from disk, discard changes)
+
+##############################################################################
+# 窗口管理 (Window Management)
+##############################################################################
+
+:split<CR>              # 水平分割窗口 (Split window horizontally)
+:vsplit<CR>             # 垂直分割窗口 (Split window vertically)
+Ctrl+w w                # 切换到下一个窗口 (Switch to next window)
+Ctrl+w h                # 切换到左侧窗口 (Switch to left window)
+Ctrl+w j                # 切换到下方窗口 (Switch to below window)
+Ctrl+w k                # 切换到上方窗口 (Switch to above window)
+Ctrl+w l                # 切换到右侧窗口 (Switch to right window)
+:close<CR>              # 关闭当前窗口 (Close current window)
+:only<CR>               # 只保留当前窗口，关闭其他窗口 (Keep only current window, close others)
+
+##############################################################################
+# Tab 页管理 (Tab Management)
+##############################################################################
+
+:tabnew<CR>             # 新建 Tab 页 (Open new tab)
+:tabnew {filename}<CR> # 新建 Tab 页并打开文件 (Open file in new tab)
+:tabnext<CR>            # 切换到下一个 Tab 页 (Next tab)
+:tabprevious<CR>        # 切换到上一个 Tab 页 (Previous tab)
+:tabfirst<CR>           # 切换到第一个 Tab 页 (First tab)
+:tablast<CR>            # 切换到最后一个 Tab 页 (Last tab)
+:tabclose<CR>           # 关闭当前 Tab 页 (Close current tab)
+:tabonly<CR>            # 只保留当前 Tab 页 (Keep only current tab)
+
+##############################################################################
+# 宏 (Macros)
+##############################################################################
+
+q{register}             # 开始录制宏到寄存器 register (Start recording macro in register, e.g., qa)
+q                       # 停止录制宏 (Stop recording macro)
+@{register}             # 执行寄存器 register 中的宏 (Execute macro in register, e.g., @a)
+@@                      # 再次执行上次执行的宏 (Re-execute last executed macro)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# . (点命令): 重复上次修改 (Repeat last change)
+# COUNT{command}: 重复命令 COUNT 次 (Repeat command COUNT times, e.g., 3dd 删除 3 行)
+# 组合操作符和 MOTION (Operators and Motions):  例如 dw (删除单词), ciw (修改单词内文本), y$ (复制到行尾)
+# 使用 :help {topic} 获取帮助 (Get help on topic, e.g., :help :w)
+# :syntax on   启用语法高亮 (Enable syntax highlighting)
+# :syntax off  禁用语法高亮 (Disable syntax highlighting)
+# :set nu      显示行号 (Show line numbers)
+# :set nonu    隐藏行号 (Hide line numbers)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 打开文件, 修改, 保存退出:
+#    vim myfile.txt
+#    i<输入内容><Esc>:wq<CR>
+
+# 2. 查找并替换所有 "apple" 为 "orange":
+#    :%s/apple/orange/g<CR>
+
+# 3. 录制宏删除空行并移动到下一行，重复执行 5 次:
+#    qa
+#    dd
+#    j
+#    q
+#    5@a
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Vim 官方文档: https://www.vim.org/docs.php
+# Vim 教程 (中文): https://coolshell.cn/articles/5426.html
+# Vim Awesome 插件推荐: https://vimawesome.com/
+
+# vim: set ts=4 sw=4 tw=0 et ft=vim :

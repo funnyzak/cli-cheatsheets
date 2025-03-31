@@ -1,0 +1,134 @@
+##############################################################################
+# LSOF 速查表 (List Open Files Cheatsheet)
+# 列出打开文件工具速查表
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PID:     进程 ID (Process ID)
+#   - USER:    进程所有者用户名 (User name of process owner)
+#   - FD:      文件描述符 (File Descriptor)
+#              - cwd:  当前工作目录 (Current Working Directory)
+#              - rtd:  根目录 (Root Directory)
+#              - mem:  内存映射文件 (Memory-mapped file)
+#              - txt:  程序代码段 (Program text (code))
+#              - *:    其他文件描述符 (Numeric file descriptor, e.g., 0, 1, 2, 3u, etc.)
+#   - TYPE:    文件类型 (File Type)
+#              - REG:   普通文件 (Regular file)
+#              - DIR:   目录 (Directory)
+#              - FIFO:  命名管道 (FIFO pipe)
+#              - SOCK:  套接字 (Socket)
+#              - IPv4/IPv6:  网络套接字类型 (Internet Protocol version 4/6)
+#              - UNIX:  Unix 域套接字 (Unix domain socket)
+#   - DEVICE:  设备号 (Device number)
+#   - SIZE/OFF: 文件大小或偏移量 (File size or offset)
+#   - NODE:    Inode 节点号 (Inode number)
+#   - NAME:    文件/套接字名称 (File or socket name)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+lsof                                        # 列出所有打开的文件 (List all open files)
+lsof [FILE]                                   # 列出打开指定文件的进程 (List processes opening FILE)
+lsof [DIR]                                    # 列出打开指定目录的进程 (List processes opening DIR)
+
+##############################################################################
+# 用户和进程过滤 (User and Process Filtering)
+##############################################################################
+
+lsof -u [USER]                                 # 列出指定用户打开的文件 (List files opened by USER)
+lsof -u [USER1],[USER2],[USER3]                 # 列出多个用户打开的文件 (List files opened by multiple users)
+lsof -U                                       # 列出所有 Unix 域套接字文件 (List all Unix domain socket files)
+lsof -p [PID]                                  # 列出指定 PID 进程打开的文件 (List files opened by PID)
+lsof -p [PID1],[PID2],[PID3]                  # 列出多个 PID 进程打开的文件 (List files opened by multiple PIDs)
+lsof -g [GID]                                  # 列出指定 GID 进程打开的文件 (List files opened by GID)
+lsof -c [COMMAND]                              # 列出命令名以 COMMAND 开头的进程打开的文件 (List files opened by processes with COMMAND)
+lsof -c ^[COMMAND]                             # 列出命令名不以 COMMAND 开头的进程打开的文件 (List files NOT opened by processes with COMMAND)
+lsof -t -u [USER]                              # 仅列出指定用户的进程 PID (List only PIDs of processes owned by USER)
+
+# 提示:
+#   - 可以组合使用 -u, -p, -c 等选项进行更精确的过滤 (Combine options for precise filtering)
+
+##############################################################################
+# 文件类型过滤 (File Type Filtering)
+##############################################################################
+
+lsof -d [FD]                                  # 列出指定文件描述符 FD 的文件 (e.g., 0, 1, 2, or mem, txt, cwd, rtd, etc.)
+lsof -d ^[FD]                                 # 排除指定文件描述符 (Exclude specific file descriptors)
+lsof -i [4/6][@HOST][:PORT][,[4/6][@HOST][:PORT]] # 列出网络文件 (List network files, IPv4/IPv6, host, port)
+lsof -i TCP                                    # 列出所有 TCP 连接 (List all TCP connections)
+lsof -i UDP                                    # 列出所有 UDP 连接 (List all UDP connections)
+lsof -i :[PORT]                                # 列出指定端口的网络连接 (List connections on PORT)
+lsof -i TCP:[PORT]                             # 列出指定 TCP 端口的连接 (List TCP connections on PORT)
+lsof -i @[HOST]                                # 列出连接到指定 HOST 的网络连接 (List connections to HOST)
+lsof -i 4                                      # 列出 IPv4 网络连接 (List IPv4 network connections)
+lsof -i 6                                      # 列出 IPv6 网络连接 (List IPv6 network connections)
+lsof -a -i TCP -p [PID]                        # 列出指定 PID 进程的 TCP 连接 (List TCP connections of PID, using -a for AND)
+lsof -U                                       # 列出 Unix 域套接字文件 (List Unix domain socket files)
+lsof -Fn                                      # 输出 NFS 文件 (List NFS files)
+
+# 提示:
+#   - 使用 -a (AND) 和 -o (OR) 组合多个条件 (Combine conditions with -a (AND) and -o (OR))
+
+##############################################################################
+# 输出格式控制 (Output Formatting)
+##############################################################################
+
+lsof -l                                       # 显示 UID 和 GID (Display UID and GID)
+lsof -n                                       # 不解析主机名 (No hostname resolution - faster for network queries)
+lsof -P                                       # 不解析端口号为端口名 (No port number to port name conversion)
+lsof -r [N]                                    # 每隔 N 秒重复执行 lsof (Repeat lsof every N seconds)
+lsof +r [N]                                   # 持续重复执行 lsof, 直到没有文件被打开/关闭 (Repeat continuously until no changes)
+lsof -w                                       # 禁止警告信息 (Suppress warning messages)
+lsof -h                                       # 显示帮助信息 (Display help information)
+lsof -v                                       # 显示版本信息 (Display version information)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 查找占用特定端口的进程 (Find process using a specific port):
+#   lsof -i :[PORT]
+
+# 查找打开特定文件的进程 (Find processes opening a specific file):
+#   lsof /path/to/file
+
+# 查找指定用户打开的所有网络连接 (Find all network connections opened by a user):
+#   lsof -i -u [USER]
+
+# 实时监控文件打开情况 (Real-time monitoring of file openings):
+#   lsof -r 1
+
+# 结合 grep 过滤输出 (Filter output with grep):
+#   lsof -i TCP | grep ESTABLISHED         # 查找 ESTABLISHED 状态的 TCP 连接
+#   lsof | grep firefox                   # 查找 firefox 进程打开的文件
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 查找占用 8080 端口的进程:
+#   lsof -i :8080
+
+# 查找用户 'john' 打开的所有文件:
+#   lsof -u john
+
+# 查找进程 ID 为 1234 打开的文件:
+#   lsof -p 1234
+
+# 查找所有 TCP 连接并排除主机名解析:
+#   lsof -i TCP -n
+
+# 实时监控当前目录下文件的打开情况:
+#   lsof -r 1 .
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://linux.die.net/man/8/lsof
+# https://www.rapid7.com/blog/post/lsof-command-examples/
+# https://www.computerhope.com/unix/ulsof.htm
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

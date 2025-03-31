@@ -1,0 +1,100 @@
+##############################################################################
+# SCP 命令速查表 (SCP Command Cheatsheet)
+# 安全拷贝 (Secure Copy) - 基于 SSH 的文件传输工具
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - [USER@]HOST:  远程主机地址 (username@hostname 或 IP 地址)
+#   - SRC_PATH:    源路径 (本地或远程文件/目录路径)
+#   - DEST_PATH:   目标路径 (本地或远程文件/目录路径)
+#   - LOCAL_PATH:  本地文件/目录路径
+#   - REMOTE_PATH: 远程文件/目录路径
+
+##############################################################################
+# 基本拷贝 (Basic Copy)
+##############################################################################
+
+scp LOCAL_PATH [USER@]HOST:REMOTE_PATH           # 本地文件/目录 -> 远程 (默认用户)
+scp LOCAL_PATH USER@HOST:REMOTE_PATH            # 本地文件/目录 -> 远程 (指定用户)
+scp [USER@]HOST:REMOTE_PATH LOCAL_PATH           # 远程文件/目录 -> 本地 (默认用户)
+scp USER@HOST:REMOTE_PATH LOCAL_PATH            # 远程文件/目录 -> 本地 (指定用户)
+scp [USER@]HOST:REMOTE_PATH [USER@]HOST:REMOTE_PATH # 远程主机 -> 远程主机
+
+# 提示:
+#   - 路径可以是绝对路径或相对路径。
+#   - 目录路径需要使用 `-r` 选项进行递归拷贝 (见下文)。
+#   - 默认情况下，远程路径相对于用户家目录 (~/)。
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+scp -r SRC_PATH DEST_PATH                      # 递归拷贝目录 (recursive)
+scp -P port SRC_PATH DEST_PATH                  # 指定 SSH 端口 (port)
+scp -i identity_file SRC_PATH DEST_PATH         # 指定身份验证文件 (identity file, 私钥)
+scp -C SRC_PATH DEST_PATH                      # 启用压缩 (compression)
+scp -l limit SRC_PATH DEST_PATH                 # 限制带宽 (bits/sec, limit)
+scp -v SRC_PATH DEST_PATH                      # 详细输出 (verbose)
+scp -q SRC_PATH DEST_PATH                      # 静默模式 (quiet)
+scp -o ssh_option=value SRC_PATH DEST_PATH      # 传递 SSH 选项 (ssh option)
+
+# 提示:
+#   - `-P` 端口号必须是大写 P。
+#   - `-l`  限制的是 bits/秒，例如 `-l 64` 限制为 64kbps。
+#   - `-o` 可以传递任何 ssh_config(5) 中定义的选项，例如 `-o "StrictHostKeyChecking=no"`。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 从本地复制文件 'myfile.txt' 到远程主机 'remote_host' 的家目录:
+#    scp myfile.txt user@remote_host:~
+
+# 2. 从本地复制目录 'mydir' 到远程主机 'remote_host' 的 '/opt' 目录 (需要 sudo 权限):
+#    scp -r mydir user@remote_host:/opt/
+
+# 3. 从远程主机 'remote_host' 复制文件 'remotefile.log' 到本地当前目录:
+#    scp user@remote_host:/var/log/remotefile.log .
+
+# 4. 从远程主机 'host1' 复制文件到远程主机 'host2' (通过本地中转):
+#    scp user1@host1:/path/to/file user2@host2:/destination/path/
+
+# 5. 使用指定端口 2222 拷贝本地文件到远程主机:
+#    scp -P 2222 myfile.txt user@remote_host:~
+
+# 6. 使用私钥文件 'my_private_key' 进行身份验证:
+#    scp -i ~/.ssh/my_private_key myfile.txt user@remote_host:~
+
+# 7. 限制带宽为 1Mbps (1000000 bits/sec):
+#    scp -l 1000000 largefile.iso user@remote_host:~
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 Tab 补全路径:
+#   - 本地路径支持 Tab 补全。
+#   - 远程路径在输入 `[USER@]HOST:` 后，部分 Shell 支持远程路径补全 (依赖于 SSH 配置)。
+
+# 使用通配符 (*, ?, []) 批量拷贝文件:
+#   scp *.txt user@remote_host:~/documents/
+
+# 使用 `-v` 查看详细传输进度和调试信息。
+
+# 结合 `ssh-copy-id` 简化免密码登录配置，之后 `scp` 可以直接使用，无需每次输入密码。
+
+# 注意权限问题:
+#   - 确保本地用户对源文件/目录有读取权限。
+#   - 确保远程用户对目标目录有写入权限 (或根据具体操作)。
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# `man scp` (查看 scp 命令手册)
+# `man ssh` (查看 ssh 命令手册，scp 基于 ssh)
+# https://www.ssh.com/ssh/scp/
+# https://www.digitalocean.com/community/tutorials/how-to-use-scp-to-securely-transfer-files
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

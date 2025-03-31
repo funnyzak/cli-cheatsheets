@@ -1,0 +1,118 @@
+##############################################################################
+# traceroute 命令速查表 (traceroute Cheat Sheet)
+# 跟踪路由，诊断网络连接
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - HOST:      目标主机名或 IP 地址 (Target hostname or IP address)
+#   - PORT:      端口号 (Port number, 例如: 80, 53)
+#   - PROTOCOL:  协议名称或编号 (Protocol name or number, 例如: icmp, tcp, udp, 1, 6, 17)
+#   - NUM:       数字 (Number)
+#   - SEC:       秒 (Seconds)
+#   - TTL:       生存时间 (Time To Live)
+#   - GATEWAY:   网关 IP 地址 (Gateway IP Address)
+#   - SRC_ADDR:  源 IP 地址 (Source IP Address)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+traceroute HOST                               # 跟踪到主机的路由 (默认 UDP)
+traceroute -T HOST                              # 使用 TCP SYN 探测 (需要 root 或 sudo)
+traceroute -I HOST                              # 使用 ICMP Echo 探测 (需要 root 或 sudo)
+traceroute -U HOST                              # 使用 UDP 探测 (默认)
+traceroute -P PROTOCOL HOST                     # 指定协议进行探测 (例如: tcp, udp, icmp, 1, 6, 17)
+
+# 提示:
+#   - 默认情况下，traceroute 使用 UDP 探测包。
+#   - 使用 -T, -I 等选项可以切换到 TCP SYN 或 ICMP Echo 探测，更常用于网络诊断。
+#   - 大部分选项需要 root 或 sudo 权限，特别是使用 -T 和 -I 时。
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+traceroute -n HOST                              # 不进行 DNS 反向解析，显示 IP 地址
+traceroute -v HOST                              #  verbose 模式，显示详细信息
+traceroute -q NUM HOST                           # 设置每跳发送探测包的数量 (默认 3)
+traceroute -w SEC HOST                           # 设置等待响应的超时时间 (秒)
+traceroute -m NUM HOST                           # 设置最大跳数 (Max TTL, 默认 30)
+traceroute -g GATEWAY HOST                       # 设置网关 (gateway) 进行路由探测
+traceroute -p PORT HOST                          # 设置目标端口 (用于 TCP/UDP 探测)
+traceroute -s SRC_ADDR HOST                      # 设置源 IP 地址
+traceroute -z FIRST_TTL HOST                     # 设置起始 TTL 值 (默认为 1)
+traceroute -N NUM HOST                           # 设置同时发送探测包的数量 (增加速度)
+traceroute --tcp -p PORT HOST                     # 强制 TCP SYN 探测，并指定端口 (等同于 -T -p PORT)
+traceroute --icmp HOST                           # 强制 ICMP Echo 探测 (等同于 -I)
+traceroute --udp HOST                            # 强制 UDP 探测 (等同于 -U)
+
+# 提示:
+#   - `-n` 可以加速 traceroute 的执行，避免 DNS 查询延迟。
+#   - `-m` 可以限制探测范围，避免长时间等待。
+#   - `-w` 可以调整超时时间，适应不同网络环境。
+#   - `-p` 可以指定目标端口，用于测试特定服务的连通性 (TCP/UDP)。
+
+##############################################################################
+# 输出信息解读 (Interpreting Output)
+##############################################################################
+
+# 输出示例:
+#  1  192.168.1.1 (192.168.1.1)  1.234 ms  0.987 ms  1.111 ms
+#  2  10.0.0.1 (10.0.0.1)  5.678 ms  6.000 ms  5.888 ms
+#  3  * * *
+#  4  destination.host (203.0.113.5)  15.555 ms  16.222 ms  15.999 ms
+
+#  - 每行代表一跳 (hop)，数字为跳数。
+#  - 第一个字段是跳数，之后是路由器的 IP 地址和主机名 (如果 DNS 解析成功)。
+#  - 括号内是 IP 地址，括号外是主机名。
+#  - 后面跟着三个时间值，表示三个探测包的往返时间 (RTT, Round Trip Time)，单位毫秒 (ms)。
+#  - `* * *` 表示该跳没有响应，可能是网络问题或防火墙阻止。
+#  - 最后一跳通常是目标主机。
+
+# 提示:
+#   - 关注 RTT 值，可以判断网络延迟情况。
+#   - 连续的 `* * *` 可能表示网络中断或路由问题。
+#   - 主机名解析失败不影响路由跟踪，可以忽略。
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 TCP SYN 探测 (-T) 穿透防火墙:
+#   - 某些防火墙可能阻止 UDP 或 ICMP 探测，但允许 TCP 连接。
+#   - 使用 `-T` 可以尝试 TCP SYN 探测，模拟 TCP 连接建立过程，可能绕过防火墙限制。
+#   - 需要 root 或 sudo 权限。
+
+# 使用指定端口 (-p PORT) 测试特定服务:
+#   - 例如 `traceroute -T -p 80 google.com` 可以测试到 google.com 80 端口的 TCP 路由。
+#   - 可以用于诊断特定端口的网络连通性。
+
+# 结合 `watch` 命令实时监控路由变化 (不常用，但可用于观察动态路由):
+#   watch -n 1 traceroute google.com
+
+# 结合 `grep` 过滤输出 (例如，只看延迟时间超过阈值的跳):
+#   traceroute google.com | awk '{if ($5 > 10) print $0}'  # 延迟超过 10ms 的行 (假设第五列是延迟)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 基本路由跟踪到 google.com:
+#   traceroute google.com
+
+# 使用 TCP SYN 探测到 google.com 80 端口:
+#   sudo traceroute -T -p 80 google.com
+
+# 不进行 DNS 解析，快速跟踪到 8.8.8.8:
+#   traceroute -n 8.8.8.8
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://man7.org/linux/man-pages/man8/traceroute.8.html
+# https://en.wikipedia.org/wiki/Traceroute
+# 您的系统 `man traceroute` 命令
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

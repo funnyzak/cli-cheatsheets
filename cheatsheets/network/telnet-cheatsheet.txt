@@ -1,0 +1,106 @@
+##############################################################################
+# Telnet 速查表 (Telnet Cheatsheet)
+# 简易的 Telnet 客户端速查，用于快速连接和基本操作。
+# Simple Telnet client cheatsheet for quick connection and basic operations.
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - HOST:   目标主机名或 IP 地址 (Target hostname or IP address)
+#   - PORT:   目标端口号 (Target port number)
+
+##############################################################################
+# 连接与基本用法 (Connection & Basic Usage)
+##############################################################################
+
+telnet HOST                                 # 连接到指定主机 (默认端口 23)
+telnet HOST PORT                            # 连接到指定主机和端口
+telnet                                      # 启动 telnet 交互模式 (输入 open HOST [PORT] 连接)
+open HOST [PORT]                            # 在 telnet 交互模式中连接到主机
+close                                       # 关闭当前连接 (在 telnet 交互模式中)
+quit 或 exit                                  # 退出 telnet (在 telnet 交互模式中)
+
+# 提示:
+#   - 直接 `telnet HOST` 最常用，快速连接到默认 Telnet 服务端口 (23)。
+#   - 在交互模式中可以使用更多命令，例如 `status`, `set`, `toggle` 等。
+
+##############################################################################
+# 会话命令 (Session Commands - 进入交互模式后)
+##############################################################################
+
+? 或 help                                     # 显示帮助信息
+status                                      # 显示连接状态信息
+send <命令>                                  # 发送特殊命令 (例如: send escape, send break, send eof)
+set <选项> <值>                              # 设置 telnet 选项 (例如: set ech, set crlf)
+unset <选项>                                 # 取消设置 telnet 选项 (例如: unset ech, unset crlf)
+toggle <选项>                                # 切换 telnet 选项状态 (例如: toggle options, toggle crlf)
+z                                           # 挂起 telnet 进程 (暂停到后台)
+
+# 常用 send 命令:
+#   send escape     - 发送 telnet 转义字符 (通常 Ctrl+])
+#   send break      - 发送 BREAK 信号
+#   send eof        - 发送 EOF (文件结束符)
+#   send synch      - 发送 SYNCH 信号
+
+# 常用 set/unset/toggle 选项 (部分):
+#   ech             - 本地回显 (local echo)
+#   crlf            - 发送 CR-LF 而不是 CR
+#   options         - 显示 telnet 选项协商信息
+#   binary          - 二进制传输模式
+#   debug           - 调试模式
+
+##############################################################################
+# 实用技巧 (Tips & Tricks)
+##############################################################################
+
+# Ctrl+] 进入命令模式:
+#   在 telnet 连接中，按下 Ctrl+] 组合键可以进入 telnet 交互命令模式。
+#   之后可以输入命令，例如 `close`, `quit`, `status`, `send ?` 等。
+
+# 使用 `status` 查看连接状态:
+#   在交互模式中使用 `status` 命令可以查看当前连接的详细信息，
+#   包括连接的主机、端口、状态、以及启用的 telnet 选项。
+
+# 调试连接问题:
+#   可以使用 `toggle options` 查看 telnet 选项协商过程，
+#   或者使用 `set debug` 开启调试模式，输出更详细的调试信息，
+#   帮助排查连接问题。
+
+##############################################################################
+# 安全提示 (Security Notes - 重要)
+##############################################################################
+
+# Telnet 通信不加密:
+#   Telnet 协议传输的数据是明文的，包括用户名、密码等敏感信息。
+#   在不安全的网络环境中使用 Telnet 会有安全风险，容易被监听或窃取信息。
+
+# 建议使用更安全的替代方案:
+#   对于远程登录和管理，强烈建议使用 SSH (Secure Shell) 等加密协议，
+#   而不是 Telnet。 SSH 提供加密传输，更加安全可靠。
+
+# 仅在测试或受信任的内网环境中使用 Telnet:
+#   如果需要使用 Telnet，请仅限于测试环境或受信任的内部网络，
+#   避免在公共网络或不信任的网络环境中使用。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 连接到 example.com 的 Telnet 服务 (默认端口 23):
+#   telnet example.com
+
+# 2. 连接到 192.168.1.100 的 80 端口 (尝试连接 HTTP 服务):
+#   telnet 192.168.1.100 80
+
+# 3. 启动 telnet 交互模式，然后连接到 bbs.example.org:
+#   telnet
+#   open bbs.example.org
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://www.man7.org/linux/man-pages/man1/telnet.1.html
+# https://en.wikipedia.org/wiki/Telnet
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

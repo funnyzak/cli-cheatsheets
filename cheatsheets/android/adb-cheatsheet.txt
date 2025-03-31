@@ -1,0 +1,211 @@
+##############################################################################
+# ADB 命令速查表 (Android Debug Bridge Cheatsheet)
+# 用于 Android 开发和调试的常用 ADB 命令
+# Cheat sheet for common ADB (Android Debug Bridge) commands.
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - DEVICE_ID:  设备序列号 (Device Serial Number, 例如: emulator-5554, 192.168.1.100:5555)
+#                可以使用 `adb devices` 命令查看设备序列号
+#                Use `adb devices` to list device serial numbers.
+#   - PACKAGE_NAME: 应用包名 (Application Package Name, 例如: com.example.myapp)
+#                  通常可以在 AndroidManifest.xml 或应用商店链接中找到
+#                  Found in AndroidManifest.xml or app store link.
+#   - ACTIVITY_NAME:  Activity 名称 (Activity Name, 例如: .MainActivity, com.example.myapp.SettingsActivity)
+#                   通常在应用的 Java 代码或 AndroidManifest.xml 中定义
+#                   Defined in Java code or AndroidManifest.xml.
+#   - PATH:       文件/目录路径 (File/Directory Path, 例如: /sdcard/Download, /data/local/tmp)
+#   - PORT:       端口号 (Port Number, 例如: 8080, 5555)
+#   - LOCAL_PORT: 本地端口 (Local Port)
+#   - REMOTE_PORT: 远程端口 (Remote Port)
+
+##############################################################################
+# 设备管理 (Device Management)
+##############################################################################
+
+adb devices                                  # 列出已连接设备 (List connected devices)
+adb devices -l                               # 列出设备和详细信息 (List devices with details)
+adb -s DEVICE_ID devices                     # 指定设备执行 devices 命令 (Devices command for specific device)
+adb get-state                                # 获取设备状态 (Get device state: device, offline, unknown)
+adb get-serialno                             # 获取设备序列号 (Get device serial number)
+adb get-devpath                              # 获取设备路径 (Get device path)
+adb get-product                              # 获取设备产品名称 (Get device product name)
+adb get-model                                # 获取设备型号 (Get device model)
+adb get-device                               # 获取设备设备名称 (Get device device name)
+adb get-transport                            # 获取设备传输类型 (Get device transport type)
+adb usb                                      # 重启 ADB USB 模式 (Restart ADB in USB mode)
+adb tcpip PORT                               # 重启 ADB TCP/IP 模式，监听指定端口 (Restart ADB in TCP/IP mode, listen on PORT)
+adb connect HOST:PORT                        # 连接到 TCP/IP 设备 (Connect to TCP/IP device)
+adb disconnect [HOST:PORT]                    # 断开 TCP/IP 设备连接 (Disconnect TCP/IP device)
+adb emu COMMAND [OPTIONS]                    # 发送模拟器命令 (Send emulator command)
+adb host-features                            # 获取 host 支持的 features (Get host supported features)
+adb version                                  # 获取 ADB 版本 (Get ADB version)
+
+##############################################################################
+# 应用管理 (Application Management)
+##############################################################################
+
+adb install PATH/TO/APK                      # 安装 APK (Install APK)
+adb install -r PATH/TO/APK                   # 重新安装 APK，保留数据 (Reinstall APK, keep data)
+adb install -g PATH/TO/APK                   # 安装 APK 并授予所有运行时权限 (Install APK and grant all runtime permissions)
+adb install -t PATH/TO/APK                   # 允许安装测试 APK (Allow test APK installation)
+adb uninstall PACKAGE_NAME                   # 卸载应用 (Uninstall application)
+adb uninstall -k PACKAGE_NAME                # 卸载应用，保留数据和缓存 (Uninstall app, keep data and cache)
+adb shell pm list packages                   # 列出所有已安装应用包名 (List all installed package names)
+adb shell pm list packages -3                # 列出所有第三方应用包名 (List third-party package names)
+adb shell pm list packages -s                # 列出所有系统应用包名 (List system package names)
+adb shell pm clear PACKAGE_NAME                # 清除应用数据 (Clear application data)
+adb shell pm disable-user --user 0 PACKAGE_NAME # 禁用应用 (Disable application for user 0)
+adb shell pm enable PACKAGE_NAME              # 启用应用 (Enable application)
+adb shell pm grant PACKAGE_NAME PERMISSION    # 授予应用权限 (Grant application permission, e.g., android.permission.READ_SMS)
+adb shell pm revoke PACKAGE_NAME PERMISSION   # 撤销应用权限 (Revoke application permission)
+adb shell pm get-install-location             # 获取默认安装位置 (Get default install location)
+adb shell pm set-install-location LOCATION   # 设置默认安装位置 (Set default install location: 0=auto, 1=internal, 2=external)
+adb shell dumpsys package PACKAGE_NAME       # 查看应用详细信息 (View detailed application information)
+adb shell cmd package list packages          # 列出所有包名 (更快速) (List all package names - faster)
+adb shell cmd package install PATH/TO/APK    # 安装 APK (更快速) (Install APK - faster)
+
+##############################################################################
+# 文件传输 (File Transfer)
+##############################################################################
+
+adb push LOCAL_PATH REMOTE_PATH               # 上传文件/目录到设备 (Push file/directory to device)
+adb pull REMOTE_PATH LOCAL_PATH               # 从设备下载文件/目录 (Pull file/directory from device)
+adb sync [directory]                         # 同步主机目录到设备 (Sync host directory to device)
+
+##############################################################################
+# Shell 命令 (Shell Commands)
+##############################################################################
+
+adb shell                                    # 进入设备 Shell (Enter device shell)
+adb shell COMMAND [OPTIONS]                  # 在设备 Shell 中执行命令 (Execute command in device shell)
+adb shell su                                 # 切换到 root 用户 (Switch to root user, if device is rooted)
+adb shell exit                               # 退出设备 Shell (Exit device shell)
+adb shell logcat                             # 查看设备日志 (View device logs)
+adb shell logcat -c                          # 清空日志缓冲区 (Clear log buffer)
+adb shell top                                # 查看进程信息 (View process information)
+adb shell ps                                 # 查看进程列表 (View process list)
+adb shell kill PID                           # 杀死进程 (Kill process)
+adb shell reboot                             # 重启设备 (Reboot device)
+adb shell reboot recovery                      # 重启到 Recovery 模式 (Reboot to recovery mode)
+adb shell reboot bootloader                    # 重启到 Bootloader 模式 (Reboot to bootloader mode)
+adb shell screencap /sdcard/screenshot.png    # 截屏 (Screenshot)
+adb shell screenrecord /sdcard/screenrecord.mp4 # 录屏 (Screen recording, Android 4.4+)
+adb shell getprop [PROPERTY_NAME]            # 获取系统属性 (Get system property)
+adb shell setprop PROPERTY_NAME VALUE        # 设置系统属性 (Set system property)
+adb shell am start -n PACKAGE_NAME/ACTIVITY_NAME # 启动 Activity (Start Activity)
+adb shell am start -a ACTION -d DATA -t MIME_TYPE -c CATEGORY -e EXTRA_KEY EXTRA_VALUE -f FLAGS PACKAGE_NAME/ACTIVITY_NAME # 复杂 Intent 启动 Activity (Complex Intent start Activity)
+adb shell am force-stop PACKAGE_NAME          # 强制停止应用 (Force stop application)
+adb shell am broadcast -a ACTION [MIME_TYPE] [DATA_URI] [PACKAGE] [COMPONENT] [FLAGS] [EXTRAS] # 发送广播 (Send broadcast intent)
+
+##############################################################################
+# 端口转发 (Port Forwarding)
+##############################################################################
+
+adb forward tcp:LOCAL_PORT tcp:REMOTE_PORT      # TCP 端口转发 (TCP port forwarding)
+adb forward tcp:LOCAL_PORT localfilesystem:SOCKET_NAME # 本地文件系统套接字转发 (Local filesystem socket forwarding)
+adb forward --list                             # 列出所有端口转发规则 (List all port forwarding rules)
+adb forward --remove tcp:LOCAL_PORT            # 删除指定端口转发规则 (Remove specific port forwarding rule)
+adb forward --remove-all                       # 删除所有端口转发规则 (Remove all port forwarding rules)
+
+##############################################################################
+# 日志管理 (Log Management)
+##############################################################################
+
+adb logcat                                   # 查看实时日志 (View real-time logs)
+adb logcat -v time                             # 显示时间戳 (Show timestamps)
+adb logcat -v threadtime                       # 显示线程和时间戳 (Show thread and timestamps)
+adb logcat -v tag                              # 显示 tag (Show tags)
+adb logcat -s TAG:LEVEL                        # 过滤指定 tag 和级别 (Filter by tag and level, e.g., *:V, MyTag:D)
+adb logcat -f FILENAME                          # 将日志输出到文件 (Output logs to file)
+adb logcat -r SIZE_KB                          # 循环日志，限制文件大小 (Rotating logs, limit file size in KB)
+adb logcat -n COUNT                             # 循环日志，保留文件数量 (Rotating logs, keep COUNT files)
+adb logcat -b radio                            # 查看 radio 日志 (View radio logs)
+adb logcat -b events                           # 查看 events 日志 (View events logs)
+adb logcat -b main                             # 查看 main 日志 (View main logs, default)
+adb logcat -c                                  # 清空所有日志缓冲区 (Clear all log buffers)
+
+##############################################################################
+# 截屏 & 录屏 (Screenshot & Screen Recording)
+##############################################################################
+
+adb shell screencap /sdcard/screenshot.png    # 截屏到设备存储 (Screenshot to device storage)
+adb pull /sdcard/screenshot.png screenshot.png # 下载截屏到本地 (Pull screenshot to local)
+adb shell screenrecord /sdcard/screenrecord.mp4 # 录屏到设备存储 (Screen record to device storage, Android 4.4+)
+adb pull /sdcard/screenrecord.mp4 screenrecord.mp4 # 下载录屏到本地 (Pull screen recording to local)
+
+# 快捷截屏并下载到本地 (Quick screenshot and download to local):
+#   adb shell screencap -p | sed 's/\r$//' > screenshot.png
+
+##############################################################################
+# 高级功能 (Advanced Features)
+##############################################################################
+
+adb backup [-f <filename>] [-apk|-noapk] [-obb|-noobb] [-shared|-noshared] [-all] [-system|-nosystem] [<packages...>]
+                                             # 设备备份 (Device backup)
+adb restore <backup_file>                      # 设备恢复 (Device restore)
+adb bugreport [PATH/TO/BUGREPORT.ZIP]          # 生成 bug 报告 (Generate bug report)
+adb jdwp                                     # 列出设备上的 JDWP 进程 (List JDWP processes on device)
+adb forward jdwp:LOCAL_PORT jdwp:REMOTE_PID   # 端口转发到指定 JDWP 进程 (Port forward to specific JDWP process for debugging)
+adb track-devices                              # 跟踪设备连接状态变化 (Track device connection state changes)
+adb wait-for-device                            # 等待设备连接 (Wait for device to connect)
+adb wait-for-DEVICE_ID shell                  # 等待指定设备 shell 可用 (Wait for shell on specific device to be available)
+adb root                                       # 以 root 权限重启 ADB (Restart ADB with root privileges)
+adb unroot                                     # 以非 root 权限重启 ADB (Restart ADB without root privileges)
+adb sideload PATH/TO/ZIP                       # Sideload OTA 更新包 (Sideload OTA update package)
+
+##############################################################################
+# 网络调试 (Network Debugging)
+##############################################################################
+
+adb shell netcfg                               # 查看网络接口配置 (View network interface configuration)
+adb shell ip route list                        # 查看路由表 (View routing table)
+adb shell ping HOST                           # Ping 命令 (Ping command)
+adb shell ifconfig                             # 查看接口配置 (旧命令，netcfg 更推荐) (View interface configuration - older command, netcfg is preferred)
+adb shell tcpdump -p -s 0 -w /sdcard/capture.pcap -i any # 抓包 (Packet capture, requires root and tcpdump binary)
+adb shell netstat -natup                       # 查看网络连接状态 (View network connection status)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用别名简化命令 (Use aliases to simplify commands in your shell profile, e.g., .bashrc, .zshrc):
+#   alias adb-install='adb install'
+#   alias adb-logcat='adb logcat -v threadtime'
+
+# 使用 `Ctrl+C` 终止 `adb logcat` 等持续运行的命令 (Use `Ctrl+C` to terminate long-running commands like `adb logcat`).
+
+# 使用 `-s DEVICE_ID` 指定设备，当连接多个设备时非常有用 (Use `-s DEVICE_ID` to specify device when multiple devices are connected).
+
+# 结合 Shell 脚本自动化 ADB 操作 (Combine with shell scripts to automate ADB tasks).
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 安装应用并启动主 Activity (Install app and start main activity):
+#   adb install path/to/your_app.apk
+#   adb shell am start -n com.example.your_package/.MainActivity
+
+# 抓取日志并保存到文件 (Capture logs and save to file):
+#   adb logcat -v time -f adb.log
+
+# 端口转发，将设备 8080 端口转发到本地 8080 (Port forwarding, forward device port 8080 to local port 8080):
+#   adb forward tcp:8080 tcp:8080
+#   # 然后可以在本地浏览器访问 http://localhost:8080 访问设备上的服务
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Android 开发者官网 - ADB:
+#   https://developer.android.com/studio/command-line/adb
+
+# ADB 命令大全:
+#   https://www.cnblogs.com/coder-pig/p/3544853.html
+
+# Android Debug Bridge (adb) Cheat Sheet:
+#   https://www.cheatography.com/aliyazicioglu/cheat-sheets/android-debug-bridge-adb/
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

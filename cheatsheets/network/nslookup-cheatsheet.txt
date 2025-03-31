@@ -1,0 +1,110 @@
+##############################################################################
+# nslookup 速查表 (nslookup Cheatsheet)
+# 域名查询工具 (Domain Name Lookup Utility)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - HOSTNAME:  域名或主机名 (Domain name or Hostname, 例如: google.com, www.example.org)
+#   - SERVER:    DNS 服务器地址 (DNS Server Address, 例如: 8.8.8.8, 1.1.1.1)
+#   - TYPE:      查询类型 (Query Type, 例如: A, AAAA, MX, NS, TXT, CNAME)
+
+##############################################################################
+# 基本查询 (Basic Lookups)
+##############################################################################
+
+nslookup HOSTNAME                              # 查询域名的 A 记录 (IPv4 地址)
+nslookup -query=AAAA HOSTNAME                   # 查询域名的 AAAA 记录 (IPv6 地址)
+nslookup -query=MX HOSTNAME                     # 查询域名的 MX 记录 (邮件交换记录)
+nslookup -query=NS HOSTNAME                     # 查询域名的 NS 记录 (域名服务器记录)
+nslookup -query=TXT HOSTNAME                    # 查询域名的 TXT 记录 (文本记录)
+nslookup -query=CNAME HOSTNAME                  # 查询域名的 CNAME 记录 (别名记录)
+nslookup -query=SOA HOSTNAME                    # 查询域名的 SOA 记录 (起始授权机构记录)
+nslookup -query=PTR IP_ADDRESS                  # 反向查询 IP 地址的 PTR 记录 (域名)
+
+# 提示:
+#   - 默认查询类型为 A 记录
+#   - 可以使用 `-type=` 代替 `-query=` (例如: `nslookup -type=MX HOSTNAME`)
+
+##############################################################################
+# 指定 DNS 服务器 (Specifying DNS Server)
+##############################################################################
+
+nslookup HOSTNAME SERVER                       # 使用指定的 DNS 服务器查询
+nslookup HOSTNAME 8.8.8.8                       # 使用 Google Public DNS 查询
+nslookup HOSTNAME 1.1.1.1                       # 使用 Cloudflare DNS 查询
+
+# 提示:
+#   - SERVER 可以是 IP 地址或域名
+#   - 如果未指定 SERVER，则使用系统默认 DNS 服务器
+
+##############################################################################
+# 查询选项 (Query Options)
+##############################################################################
+
+nslookup -debug HOSTNAME                         # 启用调试模式，显示详细信息
+nslookup -recurse HOSTNAME                       # 启用递归查询 (默认启用)
+nslookup -norecurse HOSTNAME                     # 禁用递归查询
+nslookup -timeout=N HOSTNAME                     # 设置超时时间为 N 秒
+nslookup -retry=N HOSTNAME                       # 设置重试次数为 N 次
+nslookup -port=PORT HOSTNAME                     # 指定 DNS 服务器端口 (默认 53)
+
+##############################################################################
+# 交互模式 (Interactive Mode)
+##############################################################################
+
+nslookup                                      # 进入交互模式
+> HOSTNAME                                    # 在交互模式下查询域名
+> set querytype=TYPE                            # 设置查询类型
+> server SERVER                                 # 切换 DNS 服务器
+> exit                                        # 退出交互模式
+
+# 提示 (交互模式常用命令):
+#   - `help` 或 `?` 显示帮助信息
+#   - `set all` 显示所有 set 命令的当前值
+#   - `set debug` 切换调试模式
+#   - `set recurse` 切换递归查询
+#   - `set timeout=N` 设置超时时间
+#   - `set retry=N` 设置重试次数
+#   - `server SERVER` 切换 DNS 服务器
+#   - `lserver SERVER` 使用初始服务器查询 SERVER 的信息 (local server)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 快速查询 IP 地址:
+#   nslookup google.com
+
+# 查询邮件服务器 (MX 记录):
+#   nslookup -query=MX gmail.com
+
+# 使用指定的 DNS 服务器进行查询 (例如 Google DNS):
+#   nslookup baidu.com 8.8.8.8
+
+# 反向 IP 地址查询 (PTR 记录, 查找 IP 对应的域名):
+#   nslookup -query=PTR 8.8.8.8
+
+# 调试模式查看详细查询过程:
+#   nslookup -debug google.com
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 查询 google.com 的 A 记录 (默认):
+#   nslookup google.com
+#   # 返回 google.com 的 IPv4 地址
+
+# 2. 查询 google.com 的 MX 记录，并使用 1.1.1.1 作为 DNS 服务器:
+#   nslookup -query=MX google.com 1.1.1.1
+#   # 返回 google.com 的邮件服务器信息，并使用 Cloudflare DNS 查询
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://linux.die.net/man/1/nslookup
+# https://www.geeksforgeeks.org/nslookup-command-in-linux-with-examples/
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

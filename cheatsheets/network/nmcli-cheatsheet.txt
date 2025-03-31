@@ -1,0 +1,157 @@
+##############################################################################
+# NMCLI 速查表 (NMCLI Cheatsheet)
+# NetworkManager 命令行工具速查表
+# 用于管理网络连接和设备
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - CON-NAME:  连接名称 (Connection Name, 例如: Wired Connection 1, MyWifi)
+#   - IFACE:     网络接口名 (Interface name, 例如: eth0, wlan0)
+#   - SSID:      Wi-Fi 网络名称 (Service Set Identifier, Wi-Fi network name)
+#   - BSSID:     Wi-Fi 基站标识符 (Basic Service Set Identifier, Wi-Fi AP MAC address)
+#   - PASSWORD:  密码 (Password)
+#   - PROFILE:   连接配置文件名 (Connection profile filename)
+
+##############################################################################
+# 通用选项 (General Options)
+##############################################################################
+
+nmcli status                                 # 显示 NetworkManager 状态
+nmcli general status                         # 显示 NetworkManager 常规状态
+nmcli general hostname                       # 显示主机名
+nmcli general permissions                    # 显示 NetworkManager 权限
+nmcli general logging level [LEVEL] domains [DOMAINS]  # 设置/显示 日志级别和域 (LEVEL: ERR, WARN, INFO, DEBUG, TRACE)
+nmcli -v                                     # 显示 nmcli 版本
+nmcli -h                                     # 显示帮助信息
+
+##############################################################################
+# 连接管理 (Connection Management, nmcli connection 或 nmcli con)
+##############################################################################
+
+nmcli con show                               # 显示所有连接
+nmcli con show -a                            # 显示所有连接 (包括隐藏的)
+nmcli con show --active                      # 显示活动连接
+nmcli con show CON-NAME                      # 显示指定连接的详细信息
+nmcli con show UUID                          # 使用 UUID 显示连接信息
+nmcli con status UUID                        # 显示指定连接的状态
+nmcli con up id CON-NAME                      # 激活连接 (通过连接名称)
+nmcli con up uuid UUID                        # 激活连接 (通过 UUID)
+nmcli con down id CON-NAME                    # 停用连接 (通过连接名称)
+nmcli con down uuid UUID                      # 停用连接 (通过 UUID)
+nmcli con reload                             # 重新加载连接配置
+nmcli con load PROFILE                       # 从文件加载连接配置
+nmcli con save id CON-NAME                     # 保存指定连接的配置
+nmcli con delete id CON-NAME                   # 删除连接 (通过连接名称)
+nmcli con delete uuid UUID                     # 删除连接 (通过 UUID)
+nmcli con modify id CON-NAME [setting.property value] # 修改连接配置
+nmcli con import type [iface IFACE] file FILE # 导入连接配置文件 (type: vpn, ovpn, openvpn, ...)
+nmcli con export id CON-NAME                   # 导出连接配置文件
+
+# 连接类型 (Connection Types, 用于 nmcli con add type <TYPE>):
+#   - ethernet   以太网
+#   - wifi       Wi-Fi
+#   - bluetooth  蓝牙
+#   - gsm        GSM/3G/4G
+#   - cdma       CDMA/EVDO
+#   - ip-tunnel  IP 隧道
+#   - vlan       VLAN
+#   - bridge     网桥
+#   - bond       链路聚合
+#   - infiniband InfiniBand
+#   - team       Team (链路聚合替代方案)
+#   - olpc-mesh  OLPC Mesh
+#   - dummy      虚拟接口
+
+# 提示:
+#   - 使用 `tab` 键自动补全连接名称和 UUID
+#   - 使用 `nmcli con show id CON-NAME | grep <property>` 查找特定属性值
+
+##############################################################################
+# 设备管理 (Device Management, nmcli device 或 nmcli dev)
+##############################################################################
+
+nmcli dev status                             # 显示设备状态
+nmcli dev                                    # 简洁显示设备状态
+nmcli dev show IFACE                           # 显示指定设备的详细信息
+nmcli dev disconnect IFACE                     # 断开设备连接 (但不禁用设备)
+nmcli dev connect IFACE CON-NAME               # 连接设备到指定连接
+nmcli dev wifi                               # 列出 Wi-Fi 设备扫描到的网络
+nmcli dev wifi list                          # 列出 Wi-Fi 设备扫描到的网络 (详细)
+nmcli dev wifi connect SSID password PASSWORD iface IFACE [bssid BSSID] [name CON-NAME] # 连接到 Wi-Fi 网络
+nmcli dev wifi rescan IFACE                    # 触发 Wi-Fi 设备重新扫描
+
+# 设备状态 (DEVICE-STATE):
+#   - 10 (unmanaged):  未被 NetworkManager 管理
+#   - 20 (unavailable): 设备不可用 (例如: 驱动未加载)
+#   - 30 (disconnected): 设备已断开连接
+#   - 40 (prepare):     设备准备连接
+#   - 50 (config):      设备正在配置
+#   - 60 (ip-config):   设备正在获取 IP 配置
+#   - 70 (ip-check):    设备正在进行 IP 地址检查
+#   - 80 (secondaries): 设备正在配置辅助连接
+#   - 90 (activated):   设备已激活，已连接
+#   - 100 (deactivating): 设备正在停用
+#   - 110 (failed):     设备连接失败
+
+# 提示:
+#   - `nmcli dev wifi list iface wlan0` 指定接口扫描 Wi-Fi
+#   - `nmcli dev status | grep wifi`  过滤 Wi-Fi 设备状态
+
+##############################################################################
+# 网络控制 (Networking Control)
+##############################################################################
+
+nmcli networking on                          # 启用网络 (NetworkManager 管理的所有接口)
+nmcli networking off                         # 禁用网络 (NetworkManager 管理的所有接口)
+nmcli networking connectivity                 # 检查网络连接性状态 (none, portal, limited, full)
+
+##############################################################################
+# 主机名管理 (Hostname Management)
+##############################################################################
+
+nmcli general hostname                       # 显示当前主机名
+nmcli general hostname HOSTNAME                 # 设置主机名 (hostnamectl set-hostname HOSTNAME 别名)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 连接到名为 "MyWifi" 的 Wi-Fi 网络，密码 "password123" (假设 wlan0 是 Wi-Fi 接口):
+#   nmcli dev wifi connect MyWifi password password123 iface wlan0
+
+# 创建一个新的以太网连接，使用 DHCP，连接名称 "MyWiredConn", 接口 "eth0":
+#   nmcli con add type ethernet con-name "MyWiredConn" ifname eth0 autoconnect yes
+
+# 创建一个新的静态 IP 以太网连接，IP 192.168.1.100/24, 网关 192.168.1.1, DNS 8.8.8.8, 连接名称 "StaticEth0", 接口 "eth0":
+#   nmcli con add type ethernet con-name "StaticEth0" ifname eth0 ip4 192.168.1.100/24 gw4 192.168.1.1 dns4 8.8.8.8 autoconnect yes
+
+# 修改 "StaticEth0" 连接，更改 DNS 服务器为 1.1.1.1:
+#   nmcli con modify id "StaticEth0" ipv4.dns "1.1.1.1"
+
+# 激活 "StaticEth0" 连接:
+#   nmcli con up id "StaticEth0"
+
+# 查看当前活动的 Wi-Fi 连接的 SSID:
+#   nmcli -g wifi-ssid con show --active type wifi
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 `-p` 或 `--pretty` 选项可以获得更易读的输出格式 (例如: `nmcli -p dev status`)
+# 使用 `grep` 过滤输出，例如: `nmcli con show | grep wifi`
+# 使用 `tab` 键自动补全命令、连接名称、设备名称等
+# 使用 `nmcli con edit id CON-NAME` 进入交互式连接编辑器 (高级配置)
+# 使用 `nmcli con add help` 或 `nmcli con modify help` 查看连接类型和属性的帮助信息
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# NetworkManager 官方文档: https://networkmanager.dev/docs/en/
+# nmcli 手册页: `man nmcli` 或 `nmcli --help`
+# Red Hat System Administrator's Guide - NetworkManager Command-Line Tool (nmcli):
+# https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_networking/using-the-networkmanager-command-line-tool-nmcli_configuring-and-managing-networking
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

@@ -1,0 +1,131 @@
+##############################################################################
+# Pacman 速查表 (Pacman Cheatsheet)
+# Arch Linux Package Manager
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PACKAGE:  软件包名 (Package name, 例如: firefox, git)
+#   - GROUP:    软件包组名 (Package group name, 例如: base-devel, gnome)
+#   - FILE:     本地文件路径 (Local file path, 例如: /tmp/package.tar.xz)
+#   - URL:      软件包 URL 地址 (Package URL address, 例如: http://example.com/package.pkg.tar.zst)
+
+##############################################################################
+# 数据库操作 (Database Operations)
+##############################################################################
+
+pacman -Sy                                     # 同步软件包数据库 (Sync package databases)
+pacman -Syu                                    # 系统升级 (全系统) (System upgrade - full system)
+pacman -Syy                                    # 强制刷新数据库 (Force refresh databases - refresh even if up to date)
+pacman -Syyu                                   # 强制刷新并升级 (Force refresh and system upgrade)
+pacman -Sw PACKAGE                             # 下载软件包但不安装 (Download package but do not install)
+pacman -Sp PACKAGE                             # 显示软件包信息 (Show package info from databases - no download)
+pacman -Si PACKAGE                             # 显示软件包详细信息 (Show package detailed info - from databases)
+pacman -Ss KEYWORD                             # 搜索软件包 (Search packages - from databases)
+pacman -Sl [REPO]                              # 列出仓库软件包 (List packages in repository - default: all)
+pacman -Sc                                     # 清理未安装软件包缓存 (Clean uninstalled package cache)
+pacman -Scc                                    # 清理所有软件包缓存 (Clean all package cache - installed and uninstalled)
+
+# 提示:
+#   - 使用 `-p <路径>` 指定数据库路径 (Use `-p <path>` to specify database path)
+
+##############################################################################
+# 软件包查询 (Package Querying)
+##############################################################################
+
+pacman -Q                                     # 列出已安装软件包 (List installed packages)
+pacman -Qe                                    # 列出显式安装的软件包 (List explicitly installed packages)
+pacman -Qm                                    # 列出外来软件包 (List foreign packages - not from repos)
+pacman -Qn                                    # 列出孤立软件包 (List orphaned packages - no longer required dependencies)
+pacman -Qu                                    # 列出可升级软件包 (List upgradable packages)
+pacman -Qi PACKAGE                             # 显示已安装软件包信息 (Show installed package info)
+pacman -Ql PACKAGE                             # 列出已安装软件包文件 (List installed package files)
+pacman -Qs KEYWORD                             # 搜索已安装软件包 (Search installed packages)
+pacman -Qdt                                   # 列出作为依赖安装但不再需要的软件包 (List packages installed as dependencies but no longer needed)
+pacman -Qk [PACKAGE]                           # 检查软件包文件完整性 (Check package file integrity)
+
+# 提示:
+#   - 结合 grep 过滤输出，例如: `pacman -Qs firefox` (Use grep to filter output, e.g., `pacman -Qs firefox`)
+#   - 使用 `-i` 参数可以查看更详细的信息 (Use `-i` option for more detailed information)
+
+##############################################################################
+# 软件包安装/升级/删除 (Package Installation/Upgrade/Removal)
+##############################################################################
+
+pacman -S PACKAGE                             # 安装软件包 (Install package)
+pacman -S PACKAGE1 PACKAGE2 PACKAGE3 ...       # 安装多个软件包 (Install multiple packages)
+pacman -S GROUP                               # 安装软件包组 (Install package group)
+pacman -Su                                     # 系统升级 (仅升级已安装软件包) (System upgrade - only installed packages)
+pacman -Su PACKAGE                             # 升级指定软件包 (Upgrade specific package)
+pacman -U FILE                                # 从本地文件安装软件包 (Install package from local file)
+pacman -U URL                                 # 从 URL 安装软件包 (Install package from URL)
+pacman -R PACKAGE                             # 删除软件包 (Remove package)
+pacman -Rs PACKAGE                             # 递归删除软件包及其不需要的依赖 (Remove package and unneeded dependencies recursively)
+pacman -Rsc PACKAGE                            # 递归删除软件包及其所有依赖 (包括需要的) (Remove package and all dependencies recursively - including needed ones, CAUTION!)
+pacman -Rdd PACKAGE                            # 强制删除软件包，忽略依赖检查 (Force remove package - skip dependency checks, CAUTION!)
+pacman -Rn PACKAGE                             # 删除软件包及配置文件 (Remove package and configuration files)
+
+# 提示:
+#   - 使用 `--asdeps` 将软件包标记为依赖 (Use `--asdeps` to mark package as dependency)
+#   - 使用 `--asexplicit` 将软件包标记为显式安装 (Use `--asexplicit` to mark package as explicitly installed)
+#   - 使用 `--ignore PACKAGE` 忽略软件包升级 (Use `--ignore PACKAGE` to ignore package upgrades)
+#   - 使用 `--ignoregroup GROUP` 忽略软件包组升级 (Use `--ignoregroup GROUP` to ignore package group upgrades)
+
+##############################################################################
+# 系统维护 (System Maintenance)
+##############################################################################
+
+pacman -D --asdeps PACKAGE                      # 将已安装软件包标记为依赖 (Mark installed package as dependency)
+pacman -D --asexplicit PACKAGE                  # 将已安装软件包标记为显式安装 (Mark installed package as explicitly installed)
+pacman -D --remove PACKAGE                      # 移除软件包的显式/依赖标记 (Remove explicit/dependency mark from package)
+pacman -Qdtq | pacman -Rns -                   # 删除孤立软件包 (Remove orphaned packages - command pipeline)
+pacman -Qmq | pacman -Rns -                   # 删除外来软件包 (Remove foreign packages - CAUTION! - command pipeline)
+
+# 提示:
+#   - 定期清理缓存 `pacman -Sc` 或 `pacman -Scc` (Regularly clean cache with `pacman -Sc` or `pacman -Scc`)
+#   - 谨慎使用 `-Rsc` 和 `-Rdd`，可能导致系统不稳定 (Use `-Rsc` and `-Rdd` with caution, may lead to system instability)
+
+##############################################################################
+# 一般选项 (General Options)
+##############################################################################
+
+pacman -v                                     # 显示版本信息 (Show version information)
+pacman --help                                 # 显示帮助信息 (Show help information)
+pacman --config <文件>                         # 指定配置文件 (Specify configuration file)
+pacman --root <路径>                           # 指定根目录 (Specify root directory)
+pacman --dbpath <路径>                         # 指定数据库路径 (Specify database path)
+pacman --cachedir <路径>                       # 指定缓存目录 (Specify cache directory)
+pacman --gpgdir <路径>                          # 指定 GPG 密钥环路径 (Specify GPG keyring path)
+pacman --logfile <文件>                        # 指定日志文件 (Specify log file)
+pacman --color auto|always|never                # 控制彩色输出 (Control color output)
+pacman --noconfirm                             # 非交互模式 (Non-interactive mode - no confirmation prompts)
+pacman --ask 数量                              # 批量确认安装/删除操作 (Ask for confirmation every N operations)
+
+# 提示:
+#   - 结合 `sudo` 或 `su` 以管理员权限运行 (Run with administrator privileges using `sudo` or `su`)
+#   - 使用 `-v` 或 `--verbose` 获取更详细的输出 (Use `-v` or `--verbose` for more detailed output)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 安装 Firefox 和 VLC:
+#   pacman -S firefox vlc
+
+# 升级系统并清理旧软件包缓存:
+#   pacman -Syu && pacman -Sc
+
+# 搜索包含 "network" 关键词的已安装软件包:
+#   pacman -Qs network
+
+# 从本地文件安装软件包:
+#   pacman -U /tmp/mypackage.tar.xz
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Arch Wiki - Pacman: https://wiki.archlinux.org/title/Pacman
+# Pacman man page: man pacman
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

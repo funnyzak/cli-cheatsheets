@@ -1,0 +1,179 @@
+##############################################################################
+# curl 命令速查表 (curl Command Cheatsheet)
+# 强大的命令行数据传输工具
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - URL:     请求的 URL (Uniform Resource Locator)
+#   - FILE:    本地文件路径 (File path on local system)
+#   - HEADER:  HTTP 头部信息 (HTTP Header, 例如: 'Content-Type: application/json')
+#   - COOKIE:  Cookie 信息 (例如: 'name=value')
+#   - DATA:    请求体数据 (Request body data, 例如: 'name=value' 或 @filename)
+#   - METHOD:  HTTP 请求方法 (HTTP Method, 例如: GET, POST, PUT, DELETE)
+#   - OUTPUT:  输出文件路径 (Output file path)
+
+##############################################################################
+# 基本请求 (Basic Requests)
+##############################################################################
+
+curl URL                                        # 发送 GET 请求并显示响应
+curl -v URL                                     # 详细模式，显示请求和响应头
+curl -s URL                                     # 静默模式，不显示进度条和错误信息
+curl -o OUTPUT URL                               # 下载文件到指定路径 (保留原始文件名)
+curl -O URL                                     # 下载文件到当前目录 (保留原始文件名)
+curl -w "\n状态码: %{http_code}\n" URL            # 显示状态码 (定制化输出)
+curl -I URL                                     # 仅获取响应头 (HEAD 请求)
+
+##############################################################################
+# HTTP 方法 (HTTP Methods)
+##############################################################################
+
+curl -X GET URL                                 # 发送 GET 请求 (显式指定)
+curl -X POST -d DATA URL                          # 发送 POST 请求 (数据在请求体)
+curl -X PUT -d DATA URL                           # 发送 PUT 请求
+curl -X DELETE URL                              # 发送 DELETE 请求
+curl -X HEAD URL                                # 发送 HEAD 请求 (等同于 -I)
+curl -X OPTIONS URL                             # 发送 OPTIONS 请求
+
+# 提示:
+#   - 默认 curl 使用 GET 方法，POST/PUT/DELETE 等需要使用 -X 指定
+
+##############################################################################
+# 请求头 (Request Headers)
+##############################################################################
+
+curl -H HEADER URL                               # 添加自定义请求头 (单次)
+curl -H "Header1: Value1" -H "Header2: Value2" URL # 添加多个请求头
+curl -A USER_AGENT URL                           # 设置 User-Agent
+curl -e REFERER URL                              # 设置 Referer
+curl --compressed URL                             # 声明接受压缩编码 (Accept-Encoding: gzip, deflate)
+
+# 示例:
+#   curl -H "Content-Type: application/json" -H "Authorization: Bearer TOKEN" URL
+
+##############################################################################
+# 请求体数据 (Request Body Data)
+##############################################################################
+
+curl -d DATA URL                                 # 发送 POST 数据 (urlencoded)
+curl --data DATA URL                              # 同 -d, 更明确
+curl --data-raw DATA URL                          # 发送原始数据 (不编码)
+curl --data-binary @FILE URL                      # 发送二进制文件内容
+curl --data-urlencode "param=value" URL           # URL 编码数据
+curl -F "name=FILE;filename=upload.txt" URL      # 上传文件 (multipart/form-data)
+curl -F "field=value" -F "file=@FILE" URL         # 表单字段和文件上传混合
+
+# 提示:
+#   - DATA 可以是字符串或 @filename (读取文件内容)
+#   - 默认 Content-Type 为 application/x-www-form-urlencoded (-d/-F) 或 text/plain (--data-raw)
+
+##############################################################################
+# Cookie 处理 (Cookie Handling)
+##############################################################################
+
+curl -b COOKIE URL                               # 发送 Cookie (字符串)
+curl -b cookie.txt URL                           # 从文件读取 Cookie
+curl -c cookie-output.txt URL                    # 保存 Cookie 到文件
+curl --cookie-jar cookie.txt URL                 # 保存 Cookie 到文件 (覆盖)
+curl --cookie-jar new-cookie.txt --cookie cookie.txt URL # 读取并更新 Cookie 文件
+
+# 提示:
+#   - Cookie 文件格式通常为 Netscape 或 HTTP Cookie File
+
+##############################################################################
+# 文件上传和下载 (File Upload & Download)
+##############################################################################
+
+# 下载 (Download): 见基本请求部分 (-o, -O)
+
+# 上传 (Upload):
+curl -T FILE URL                                 # 上传单个文件 (PUT)
+curl -T "FILE1,FILE2,FILE3" URL                   # 上传多个文件 (PUT)
+curl -F "file=@FILE" URL                         # 表单方式上传文件 (POST multipart/form-data)
+
+# 提示:
+#   - -T 上传使用 PUT 方法，-F 上传使用 POST 方法 (multipart/form-data)
+
+##############################################################################
+# 超时和重试 (Timeout & Retry)
+##############################################################################
+
+curl --connect-timeout SECONDS URL               # 连接超时时间 (秒)
+curl --max-time SECONDS URL                      # 总请求超时时间 (秒)
+curl --retry NUM URL                             # 请求失败重试次数
+curl --retry-delay SECONDS URL                   # 重试间隔时间 (秒)
+curl --retry-connrefused URL                     # 连接被拒绝时重试
+
+##############################################################################
+# 安全连接 (HTTPS & SSL/TLS)
+##############################################################################
+
+curl URL                                        # 自动处理 HTTPS (如果 curl 编译时支持)
+curl --insecure URL                              # 忽略 SSL 证书验证 (不安全!)
+curl --cacert CERT_FILE URL                      # 指定 CA 证书文件
+curl --cert CLIENT_CERT:KEY_FILE URL             # 指定客户端证书和私钥
+
+# 警告:
+#   - --insecure 选项禁用证书验证，可能存在安全风险，生产环境慎用
+
+##############################################################################
+# 用户认证 (Authentication)
+##############################################################################
+
+curl -u USER:PASSWORD URL                         # HTTP Basic Auth
+curl --digest -u USER:PASSWORD URL                # HTTP Digest Auth
+curl --ntlm -u USER:PASSWORD URL                  # NTLM Auth
+curl --negotiate -u USER:PASSWORD URL             # Negotiate/Kerberos Auth
+curl --oauth2-bearer TOKEN URL                    # OAuth 2.0 Bearer Token
+
+##############################################################################
+# 进度显示和输出控制 (Progress & Output)
+##############################################################################
+
+curl -# URL                                      # 显示简单进度条
+curl --progress-bar URL                           # 显示 ASCII 进度条 (更详细)
+curl --silent URL                                 # 静默模式 (无进度条和错误)
+curl --show-error URL                             # 仅在出错时显示错误信息
+curl > OUTPUT URL                                 # 重定向输出到文件 (覆盖)
+curl >> OUTPUT URL                                # 重定向输出到文件 (追加)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 jq 处理 JSON 响应:
+#   curl URL | jq '.'                            # 格式化 JSON 输出
+#   curl URL | jq '.name'                         # 提取 JSON 中的 'name' 字段
+
+# 使用 grep/awk/sed 等文本处理工具过滤和提取信息:
+#   curl URL | grep "关键词"
+#   curl URL | awk '/pattern/{print $1}'
+
+# 使用 -w 选项自定义输出格式，获取更多请求信息 (状态码, 耗时等):
+#   curl -w "状态码: %{http_code}, 耗时: %{time_total}\n" URL
+
+# 使用 -v 选项详细查看请求和响应过程，方便调试。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 获取网页内容并保存到文件:
+#   curl -o index.html https://www.example.com
+
+# 发送 POST 请求，Content-Type 为 application/json，并处理 JSON 响应:
+#   curl -X POST -H "Content-Type: application/json" -d '{"key": "value"}' https://api.example.com | jq '.'
+
+# 下载多个文件到指定目录:
+#   curl -o /tmp/#1 -O -J https://example.com/file[1-3].zip
+#   (注意: #1 会被替换为 URL 中的通配符匹配部分, -J 从 Content-Disposition 获取文件名)
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# curl 官方文档: https://curl.se/docs/manpage.html
+# curl Cookbook: https://ec.haxx.se/curl-cookbook/
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

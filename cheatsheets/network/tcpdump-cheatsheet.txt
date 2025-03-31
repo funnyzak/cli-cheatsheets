@@ -1,0 +1,158 @@
+##############################################################################
+# tcpdump 速查表 (tcpdump Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - IFACE:  网络接口名 (Interface name, 例如: eth0, wlan0)
+#   - HOST:   主机名或 IP 地址 (Hostname or IP Address, 例如: google.com, 192.168.1.1)
+#   - PORT:   端口号 (Port number, 例如: 80, 443, 53)
+#   - PROTO:  协议 (Protocol, 例如: tcp, udp, icmp, arp)
+#   - EXPRESSION: 过滤表达式 (Filtering expression)
+
+##############################################################################
+# 基本捕获 (Basic Capture)
+##############################################################################
+
+tcpdump                                     # 捕获所有接口的所有包 (默认)
+tcpdump -i IFACE                             # 指定接口 (Capture on specific interface)
+tcpdump -D                                      # 列出可用接口 (List available interfaces)
+tcpdump -c COUNT                             # 捕获指定数量的包后停止 (Capture COUNT packets and exit)
+tcpdump -s SNAPLEN                           # 设置抓包长度 (Snap length, 默认 262144, 0 表示完整包)
+tcpdump -w FILENAME                          # 将原始包数据保存到文件 (Write raw packets to file, pcap format)
+tcpdump -r FILENAME                          # 从文件读取包数据 (Read packets from file)
+tcpdump -n                                      # 不解析主机名和端口号 (Don't resolve hostnames or port numbers)
+tcpdump -N                                      # 不打印域名 (Don't print domain names)
+tcpdump -q                                      # 安静模式 (Less verbose output)
+tcpdump -v                                      # 详细模式 (Verbose output)
+tcpdump -vv                                     # 更详细模式 (More verbose output)
+tcpdump -vvv                                    # 最详细模式 (Most verbose output)
+tcpdump -e                                      # 显示链路层头部信息 (Print link-level header)
+tcpdump -x                                      # 以十六进制和 ASCII 码形式显示包内容 (Print packet payload in hex and ASCII)
+tcpdump -X                                      # 以十六进制和 ASCII 码形式显示包内容，不包含链路层头部 (Same as -x, but without link-level header)
+tcpdump -A                                      # 以 ASCII 码形式显示包内容 (Print packet payload in ASCII)
+tcpdump -U                                      # 立即刷新缓冲区 (Packet-buffered output, useful with -w for real-time capture)
+
+##############################################################################
+# 过滤器 (Filters)
+##############################################################################
+
+# 主机过滤 (Host Filters)
+tcpdump host HOST                             # 捕获指定主机的所有包
+tcpdump src host HOST                          # 捕获源地址为主机的包
+tcpdump dst host HOST                          # 捕获目标地址为主机的包
+
+# 网络过滤 (Network Filters)
+tcpdump net NETWORK                           # 捕获指定网络的包 (例如: 192.168.1.0/24)
+tcpdump src net NETWORK                        # 捕获源地址为指定网络的包
+tcpdump dst net NETWORK                        # 捕获目标地址为指定网络的包
+
+# 端口过滤 (Port Filters)
+tcpdump port PORT                             # 捕获指定端口的包
+tcpdump src port PORT                          # 捕获源端口为指定端口的包
+tcpdump dst port PORT                          # 捕获目标端口为指定端口的包
+tcpdump portrange PORT1-PORT2                  # 捕获指定端口范围的包
+
+# 协议过滤 (Protocol Filters)
+tcpdump PROTO                                 # 捕获指定协议的包 (例如: tcp, udp, icmp, arp)
+tcpdump ip                                      # 捕获 IPv4 包
+tcpdump ip6                                     # 捕获 IPv6 包
+tcpdump arp                                     # 捕获 ARP 包
+tcpdump rarp                                    # 捕获 RARP 包
+tcpdump icmp                                    # 捕获 ICMP 包
+tcpdump tcp                                     # 捕获 TCP 包
+tcpdump udp                                     # 捕获 UDP 包
+
+# 组合过滤器 (Combining Filters)
+tcpdump 'host HOST and port PORT'              # 捕获指定主机和端口的包 (AND)
+tcpdump 'host HOST or port PORT'               # 捕获指定主机或端口的包 (OR)
+tcpdump 'not port PORT'                        # 捕获非指定端口的包 (NOT)
+tcpdump '! port PORT'                          # 同上 (NOT - alternative syntax)
+tcpdump 'port not PORT'                        # 同上 (NOT - alternative syntax)
+tcpdump 'port != PORT'                         # 同上 (NOT - alternative syntax)
+
+# 方向过滤器 (Direction Filters)
+tcpdump src                                     # 捕获所有发出的包 (Source)
+tcpdump dst                                     # 捕获所有收到的包 (Destination)
+tcpdump src and port PORT                      # 捕获指定端口发出的包
+tcpdump dst and port PORT                      # 捕获指定端口收到的包
+
+# 其他过滤器 (Other Filters)
+tcpdump less LENGTH                           # 捕获长度小于 LENGTH 的包
+tcpdump greater LENGTH                        # 捕获长度大于 LENGTH 的包
+tcpdump len LENGTH                            # 捕获长度等于 LENGTH 的包
+tcpdump ether proto PROTO                      # 以太网协议类型 (例如: ether proto ip, ether proto arp)
+tcpdump ip proto PROTO                         # IP 协议类型 (例如: ip proto icmp, ip proto tcp)
+tcpdump tcp port PORT and tcp[tcpflags] & (tcp-syn) != 0  # 捕获 SYN 包 (TCP SYN packets)
+tcpdump tcp port PORT and tcp[tcpflags] & (tcp-ack) != 0  # 捕获 ACK 包 (TCP ACK packets)
+tcpdump tcp port PORT and tcp[tcpflags] & (tcp-rst) != 0  # 捕获 RST 包 (TCP RST packets)
+tcpdump 'tcp[13] == 2'                         # 捕获 SYN 包 (另一种 SYN 包的表示方式, TCP flag offset might vary)
+
+##############################################################################
+# 常用技巧 (Tips and Tricks)
+##############################################################################
+
+# 常用端口和服务 (Common Ports and Services):
+#   - 80/tcp: HTTP
+#   - 443/tcp: HTTPS
+#   - 21/tcp: FTP (控制)
+#   - 20/tcp: FTP (数据)
+#   - 22/tcp: SSH
+#   - 23/tcp: Telnet
+#   - 25/tcp: SMTP
+#   - 53/udp/tcp: DNS
+#   - 123/udp: NTP
+
+# 使用 -nn 参数可以同时禁止主机名和端口号解析，加速输出
+# Use -nn to disable both hostname and port number resolution for faster output.
+#   tcpdump -nn
+
+# 使用 'expression' 将复杂的过滤器用单引号括起来，避免 Shell 解释错误
+# Use single quotes 'expression' for complex filters to prevent shell misinterpretation.
+#   tcpdump 'tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)'
+
+# 捕获指定 MAC 地址的包 (Capture packets with specific MAC address):
+#   tcpdump ether host MAC_ADDRESS
+
+# 捕获广播包 (Capture broadcast packets):
+#   tcpdump ether broadcast
+
+# 捕获多播包 (Capture multicast packets):
+#   tcpdump ether multicast
+
+# 捕获指定 VLAN ID 的包 (Capture packets with specific VLAN ID):
+#   tcpdump vlan VLAN_ID
+
+# 使用 tcpdump 和 grep 结合进行更复杂的过滤和分析 (Combine tcpdump with grep for advanced filtering and analysis):
+#   tcpdump -A | grep "User-Agent"  # 抓取 HTTP User-Agent 字段
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 捕获访问 google.com 网站的 HTTP 数据包:
+# Capture HTTP packets when accessing google.com:
+#   tcpdump -i eth0 port 80 and host google.com
+
+# 捕获本地 DNS 查询请求 (Capture local DNS query requests):
+#   tcpdump -i eth0 udp port 53 and src host 127.0.0.1
+
+# 保存捕获数据到文件，并在后台运行 (Save capture to file and run in background):
+#   tcpdump -i eth0 -w capture.pcap &
+
+# 从文件中读取捕获数据并分析 HTTP 头 (Read capture file and analyze HTTP headers):
+#   tcpdump -r capture.pcap -A | grep "Host:"
+
+# 实时监控指定 IP 地址的 TCP 连接 (Real-time monitoring TCP connections for a specific IP):
+#   watch -n 1 'tcpdump -nn -c 10 tcp and host 192.168.1.100'
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://www.tcpdump.org/
+# https://danielmiessler.com/study/tcpdump/
+# https://hackertarget.com/tcpdump-examples/
+# https://www.wireshark.org/docs/man-pages/tcpdump.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

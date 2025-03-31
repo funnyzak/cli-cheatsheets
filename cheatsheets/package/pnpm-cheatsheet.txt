@@ -1,0 +1,135 @@
+##############################################################################
+# pnpm 速查表 (pnpm Cheatsheet)
+# 高效的 JavaScript 包管理器 (Fast, disk space efficient package manager)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PACKAGE:  包名 (Package name, 例如: react, lodash)
+#   - VERSION:  版本号/版本范围 (Version/Version range, 例如: latest, ^16.0.0)
+#   - SCRIPT:   package.json 中定义的脚本名 (Script name in package.json, 例如: start, build)
+#   - PATH:     文件或目录路径 (File or directory path)
+
+##############################################################################
+# 常用命令 (Basic Commands)
+##############################################################################
+
+pnpm install                             # 安装项目依赖 (Install project dependencies)
+pnpm i                                   # install 的简写 (Alias for install)
+pnpm install PACKAGE                     # 安装指定包 (Install specific package)
+pnpm install PACKAGE@VERSION             # 安装指定版本包 (Install specific version)
+pnpm add PACKAGE                         # 添加依赖 (Add dependency, 默认 dependencies)
+pnpm add -D PACKAGE                      # 添加开发依赖 (devDependencies)
+pnpm add --save-optional PACKAGE          # 添加可选依赖 (optionalDependencies)
+pnpm add -g PACKAGE                      # 全局安装包 (Globally install package)
+pnpm uninstall PACKAGE                   # 卸载包 (Uninstall package)
+pnpm remove PACKAGE                      # uninstall 的简写 (Alias for uninstall)
+pnpm update [PACKAGE...]                  # 更新包 (Update packages, 默认更新所有)
+pnpm update -r                           # 递归更新所有 workspace 的包 (Recursive update in workspaces)
+pnpm dlx PACKAGE COMMAND                 # 执行包提供的命令 (Execute package binary, like npx)
+pnpm exec COMMAND                        # 在包上下文中执行命令 (Execute command in package context)
+pnpm run SCRIPT                          # 运行 package.json 中定义的脚本 (Run script defined in package.json)
+pnpm SCRIPT                              # 运行脚本 (简写，如果脚本名不是 pnpm 命令) (Run script, shorthand if script name is not pnpm command)
+pnpm build                               # 运行 build 脚本 (Run build script)
+pnpm test                                # 运行 test 脚本 (Run test script)
+pnpm start                               # 运行 start 脚本 (Run start script)
+pnpm stop                                # 运行 stop 脚本 (Run stop script)
+pnpm restart                             # 运行 restart 脚本 (Run restart script)
+
+##############################################################################
+# Workspace 命令 (Workspace Commands)
+##############################################################################
+
+pnpm install -r                          # 在所有 workspace 安装依赖 (Install in all workspaces)
+pnpm add -r PACKAGE                      # 在所有 workspace 添加依赖 (Add dependency to all workspaces)
+pnpm add -r -P PACKAGE                   # 在所有 workspace 添加生产依赖 (Add prod dependency to all workspaces)
+pnpm update -r                           # 更新所有 workspace 的依赖 (Update dependencies in all workspaces)
+pnpm run -r SCRIPT                       # 在所有 workspace 运行脚本 (Run script in all workspaces)
+pnpm run -r --filter=<PACKAGE_NAME> SCRIPT  # 在指定 workspace 运行脚本 (Run script in specific workspace)
+pnpm -F <PACKAGE_NAME> COMMAND           # 在指定 workspace 执行命令 (Execute command in specific workspace)
+pnpm -F ...<PACKAGE_NAME> COMMAND        # 在指定 workspace 及其依赖执行命令 (Execute command in workspace and its dependencies)
+pnpm -F ... COMMAND                      # 在所有 workspace 及其依赖执行命令 (Execute command in all workspaces and their dependencies)
+pnpm -F {workspace-1,workspace-2} COMMAND # 在多个 workspace 执行命令 (Execute command in multiple workspaces)
+
+# 提示:
+#   - 使用 `--filter` 或 `-F` 选项过滤 workspace (Use `--filter` or `-F` option to filter workspaces)
+#   - 过滤器语法参考 pnpm 文档 (Filter syntax refer to pnpm documentation)
+
+##############################################################################
+# Store 命令 (Store Commands)
+##############################################################################
+
+pnpm store path                           # 显示 store 路径 (Show store path)
+pnpm store prune                          # 清理 store 中未使用的包 (Prune unused packages in store)
+pnpm store status                         # 检查 store 完整性 (Check store integrity)
+
+##############################################################################
+# 信息 & 列表命令 (Info & List Commands)
+##############################################################################
+
+pnpm list                                # 列出已安装的包 (List installed packages)
+pnpm ls                                  # list 的简写 (Alias for list)
+pnpm list --depth <N>                     # 指定列表深度 (Specify list depth)
+pnpm list --prod                          # 仅列出生产依赖 (List only production dependencies)
+pnpm list --dev                           # 仅列出开发依赖 (List only dev dependencies)
+pnpm outdated                            # 检查过期的包 (Check for outdated packages)
+pnpm info PACKAGE                         # 查看包信息 (View package information)
+pnpm why PACKAGE                          # 解释包为什么被安装 (Explain why package is installed)
+
+##############################################################################
+# 配置命令 (Config Commands)
+##############################################################################
+
+pnpm config get <KEY>                     # 获取配置 (Get config)
+pnpm config set <KEY> <VALUE>               # 设置配置 (Set config)
+pnpm config list                          # 列出配置 (List config)
+pnpm config --global get <KEY>            # 获取全局配置 (Get global config)
+pnpm config --global set <KEY> <VALUE>      # 设置全局配置 (Set global config)
+
+##############################################################################
+# 杂项 (Miscellaneous)
+##############################################################################
+
+pnpm doctor                              # 检查环境问题 (Check for environment issues)
+pnpm import                              # 从 package-lock.json/yarn.lock 导入 (Import from package-lock.json/yarn.lock)
+pnpm dedupe                              # 精简依赖树 (Reduce dependency duplication)
+pnpm patch PACKAGE                       # 创建包补丁 (Create package patch)
+pnpm patch-commit PATH                   # 提交补丁 (Commit patch)
+pnpm patch-remove PACKAGE                # 移除补丁 (Remove patch)
+pnpm publish                             # 发布包 (Publish package)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# pnpm 比 npm 和 yarn 更快更节省磁盘空间 (pnpm is faster and more disk space efficient than npm and yarn)
+# 默认使用硬链接和符号链接，避免重复下载 (Uses hard links and symlinks by default, avoiding duplicate downloads)
+# `pnpm install` 自动创建和更新 `pnpm-lock.yaml` (Automatically creates and updates `pnpm-lock.yaml`)
+# Workspace 支持 monorepo 管理 (Workspace support for monorepo management)
+# 使用 `.npmrc` 文件配置 pnpm (Configure pnpm using `.npmrc` file)
+# 善用 filter 命令管理 workspace (Utilize filter commands for workspace management)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 初始化项目并安装 react 和 react-dom (Initialize project and install react and react-dom)
+#   mkdir my-react-app && cd my-react-app
+#   pnpm init -y
+#   pnpm add react react-dom
+
+# 在 workspace 'packages/app' 中安装 axios (Install axios in workspace 'packages/app')
+#   pnpm -F packages/app add axios
+
+# 在所有 workspace 中运行 test 脚本 (Run test script in all workspaces)
+#   pnpm run -r test
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# pnpm 官方文档 (Official Documentation): https://pnpm.io/
+# pnpm GitHub 仓库 (GitHub Repository): https://github.com/pnpm/pnpm
+# pnpm 中文网 (Chinese Website): https://www.pnpm.cn/
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

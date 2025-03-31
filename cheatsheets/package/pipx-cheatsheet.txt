@@ -1,0 +1,134 @@
+##############################################################################
+# pipx 速查表 (pipx Cheatsheet)
+# 隔离 Python 应用安装和运行工具速查表
+# Cheatsheet for pipx, the tool to install and run Python applications in isolated environments.
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PACKAGE_NAME: Python 包名 (Package name, 例如: cowsay, youtube-dl)
+#   - APP_NAME:     应用名/可执行文件名 (Application/Executable name, 例如: cowsay)
+#   - PYTHON_VERSION: Python 版本 (Python version, 例如: 3.9, 3.10)
+#   - VCS_URL:      版本控制系统 URL (Version Control System URL, 例如: git+https://...)
+#   - LOCAL_PATH:   本地路径 (Local Path, 例如: ./my_package, /path/to/package)
+
+##############################################################################
+# 安装 (Installation)
+##############################################################################
+
+pipx install PACKAGE_NAME                       # 安装包 (最新版本)
+pipx install PACKAGE_NAME==VERSION              # 安装指定版本
+pipx install --python PYTHON_VERSION PACKAGE_NAME # 使用指定 Python 版本安装
+pipx install VCS_URL                            # 从 VCS URL 安装 (git, hg, etc.)
+pipx install LOCAL_PATH                         # 从本地路径安装
+
+# 提示:
+#   - pipx 会自动创建隔离的虚拟环境
+#   - 可使用 `--spec` 指定 requirements 文件
+#   - 使用 `--force` 强制重新安装
+
+##############################################################################
+# 卸载 (Uninstallation)
+##############################################################################
+
+pipx uninstall PACKAGE_NAME                     # 卸载包
+pipx uninstall --python PYTHON_VERSION PACKAGE_NAME # 卸载指定 Python 版本安装的包
+pipx uninstall-all                             # 卸载所有 pipx 安装的包
+
+# 提示:
+#   - 卸载会删除对应的虚拟环境和应用链接
+
+##############################################################################
+# 列出已安装包 (Listing Installed Packages)
+##############################################################################
+
+pipx list                                       # 列出所有已安装包
+pipx list --include-injected                     # 包括注入的包
+pipx environment                                # 显示 pipx 环境变量信息
+pipx paths                                      # 显示 pipx 相关路径
+
+# 提示:
+#   - `pipx list` 输出简洁的包名和应用信息
+
+##############################################################################
+# 运行已安装应用 (Running Installed Applications)
+##############################################################################
+
+APP_NAME [ARGS...]                              # 直接运行已安装的应用 (在 PATH 中)
+pipx run PACKAGE_NAME APP_NAME [ARGS...]         # 运行指定包中的应用 (临时安装并运行)
+pipx run --spec PACKAGE_SPEC APP_NAME [ARGS...]   # 运行任意包中的应用 (临时安装并运行，可指定版本等)
+pipx run VCS_URL APP_NAME [ARGS...]             # 从 VCS URL 临时运行应用
+pipx run LOCAL_PATH APP_NAME [ARGS...]          # 从本地路径临时运行应用
+
+# 提示:
+#   - `pipx run` 用于临时运行，不污染全局环境
+#   - 临时安装的应用在运行后会被删除
+
+##############################################################################
+# 升级 (Upgrading)
+##############################################################################
+
+pipx upgrade PACKAGE_NAME                       # 升级指定包到最新版本
+pipx upgrade PACKAGE_NAME==VERSION              # 升级到指定版本
+pipx upgrade-all                                # 升级所有已安装包
+
+# 提示:
+#   - 升级会更新虚拟环境中的包
+
+##############################################################################
+# 包注入 (Package Injection)
+##############################################################################
+
+pipx inject PACKAGE_NAME PACKAGE_TO_INJECT       # 将包注入到已安装的应用环境
+pipx inject PACKAGE_NAME -e LOCAL_PATH          # 注入本地可编辑包
+
+# 提示:
+#   - 注入用于为已安装的应用添加额外的依赖或工具
+#   - 常用于安装插件或扩展
+
+##############################################################################
+# 其他实用命令 (Other Useful Commands)
+##############################################################################
+
+pipx completions                                # 生成 Shell 自动补全脚本
+pipx ensurepath                                 # 确保 pipx 路径在 PATH 环境变量中
+pipx uninstall PACKAGE_NAME --include-dependencies # 卸载包及其所有依赖
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用别名简化常用命令:
+#   alias px='pipx'
+#   px list
+
+# 结合 fzf 等工具快速查找已安装应用:
+#   APP_NAME=$(pipx list | awk '{print $1}' | tail -n +2 | fzf) && $APP_NAME
+
+# 使用 `--pip-args` 传递参数给 pip:
+#   pipx install --pip-args="--no-cache-dir" PACKAGE_NAME
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 安装 cowsay:
+#   pipx install cowsay
+#   cowsay "Hello pipx!"
+
+# 临时运行 pycowsay (无需安装):
+#   pipx run pycowsay "临时奶牛说"
+
+# 将 `requests` 注入到 `cowsay` 环境中:
+#   pipx inject cowsay requests
+#   pipx environment cowsay  # 查看 cowsay 环境是否包含 requests
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://pipx.pypa.io/stable/
+# https://github.com/pypa/pipx
+# https://pypi.org/project/pipx/
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

@@ -1,0 +1,57 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs and temporary files
+*.log
+tmp/*
+*.tmp
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Python
+*.pyc
+__pycache__/
+*.egg-info/
+dist/
+/build
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.bak
+
+# Compiled files
+*.o
+*.class
+*.exe
+
+# Secrets
+*.key
+*.pem
+*.p12
+
+# OS generated files
+Thumbs.db
+
+# Ignore history files
+.bash_history
+.zsh_history
+
+# Personal preferences
+.config/karabiner/karabiner.json # Example: If you manage Karabiner config
+
+# Add any other project-specific ignores below
+
+*.code-workspace
+
+.cursor/
+
+test.sh

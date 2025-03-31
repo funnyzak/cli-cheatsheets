@@ -1,0 +1,96 @@
+##############################################################################
+# CHOWN 命令速查表 (CHOWN Command Cheatsheet)
+# 用于修改文件或目录的所有者和所属组
+# Change file owner and group
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - USER:   用户名或用户 ID (Username or User ID)
+#   - GROUP:  组名或组 ID (Group name or Group ID)
+#   - FILE/DIR: 文件或目录路径 (File or Directory path)
+#   - -R:     递归操作 (Recursive operation)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+chown USER FILE/DIR                         # 更改文件/目录所有者为 USER
+chown USER:GROUP FILE/DIR                    # 更改所有者为 USER, 所属组为 GROUP
+chown :GROUP FILE/DIR                       # 仅更改所属组为 GROUP (保持所有者不变)
+
+# 提示:
+#   - 可以使用用户名或用户 ID, 组名或组 ID
+#   - 如果只指定用户名，所属组会变为该用户的登录组
+
+##############################################################################
+# 递归更改 (Recursive Change)
+##############################################################################
+
+chown -R USER FILE/DIR                        # 递归更改目录及其内容的所有者
+chown -R USER:GROUP FILE/DIR                   # 递归更改目录及其内容的所有者和所属组
+
+# 提示:
+#   - `-R` 选项会遍历目录下的所有文件和子目录
+
+##############################################################################
+# 选项 (Options)
+##############################################################################
+
+chown -v USER FILE/DIR                        # 显示详细操作信息 (verbose)
+chown --verbose USER FILE/DIR                  # 同上，更清晰的写法
+chown -c USER FILE/DIR                        # 仅在更改时显示信息 (changes)
+chown --changes USER FILE/DIR                  # 同上，更清晰的写法
+chown --from=CURRENT_OWNER USER FILE/DIR       # 仅更改当前所有者为 CURRENT_OWNER 的文件
+chown --from=:CURRENT_GROUP USER FILE/DIR      # 仅更改当前所属组为 CURRENT_GROUP 的文件
+chown --from=CURRENT_USER:CURRENT_GROUP USER FILE/DIR # 组合所有者和所属组条件
+chown --no-dereference USER SYMLINK           # 不解引用符号链接 (针对链接本身操作)
+chown -h USER SYMLINK                         # 同上，不解引用符号链接 (short option)
+chown --dereference USER SYMLINK             # 解引用符号链接 (默认行为，针对链接指向的文件操作)
+chown -f USER FILE/DIR                        # 忽略错误信息 (force)
+chown --preserve-root USER /                  # 拒绝递归操作根目录 (保护根目录)
+chown --no-preserve-root USER /               # 允许递归操作根目录 (谨慎使用)
+
+# 提示:
+#   - `--from` 可以用于更精确地控制更改范围
+#   - `--no-dereference` 和 `-h` 对符号链接操作非常有用
+
+##############################################################################
+# 权限继承 (Reference)
+##############################################################################
+
+chown --reference=REF_FILE FILE/DIR           # 将 FILE/DIR 的所有者和所属组设置为 REF_FILE 一样
+
+# 提示:
+#   - `--reference` 可以快速复制另一个文件的所有者和所属组
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 将文件 file.txt 的所有者更改为用户 john
+# chown john file.txt
+
+# 将目录 dir/ 及其内容的所有者更改为用户 www-data
+# chown -R www-data dir/
+
+# 将文件 config.ini 的所有者更改为用户 alice, 所属组更改为 developers
+# chown alice:developers config.ini
+
+# 仅更改目录 logs/ 下所有当前所有者为 root 的文件，将其所有者更改为 syslog
+# chown --from=root syslog logs/*
+
+# 将符号链接 link_to_config 的所有者更改为 bob (不影响链接指向的文件)
+# chown -h bob link_to_config
+
+# 将 file2.txt 的所有者和所属组设置为与 file1.txt 一致
+# chown --reference=file1.txt file2.txt
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# GNU Coreutils chown 官方文档: https://www.gnu.org/software/coreutils/manual/html_node/chown-invocation.html
+# Linux man page: man chown
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

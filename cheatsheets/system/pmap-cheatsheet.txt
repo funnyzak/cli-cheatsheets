@@ -1,0 +1,100 @@
+##############################################################################
+# pmap 命令速查表 (pmap Command Cheatsheet)
+# 显示进程的内存映射 (Display memory map of a process)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PID: 进程 ID (Process ID)
+#   - ADDRESS: 内存地址 (Memory Address)
+#   - PERM:   内存保护权限 (Memory protection permissions)
+#           r = 读 (read)
+#           w = 写 (write)
+#           x = 执行 (execute)
+#           s = 共享 (shared)
+#           p = 私有 (private, copy-on-write)
+#   - OFFSET: 文件或设备的偏移量 (Offset into mapped file or device)
+#   - DEV:    设备号 (Device number)
+#   - INODE:  Inode 号 (Inode number)
+#   - PATHNAME: 映射文件的路径名 (Pathname of mapped file)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+pmap PID                                      # 显示进程 PID 的内存映射
+pmap -d PID                                   # 显示设备映射 (Device mappings)
+pmap -x PID                                   # 扩展格式 (Extended format)
+pmap -q PID                                   # 静默模式，仅输出映射信息 (Quiet mode, only mappings)
+pmap -p PID                                   # 显示路径名 (Print pathnames)
+pmap -c PID                                   # 累积输出 (Cumulative output)
+pmap -o PID                                   # 按偏移量排序 (Sort by offset)
+pmap -f PID                                   # 强制输出，即使进程被跟踪 (Force output even if traced)
+pmap -V                                       # 显示版本信息 (Show version)
+
+# 提示:
+#   - PID 可以是进程 ID 或 core 文件名。
+#   - 使用 `ps aux | grep <进程名>` 查找 PID。
+#   - 结合 grep 过滤输出，例如: `pmap PID | grep libc`
+
+##############################################################################
+# 输出格式选项 (Output Format Options)
+##############################################################################
+
+# 默认输出格式 (Default Output Format):
+# ADDRESS    PERM  OFFSET   DEV   INODE   PATHNAME
+
+# 扩展格式 (-x):
+# Address          Kbytes   RSS   Dirty Mode  Mapping           Flags   Pathname
+# -------- -------- ----- ------- ----- ------ ------------- --------- --------
+
+# 设备映射 (-d):
+# Address          Mode   Mapping Device
+
+# 累积输出 (-c):
+# 累积输出会在最后显示总计 (total) 和映射类型 (mapped) 的内存使用情况。
+# Cumulative output shows totals for memory usage at the end.
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 查看进程使用的共享库:
+#   pmap PID | grep '\.so'
+
+# 查看进程的堆内存:
+#   pmap PID | grep '\[heap\]'
+
+# 查看进程的栈内存:
+#   pmap PID | grep '\[stack\]'
+
+# 监控内存映射变化 (结合 watch, 但 pmap 是快照，实时性有限):
+#   watch -n 1 pmap PID
+
+# 使用 awk/sed 等工具进一步处理 pmap 的输出，提取特定信息。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 显示当前 shell 进程的内存映射:
+#   pmap $$
+
+# 显示进程 ID 为 12345 的进程的详细内存映射:
+#   pmap -x 12345
+
+# 显示进程 ID 为 12345 的进程的设备映射:
+#   pmap -d 12345
+
+# 显示进程 ID 为 12345 的进程的内存映射，并过滤出共享库:
+#   pmap 12345 | grep '\.so'
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# `man pmap`  (Linux 手册页)
+# https://linux.die.net/man/1/pmap
+# https://www.man7.org/linux/man-pages/man1/pmap.1.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

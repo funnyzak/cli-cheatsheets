@@ -1,0 +1,137 @@
+##############################################################################
+# Caddy 速查表 (Caddy Cheatsheet)
+# 简洁易用的 Caddy Web 服务器和反向代理工具
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - Caddyfile:  Caddy 配置文件 (通常名为 Caddyfile 或 Caddyfile.dev)
+#   - Address:    监听地址 (例如 :80, localhost:443, example.com)
+#   - Port:       端口号 (例如 80, 443, 8080)
+#   - Directive:  Caddyfile 指令 (例如 root, reverse_proxy, tls)
+
+##############################################################################
+# 通用命令 (General Commands)
+##############################################################################
+
+caddy help                                    # 显示帮助信息 (所有命令和选项)
+caddy version                                 # 显示 Caddy 版本
+caddy environ                                 # 显示 Caddy 运行时环境变量
+caddy adapt                                   # 将 Caddyfile 转换为 JSON 配置 (用于调试)
+caddy adapt --config Caddyfile --pretty         # 格式化输出 JSON 配置
+
+##############################################################################
+# 服务管理 (Service Management)
+##############################################################################
+
+caddy run                                     # 前台运行 Caddy (开发/调试常用)
+caddy run --config Caddyfile                     # 指定配置文件运行
+caddy run --watch                             # 监听 Caddyfile 变化并自动重启 (开发)
+caddy run --pidfile caddy.pid                   # 将 PID 写入文件
+caddy start                                   # 后台启动 Caddy 服务
+caddy start --config Caddyfile                   # 后台启动并指定配置文件
+caddy stop                                    # 停止 Caddy 服务
+caddy reload                                  # 重新加载 Caddy 配置 (平滑重启)
+caddy reload --config Caddyfile                  # 重新加载指定配置文件
+caddy terminate                               # 强制终止 Caddy 服务
+caddy validate                                # 验证 Caddyfile 配置是否正确
+caddy validate --config Caddyfile                # 验证指定配置文件
+
+# 提示:
+#   - 默认 Caddy 会在后台作为服务运行，并自动管理证书 (Let's Encrypt)。
+#   - 使用 `caddy run` 方便在前台查看日志输出和调试。
+#   - `reload` 命令不会中断现有连接，实现平滑重启。
+
+##############################################################################
+# 配置管理 (Configuration Management)
+##############################################################################
+
+caddy fmt                                     # 格式化 Caddyfile (美化配置)
+caddy fmt --overwrite                           # 格式化并覆盖原文件
+caddy file-server [Address]                       # 快速启动静态文件服务器 (默认当前目录 :80)
+caddy file-server --root /path/to/files [Address]  # 指定文件根目录
+
+# 提示:
+#   - Caddyfile 是 Caddy 的默认配置文件，简洁易读。
+#   - JSON 配置提供更细粒度的控制，但通常 Caddyfile 已足够使用。
+#   - `file-server` 命令非常适合快速分享文件或测试静态网站。
+
+##############################################################################
+# TLS/HTTPS 管理 (TLS/HTTPS Management - 自动!)
+##############################################################################
+
+# Caddy 默认自动管理 HTTPS (通过 Let's Encrypt 或 ZeroSSL)
+# 无需手动配置证书，除非有特殊需求
+
+# 如果需要自定义 TLS 设置，可以在 Caddyfile 中使用 `tls` 指令
+# (具体配置请参考 Caddy 官方文档)
+
+# 提示:
+#   - Caddy 的一大亮点是自动 HTTPS，极大简化了 Web 服务器配置。
+#   - 可以使用 `tls internal`  生成自签名证书 (用于本地开发测试)。
+#   - 可以使用 `tls off`  禁用 HTTPS (仅用于测试或特殊场景，不推荐生产环境)。
+
+##############################################################################
+# 常用 Caddyfile 指令 (Common Caddyfile Directives)
+##############################################################################
+
+# (以下为 Caddyfile 中常用的指令示例，并非命令行参数)
+
+# 网站根目录 (Website root directory)
+# root * /var/www/html
+
+# 反向代理 (Reverse proxy)
+# reverse_proxy /api/* localhost:8080
+
+# 静态文件服务 (Static file serving)
+# file_server
+
+# 自动 HTTPS (Automatic HTTPS - 默认启用)
+# https://
+
+# 重定向 (Redirection)
+# redirect /old /new
+
+# 日志配置 (Logging)
+# log {
+#   output file /var/log/caddy/access.log
+#   format json
+# }
+
+# 更多指令请参考 Caddy 官方文档: https://caddyserver.com/docs/caddyfile/directives
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 `caddy run --watch` 实时监听 Caddyfile 修改，方便开发调试。
+# 结合 `caddy fmt` 保持 Caddyfile 格式整洁易读。
+# 利用 `file-server` 快速搭建静态文件服务器。
+# 充分利用 Caddy 的自动 HTTPS 功能，简化配置。
+# 善用 Caddyfile 的指令组合，实现各种 Web 服务需求。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 示例 1: 快速启动当前目录的静态文件服务器 (监听 80 端口)
+#   caddy file-server
+
+# 示例 2: 使用 Caddyfile 运行反向代理 (Caddyfile 内容):
+#   # Caddyfile
+#   example.com {
+#       reverse_proxy localhost:8080
+#   }
+#   # 运行命令
+#   caddy run --config Caddyfile
+
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Caddy 官方文档: https://caddyserver.com/docs/
+# Caddy 中文社区: https://caddy.community/
+# Caddy GitHub 仓库: https://github.com/caddyserver/caddy
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

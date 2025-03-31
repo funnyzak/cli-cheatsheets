@@ -1,0 +1,114 @@
+##############################################################################
+# ZIP 命令速查表 (ZIP Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - ARCHIVE:  ZIP 归档文件名 (Archive filename, 例如: archive.zip)
+#   - FILE:     单个文件 (Single file, 例如: document.txt)
+#   - DIR:      目录 (Directory, 例如: documents/)
+#   - ...:      可以指定多个文件或目录 (Indicates multiple files or directories can be specified)
+
+##############################################################################
+# 创建 ZIP 归档 (Creating ZIP Archives)
+##############################################################################
+
+zip ARCHIVE FILE1 FILE2 ...                     # 创建 ZIP 归档文件
+zip ARCHIVE DIR                                # 压缩目录 (默认不包含子目录)
+zip -r ARCHIVE DIR                              # 递归压缩目录 (包含子目录)
+zip -9 ARCHIVE FILES                            # 最佳压缩 (最慢)
+zip -0 ARCHIVE FILES                            # 无压缩 (最快，仅打包)
+zip -m ARCHIVE FILES                            # 压缩后删除源文件
+zip -q ARCHIVE FILES                            # 静默模式 (不显示详细信息)
+zip -e ARCHIVE FILES                            # 创建加密 ZIP 归档 (提示输入密码)
+zip -P password ARCHIVE FILES                   # 创建加密 ZIP 归档 (命令行指定密码，不安全)
+zip -j ARCHIVE PATH/TO/FILE                     # 仅存储文件名，忽略路径 (store just the name)
+zip -FS ARCHIVE                                 # 修复 ZIP 归档 (fix zip archive)
+
+# 提示:
+#   - 默认压缩级别为 -6。
+#   - 可以使用通配符 * 和 ? 匹配多个文件。
+#   - 使用 `-r` 选项压缩目录时，请注意相对路径。
+
+##############################################################################
+# 添加文件到 ZIP 归档 (Adding Files to ZIP Archives)
+##############################################################################
+
+zip ARCHIVE FILE_TO_ADD                         # 添加文件到现有 ZIP 归档
+zip -u ARCHIVE FILE_TO_UPDATE                    # 更新 ZIP 归档中的文件 (仅更新修改过的)
+zip -f ARCHIVE FILE_TO_REPLACE                   # 强制替换 ZIP 归档中的文件 (force replace)
+
+# 提示:
+#   - 如果 ZIP 归档不存在，`zip ARCHIVE FILE ...` 命令会创建新的归档。
+#   - 添加文件时可以使用与创建时相同的选项，例如 `-e`, `-9` 等。
+
+##############################################################################
+# 从 ZIP 归档中提取文件 (Extracting Files from ZIP Archives)
+##############################################################################
+
+unzip ARCHIVE                                   # 提取 ZIP 归档到当前目录
+unzip ARCHIVE -d DEST_DIR                       # 提取到指定目录
+unzip -l ARCHIVE                                # 列出 ZIP 归档内容 (list archive contents)
+unzip -v ARCHIVE                                # 详细列出 ZIP 归档内容 (verbose list)
+unzip -p ARCHIVE FILE                           # 提取文件内容到标准输出 (extract to stdout)
+unzip -o ARCHIVE                                # 覆盖已存在的文件 (overwrite existing files)
+unzip -n ARCHIVE                                # 不覆盖已存在的文件 (never overwrite)
+unzip -j ARCHIVE PATH/TO/FILE                    # 忽略 ZIP 中的目录结构 (junk paths)
+unzip -t ARCHIVE                                # 测试 ZIP 归档完整性 (test archive integrity)
+unzip -qq ARCHIVE                               # 静默模式提取 (quietly extract)
+unzip -P password ARCHIVE                       # 使用密码提取加密 ZIP 归档
+
+# 提示:
+#   - 使用 `-L` 选项处理文件名编码问题 (例如中文文件名)。
+#   - 可以使用通配符来提取特定文件，例如 `unzip ARCHIVE "*.txt"`。
+
+##############################################################################
+# 删除 ZIP 归档中的文件 (Deleting Files from ZIP Archives)
+##############################################################################
+
+zip -d ARCHIVE FILE_TO_DELETE                   # 从 ZIP 归档中删除文件
+
+# 提示:
+#   - 可以删除多个文件，例如 `zip -d ARCHIVE file1 file2 ...`。
+#   - 删除操作会直接修改 ZIP 归档文件。
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 压缩排除特定文件或目录:
+#   zip -r ARCHIVE DIR -x "DIR/exclude*" "DIR/*.tmp"  # 排除 "exclude*" 目录和 ".tmp" 文件
+
+# 分卷压缩 (split archive into multiple volumes):
+#   zip -s SIZE ARCHIVE FILES                       # 创建分卷压缩，SIZE 可以是 k, m, g
+
+# 创建自解压 ZIP 文件 (SFX, Self-extracting archive):
+#   (需要安装 `zip` 的 SFX 模块，不同系统可能方法不同，此处仅为概念)
+#   cat sfx_stub.sh <archive.zip> > sfx_archive.sh
+#   chmod +x sfx_archive.sh
+
+# 使用 find 命令结合 zip 批量压缩:
+#   find . -name "*.txt" -print0 | zip -0 archive.zip -@ # 压缩当前目录所有 .txt 文件
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 创建一个名为 my_archive.zip 的归档，包含 document.txt 和 images/ 目录 (递归压缩):
+#   zip -r my_archive.zip document.txt images/
+
+# 解压 my_archive.zip 到 /tmp/extracted 目录:
+#   unzip my_archive.zip -d /tmp/extracted
+
+# 列出 my_archive.zip 的内容:
+#   unzip -l my_archive.zip
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://linux.die.net/man/1/zip
+# https://linux.die.net/man/1/unzip
+# https://www.gnu.org/software/zip/zip.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

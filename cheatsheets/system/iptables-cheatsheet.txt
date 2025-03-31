@@ -1,0 +1,171 @@
+##############################################################################
+# iptables 速查表 (iptables Cheatsheet)
+# 防火墙规则管理 (Firewall Rule Management)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - CHAIN:     链名 (Chain name, 例如: INPUT, OUTPUT, FORWARD, CUSTOM_CHAIN)
+#   - RULE_NUM:  规则编号 (Rule number, 插入/删除规则时使用)
+#   - PROTOCOL:  协议 (Protocol, 例如: tcp, udp, icmp, all)
+#   - SOURCE:    源地址/网段 (Source IP address/network, 例如: 192.168.1.0/24, 10.0.0.1)
+#   - DESTINATION: 目标地址/网段 (Destination IP address/network, 例如: 8.8.8.8, example.com)
+#   - PORT:      端口号或端口范围 (Port number or range, 例如: 80, 22, 1024:65535)
+#   - INTERFACE: 网络接口 (Network interface, 例如: eth0, wlan0, ppp0)
+#   - TARGET:    目标动作 (Target action, 例如: ACCEPT, DROP, REJECT, LOG)
+
+##############################################################################
+# 基本操作 (Basic Operations)
+##############################################################################
+
+iptables -L [CHAIN] [-v] [-n]              # 列出链规则 (默认 filter 表 INPUT 链)
+iptables -F [CHAIN]                        # 清空链规则 (Flush chain, 默认 filter 表)
+iptables -X [CHAIN]                        # 删除自定义链 (Delete user-defined chain)
+iptables -P CHAIN TARGET                    # 设置链默认策略 (Policy, 例如: DROP, ACCEPT)
+iptables -E OLD_CHAIN_NAME NEW_CHAIN_NAME   # 重命名自定义链 (Rename user-defined chain)
+
+# 选项:
+#   - -L, --list:      列出规则
+#   - -F, --flush:     清空链
+#   - -X, --delete-chain: 删除链
+#   - -P, --policy:    设置默认策略
+#   - -E, --rename-chain: 重命名链
+#   - -v, --verbose:   详细输出
+#   - -n, --numeric:   数字格式输出 (IP 地址和端口)
+
+##############################################################################
+# 规则管理 - 添加 (Rule Management - Add)
+##############################################################################
+
+iptables -A CHAIN rule-specification -j TARGET  # 追加规则到链尾 (Append)
+iptables -I CHAIN [RULE_NUM] rule-specification -j TARGET # 插入规则到链首或指定位置 (Insert)
+
+# rule-specification (规则匹配条件):
+#   - -p PROTOCOL         协议 (tcp, udp, icmp, all)
+#   - -s SOURCE           源地址/网段
+#   - -d DESTINATION      目标地址/网段
+#   - --sport PORT        源端口 (用于 tcp/udp)
+#   - --dport PORT        目标端口 (用于 tcp/udp)
+#   - -i INTERFACE         入接口 (Input interface)
+#   - -o INTERFACE         出接口 (Output interface)
+#   - -m state --state STATE  连接状态 (STATE: NEW, ESTABLISHED, RELATED, INVALID, ...)
+#   - -m conntrack --ctstate STATE (conntrack 模块, 状态同上)
+
+# TARGET (目标动作):
+#   - ACCEPT              允许
+#   - DROP                丢弃 (静默丢弃)
+#   - REJECT              拒绝 (发送拒绝信息, 可用 --reject-with 指定类型)
+#   - LOG                 日志记录 (使用 --log-prefix 指定日志前缀)
+#   - ... (更多 TARGET 请查阅 iptables 文档)
+
+
+##############################################################################
+# 规则管理 - 删除/替换/检查 (Rule Management - Delete/Replace/Check)
+##############################################################################
+
+iptables -D CHAIN RULE_NUM                   # 按规则编号删除规则 (Delete by rule number)
+iptables -D CHAIN rule-specification -j TARGET # 按规则匹配删除规则 (Delete by rule specification)
+iptables -R CHAIN RULE_NUM rule-specification -j TARGET # 替换指定编号规则 (Replace)
+iptables -C CHAIN rule-specification -j TARGET # 检查规则是否存在 (Check)
+
+# 选项:
+#   - -D, --delete:    删除规则
+#   - -R, --replace:   替换规则
+#   - -C, --check:     检查规则
+
+##############################################################################
+# 常用模块 (Common Modules)
+##############################################################################
+
+# state 模块 (连接状态跟踪):
+#   -m state --state NEW,ESTABLISHED,RELATED  # 匹配 NEW, ESTABLISHED, RELATED 状态连接
+#   -m state --state INVALID                # 匹配 INVALID 状态连接
+
+# conntrack 模块 (更强大的连接跟踪, 替代 state):
+#   -m conntrack --ctstate NEW,ESTABLISHED,RELATED # 匹配连接状态 (同 state 模块)
+#   -m conntrack --ctproto PROTOCOL         # 匹配连接协议
+#   -m conntrack --ctorigsrc SOURCE          # 匹配原始源地址
+#   -m conntrack --ctdstport PORT          # 匹配目标端口
+
+# tcp 模块 (TCP 协议选项):
+#   -m tcp --tcp-flags SYN,RST,ACK SYN       # 匹配 SYN 包 (用于 SYN Flood 防御)
+#   -m tcp --syn                           # 匹配 SYN 包 (等同于 --tcp-flags SYN,RST,ACK SYN)
+
+# udp 模块 (UDP 协议选项):
+#   -m udp --dport PORT                     # 匹配 UDP 目标端口
+
+# icmp 模块 (ICMP 协议选项):
+#   -m icmp --icmp-type TYPE                # 匹配 ICMP 类型 (例如: 8 - echo request, 0 - echo reply)
+
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 默认策略设置:
+#   iptables -P INPUT DROP                  # 默认拒绝入站
+#   iptables -P OUTPUT ACCEPT                 # 默认允许出站
+#   iptables -P FORWARD DROP                 # 默认禁止转发
+
+# 允许 SSH 访问 (TCP 22 端口):
+#   iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+# 允许 Web 服务 (TCP 80/443 端口):
+#   iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+#   iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+# 允许 ping (ICMP echo request):
+#   iptables -A INPUT -p icmp --icmp-type 8 -j ACCEPT
+
+# 阻止特定 IP 地址:
+#   iptables -A INPUT -s 192.168.100.10 -j DROP
+
+# 日志记录被拒绝的连接:
+#   iptables -A INPUT -j LOG --log-prefix "IPTABLES DROP: " --log-level 4
+#   iptables -A INPUT -j DROP
+
+# 保存和恢复规则 (重要! 规则重启后会丢失, 需要保存):
+#   iptables-save > /etc/iptables/rules.v4  # 保存 IPv4 规则
+#   iptables-restore < /etc/iptables/rules.v4 # 恢复 IPv4 规则
+#   (不同发行版可能使用不同的工具和路径, 例如 `netfilter-persistent`)
+
+# 使用数字地址和端口 (-n) 避免 DNS/服务名解析，提高速度和避免解析问题
+#   iptables -L -n
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 允许来自 192.168.1.0/24 网段的 SSH 访问:
+#   iptables -A INPUT -p tcp -s 192.168.1.0/24 --dport 22 -j ACCEPT
+
+# 2. 阻止来自特定 IP 的所有访问，并记录日志:
+#   iptables -A INPUT -s 203.0.113.5 -j LOG --log-prefix "BLOCKED IP: " --log-level 4
+#   iptables -A INPUT -s 203.0.113.5 -j DROP
+
+# 3. 允许已建立的和相关的连接 (重要! 允许回复包):
+#   iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# 4. 允许环回接口的所有流量:
+#   iptables -A INPUT -i lo -j ACCEPT
+#   iptables -A OUTPUT -o lo -j ACCEPT
+
+# 5. 设置 INPUT 链默认策略为 DROP，并允许特定端口和服务:
+#   iptables -P INPUT DROP
+#   iptables -A INPUT -i lo -j ACCEPT
+#   iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+#   iptables -A INPUT -p tcp --dport 22 -j ACCEPT # 允许 SSH
+#   iptables -A INPUT -p tcp --dport 80 -j ACCEPT # 允许 HTTP
+#   iptables -A INPUT -p tcp --dport 443 -j ACCEPT # 允许 HTTPS
+#   iptables -A INPUT -p icmp --icmp-type 8 -j ACCEPT # 允许 ping (echo request)
+
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://ipset.netfilter.org/iptables.man.html
+# https://www.digitalocean.com/community/tutorials/iptables-essentials-common-firewall-rules-and-commands
+# https://www.linode.com/docs/guides/introduction-to-iptables/
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

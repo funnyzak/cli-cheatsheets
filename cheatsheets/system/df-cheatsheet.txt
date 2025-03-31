@@ -1,0 +1,107 @@
+##############################################################################
+# df 命令速查表 (df Command Cheatsheet)
+# 显示磁盘空间使用情况 (Display disk space usage)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - FILESYSTEM: 文件系统名称 (Filesystem name, 例如: /dev/sda1, /dev/mapper/vg0-lv0)
+#   - SIZE:       文件系统总大小 (Total size of the filesystem)
+#   - USED:       已使用的空间 (Used space)
+#   - AVAIL:      可用空间 (Available space)
+#   - USE%:       已使用空间的百分比 (Percentage of used space)
+#   - MOUNTPOINT:  挂载点 (Mount point, 例如: /, /home, /mnt)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+df                                          # 显示所有已挂载文件系统的磁盘空间使用情况
+df -h                                         # 以人类可读的格式显示 (Human-readable format, KB, MB, GB)
+df -H                                         # 类似 -h，但使用 1000 的幂 (Powers of 1000 instead of 1024)
+df -T                                         # 显示文件系统类型 (Display filesystem type)
+df -i                                         # 显示 inode 使用情况 (Display inode usage instead of block usage)
+df .                                          # 显示当前目录所在文件系统的磁盘空间使用情况
+df /path/to/directory                         # 显示指定目录所在文件系统的磁盘空间使用情况
+df /dev/sda1                                  # 显示指定文件系统或设备的空间使用情况
+
+##############################################################################
+# 输出选项 (Output Options)
+##############################################################################
+
+df -a                                         # 显示所有文件系统，包括虚拟文件系统 (all filesystems, including pseudo filesystems)
+df --block-size=SIZE                          # 使用指定大小的块 (e.g., 1K, 512, M, G)
+df --inodes                                    # 等同于 -i，显示 inode 信息
+df -P                                         # 使用 POSIX 输出格式 (POSIX output format)
+df --sync                                     # 在获取信息前调用 sync (Call sync before getting usage info)
+df --no-sync                                   # 不在获取信息前调用 sync (Do not call sync before getting usage info, default)
+df --total                                    # 显示总计行 (Display a grand total)
+df --output[=FIELD_LIST]                      # 自定义输出字段 (Customize output fields, see `man df` for fields)
+
+#  常用输出字段 (Common output fields for --output):
+#    source        文件系统来源 (Filesystem source)
+#    fstype        文件系统类型 (Filesystem type)
+#    itotal        inode 总数 (Total inodes)
+#    iused         已用 inodes (Used inodes)
+#    iavail        可用 inodes (Available inodes)
+#    ipcent        inode 使用百分比 (Inode usage percentage)
+#    size          总大小 (Total size)
+#    used          已用空间 (Used space)
+#    avail         可用空间 (Available space)
+#    pcent         空间使用百分比 (Space usage percentage)
+#    target        挂载点 (Mount point)
+#    options       挂载选项 (Mount options)
+#    rw            是否可读写 (Read-write or read-only)
+
+# 示例: 自定义输出字段
+# df --output=source,size,used,avail,pcent,target -h
+
+##############################################################################
+# 过滤选项 (Filtering Options)
+##############################################################################
+
+df -x TYPE                                     # 排除指定类型的文件系统 (Exclude filesystems of type TYPE)
+df -t TYPE                                     # 仅显示指定类型的文件系统 (Limit listing to filesystems of type TYPE)
+df --local                                     # 仅显示本地文件系统 (Limit listing to local filesystems)
+df --portable                                  # 使用 POSIX 可移植输出格式 (POSIX portable output format)
+
+# 示例: 仅显示 ext4 文件系统
+# df -t ext4 -h
+
+# 示例: 排除 tmpfs 文件系统
+# df -x tmpfs -h
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+#  结合 `sort` 命令按磁盘使用率排序:
+#  df -h | sort -rh -k 5  # 按第五列 (Use%) 倒序排序
+
+#  结合 `awk` 命令提取特定信息，例如只显示挂载点和使用率:
+#  df -h | awk '{print $6, $5}'
+
+#  使用 `watch` 命令实时监控磁盘空间变化:
+#  watch -n 1 df -h
+
+#  查找磁盘空间占用大的目录 (结合 du 命令 - 另一个速查表的好主题!):
+#  du -sh /* 2>/dev/null | sort -rh | head -n 10  # 查找根目录下占用空间最大的 10 个目录
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+#  以人类可读格式显示所有本地 ext4 文件系统的磁盘空间使用情况，并按使用率排序:
+#  df -ht ext4 --local | sort -rh -k 5
+
+#  显示 inode 使用情况，并排除 tmpfs 文件系统:
+#  df -ix tmpfs
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+#  GNU Coreutils df 手册: https://www.gnu.org/software/coreutils/manual/html_node/df-invocation.html
+#  `man df` 命令 (在你的终端中查看更详细的帮助)
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

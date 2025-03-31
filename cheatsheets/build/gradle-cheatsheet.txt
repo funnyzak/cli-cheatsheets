@@ -1,0 +1,161 @@
+##############################################################################
+# Gradle 命令行速查表 (Gradle Command-Line Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - TASK:     Gradle 任务名 (Task name, 例如: build, clean, test)
+#   - PROJECT:  Gradle 项目名或路径 (Project name or path, 例如: app, :module1)
+#   - BUILD_FILE: Gradle 构建文件路径 (Build file path, 例如: build.gradle, settings.gradle)
+
+##############################################################################
+# 常用任务 (Common Tasks)
+##############################################################################
+
+gradle tasks                                  # 列出所有可执行的任务
+gradle TASK                                   # 执行指定任务 (例如: gradle build)
+gradle TASK1 TASK2 ...                         # 执行多个任务 (例如: gradle clean build)
+gradle PROJECT:TASK                           # 执行指定项目的任务 (例如: gradle app:assemble)
+gradle --continue TASK                         # 即使任务失败也继续执行后续任务
+gradle --dry-run TASK                          # 模拟执行任务，不实际执行
+gradle --offline TASK                          # 离线模式执行任务，不访问网络
+gradle --stop-daemon                           # 停止 Gradle 守护进程
+gradle --status                               # 查看 Gradle 守护进程状态
+
+# 提示:
+#   - 使用 Tab 键自动补全任务名和项目名
+#   - 使用 `-q` 或 `--quiet` 减少输出信息
+#   - 使用 `-i` 或 `--info` 显示更多信息
+#   - 使用 `-d` 或 `--debug` 显示调试信息
+#   - 使用 `-s` 或 `--stacktrace` 显示堆栈跟踪
+#   - 使用 `--full-stacktrace` 显示完整堆栈跟踪
+
+##############################################################################
+# 构建生命周期任务 (Build Lifecycle Tasks)
+##############################################################################
+
+gradle build                                  # 构建项目 (默认执行 assemble 和 check)
+gradle assemble                               # 组装输出 (例如: 生成 JAR, APK, AAR)
+gradle check                                  # 执行检查 (例如: 单元测试, 代码质量检查)
+gradle clean                                  # 清理构建输出目录
+gradle test                                   # 执行单元测试
+gradle buildDependents                         # 构建依赖当前项目的项目
+gradle buildNeeded                             # 构建当前项目依赖的项目
+
+# 提示:
+#   - `build` 任务通常是默认任务，可以直接运行 `gradle`
+
+##############################################################################
+# 依赖管理 (Dependency Management)
+##############################################################################
+
+gradle dependencies                             # 显示项目依赖树
+gradle PROJECT:dependencies                      # 显示指定项目依赖树
+gradle dependencyInsight --dependency GROUP:NAME  # 查看特定依赖的详细信息
+gradle dependencyUpdates                         # 检查依赖更新 (需要插件)
+
+# 提示:
+#   - `dependencies` 任务可以帮助分析和解决依赖冲突
+
+##############################################################################
+# 项目管理 (Project Management)
+##############################################################################
+
+gradle projects                                 # 列出所有项目
+gradle PROJECT                                  # 进入指定项目 (用于多项目构建)
+gradle subprojects                              # 列出所有子项目
+gradle PROJECT:properties                       # 显示项目属性
+gradle properties                               # 显示根项目属性
+
+##############################################################################
+# Gradle Wrapper (Wrapper)
+##############################################################################
+
+gradle wrapper                                # 生成 Gradle Wrapper 文件 (gradlew, gradlew.bat)
+gradle wrapper --gradle-version VERSION         # 指定 Gradle 版本生成 Wrapper
+gradle wrapper --distribution-type bin|all     # 指定 Gradle 发行版类型
+
+# 提示:
+#   - 推荐使用 Gradle Wrapper 保持构建环境一致性
+#   - 使用 `./gradlew` 或 `gradlew.bat` 代替 `gradle` 命令
+
+##############################################################################
+# 帮助和信息 (Help and Information)
+##############################################################################
+
+gradle help                                   # 显示 Gradle 帮助信息
+gradle help --task TASK                          # 显示指定任务的帮助信息
+gradle --version                                # 显示 Gradle 版本信息
+gradle --gradle-version                         # 显示 Gradle 版本信息 (同上)
+gradle -v                                     # 显示 Gradle 版本信息 (同上)
+gradle --build-file BUILD_FILE                   # 指定构建文件路径
+gradle --settings-file SETTINGS_FILE             # 指定 settings 文件路径
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+# 通用选项 (General Options)
+#   - `--continue`:  即使任务失败也继续执行
+#   - `--dry-run`:   模拟执行，不实际执行
+#   - `--offline`:   离线模式
+#   - `--stop-daemon`: 停止 Gradle 守护进程
+#   - `--status`:    显示守护进程状态
+#   - `-q`, `--quiet`: 减少输出
+#   - `-i`, `--info`:  显示更多信息
+#   - `-d`, `--debug`: 显示调试信息
+#   - `-s`, `--stacktrace`: 显示堆栈跟踪
+#   - `--full-stacktrace`: 完整堆栈跟踪
+#   - `-v`, `--version`: 显示版本信息
+#   - `--build-file`: 指定构建文件
+#   - `--settings-file`: 指定 settings 文件
+
+# 日志级别 (Logging Levels)
+#   - `--quiet`, `-q`:   只显示错误信息
+#   - (默认):          显示概要信息和进度
+#   - `--info`, `-i`:    显示更多详细信息
+#   - `--debug`, `-d`:   显示最详细的调试信息
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 快速执行任务:
+#   - 使用缩写任务名，例如 `gradle b` 代替 `gradle build` (如果任务名唯一)
+#   - 利用 Shell 历史命令快速重复执行
+
+# 清理构建缓存:
+#   - `gradle cleanBuildCache`  清理构建缓存 (Gradle 3.5+)
+
+# 查看构建扫描报告 (Build Scan):
+#   - 构建后访问控制台输出的 Build Scan URL，获取详细构建分析
+
+# 使用 Gradle Kotlin DSL:
+#   - 构建文件使用 `build.gradle.kts` 和 `settings.gradle.kts`
+#   - Kotlin DSL 提供更强大的类型安全和 IDE 支持
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 清理并构建项目:
+#   gradle clean build
+
+# 运行所有单元测试:
+#   gradle test
+
+# 查看 app 项目的依赖树:
+#   gradle app:dependencies
+
+# 生成 Gradle Wrapper 并指定 Gradle 7.0 版本:
+#   gradle wrapper --gradle-version 7.0
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Gradle 官方文档: https://docs.gradle.org/current/userguide/command_line_interface.html
+# Gradle 任务列表:  gradle tasks --all
+# Gradle 命令行选项: gradle help --options
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

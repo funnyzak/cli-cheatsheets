@@ -1,0 +1,168 @@
+##############################################################################
+# Cargo 速查表 (Cargo Cheatsheet)
+# Rust 包管理器和构建工具 (Rust Package Manager and Build Tool)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - CRATE_NAME:  Rust 包名 (Crate name, 例如: my_crate)
+#   - FEATURE_NAME: 功能名 (Feature name, 例如: serde/derive)
+#   - PACKAGE_NAME: 工作空间中的包名 (Package name in workspace, 例如: my_app)
+
+##############################################################################
+# 项目管理 (Project Management)
+##############################################################################
+
+cargo new CRATE_NAME                       # 创建新 Rust 项目 (二进制)
+cargo new CRATE_NAME --lib                   # 创建新 Rust 项目 (库)
+cargo init                                 # 在现有目录初始化 Cargo 项目 (当前目录)
+cargo init --bin                           # 在现有目录初始化 Cargo 项目 (二进制)
+cargo init --lib                           # 在现有目录初始化 Cargo 项目 (库)
+cargo build                                # 构建当前项目 (debug 模式)
+cargo build --release                      # 构建当前项目 (release 模式, 优化)
+cargo check                                # 快速检查代码，不生成可执行文件
+cargo run                                  # 构建并运行当前项目 (debug 模式)
+cargo run --release                        # 构建并运行当前项目 (release 模式)
+cargo run --example EXAMPLE_NAME           # 运行指定 example
+cargo test                                 # 运行所有测试
+cargo test --package PACKAGE_NAME          # 运行指定包的测试 (workspace)
+cargo test --test TEST_NAME               # 运行指定测试文件
+cargo test FUNCTION_NAME                   # 运行指定测试函数
+cargo clean                                # 清理构建 artifacts (target 目录)
+
+# 提示:
+#   - `cargo b`, `cargo r`, `cargo t`, `cargo c` 分别是 `build`, `run`, `test`, `check` 的别名。
+#   - 使用 `--target <target-triple>` 指定目标架构 (例如: `x86_64-unknown-linux-gnu`)
+
+##############################################################################
+# 依赖管理 (Dependency Management)
+##############################################################################
+
+cargo add CRATE_NAME                       # 添加依赖到 Cargo.toml (最新版本)
+cargo add CRATE_NAME --vers "VERSION"      # 添加指定版本依赖 (例如: --vers "=1.0")
+cargo add CRATE_NAME --features "FEATURE_NAME1,FEATURE_NAME2" # 添加带 features 的依赖
+cargo add CRATE_NAME --no-default-features  # 添加不启用默认 features 的依赖
+cargo remove CRATE_NAME                    # 从 Cargo.toml 移除依赖
+cargo update                               # 更新所有依赖到最新兼容版本
+cargo update PACKAGE_NAME                  # 更新指定依赖
+cargo update --package PACKAGE_NAME --precise VERSION # 更新到精确版本
+cargo tree                                 # 显示依赖树
+cargo tree --depth NUM                      # 显示指定深度的依赖树
+cargo tree --invert                        # 反向显示依赖树 (查看谁依赖了谁)
+cargo vendor                               # 将所有依赖复制到 vendor 目录 (离线构建)
+cargo generate-lockfile                    # 生成 Cargo.lock 文件 (即使没有依赖变更)
+cargo lockfile --update-hashes             # 更新 Cargo.lock 文件中的 hashes (安全更新)
+
+# 提示:
+#   - `cargo add` 需要安装 `cargo-edit` 工具: `cargo install cargo-edit`
+#   - 查看 crate 版本信息: `cargo crate CRATE_NAME` (需要安装 `cargo-crate`)
+
+##############################################################################
+# 包管理 (Package Management)
+##############################################################################
+
+cargo publish                              # 发布 crate 到 crates.io
+cargo publish --dry-run                      # 模拟发布，不实际发布
+cargo publish --token API_TOKEN              # 使用 API token 发布 (非交互式)
+cargo yank CRATE_NAME --vers VERSION         # 从 crates.io 撤回 (yank) 指定版本 crate
+cargo yank CRATE_NAME --vers VERSION --undo  # 取消撤回 (un-yank)
+cargo search KEYWORDS                        # 在 crates.io 搜索 crate
+
+# 提示:
+#   - 发布前务必 `cargo check --release` 和 `cargo test --release`
+#   - 使用 `.crates-io.token` 文件或环境变量 `CARGO_REGISTRY_TOKEN` 存储 API token
+
+##############################################################################
+# 元数据 & 信息 (Metadata & Information)
+##############################################################################
+
+cargo metadata                             # 输出项目元数据 (JSON 格式)
+cargo metadata --format-version 1           # 指定元数据格式版本
+cargo doc                                  # 构建项目文档 (doc 目录)
+cargo doc --open                             # 构建并打开浏览器查看文档
+cargo fmt                                  # 格式化代码 (需要安装 `rustfmt`)
+cargo fmt --check                            # 检查代码是否符合格式化规范
+cargo clippy                               # 代码 linting (需要安装 `clippy`)
+cargo clippy --fix                           # 自动修复 clippy 建议
+cargo help                                 # 显示 cargo 帮助信息
+cargo help COMMAND                           # 显示指定命令的帮助信息 (例如: `cargo help build`)
+
+# 提示:
+#   - `rustfmt` 和 `clippy` 可以通过 `rustup component add rustfmt` 和 `rustup component add clippy` 安装
+#   -  `cargo --version` 查看 cargo 版本, `rustc --version` 查看 rustc 版本
+
+##############################################################################
+# 高级 & 配置 (Advanced & Configuration)
+##############################################################################
+
+cargo config                               # 显示 cargo 配置信息
+cargo config get KEY                       # 获取指定配置项的值
+cargo config set KEY VALUE                 # 设置配置项的值
+cargo install BINARY_CRATE_NAME            # 安装 crates.io 上的二进制 crate (例如: `cargo install ripgrep`)
+cargo install --path PATH                   # 从本地路径安装二进制 crate
+cargo uninstall BINARY_CRATE_NAME          # 卸载通过 `cargo install` 安装的 crate
+cargo login                                # 登录 crates.io (获取 API token)
+cargo logout                               # 登出 crates.io
+cargo registry                              # 显示当前 registry 配置
+cargo registry add REGISTRY_NAME --index-url URL # 添加自定义 registry
+cargo registry remove REGISTRY_NAME         # 移除自定义 registry
+
+# 提示:
+#   -  `cargo install` 安装的二进制文件通常在 `~/.cargo/bin` 目录下
+
+##############################################################################
+# 工作空间 (Workspaces)
+##############################################################################
+
+cargo build -p PACKAGE_NAME                # 构建指定 workspace 包
+cargo run -p PACKAGE_NAME                  # 运行指定 workspace 包
+cargo test -p PACKAGE_NAME                 # 测试指定 workspace 包
+cargo clean -p PACKAGE_NAME                # 清理指定 workspace 包
+cargo publish -p PACKAGE_NAME              # 发布指定 workspace 包
+
+# 提示:
+#   - 在 workspace 根目录下执行 cargo 命令会影响整个 workspace
+#   - `-p` 或 `--package` 选项用于指定 workspace 中的包
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 别名 (Aliases):
+#   可以在 `.cargo/config.toml` 中设置别名，例如:
+#   [alias]
+#   b = "build"
+#   r = "run"
+#   t = "test"
+#   c = "check"
+#   例如设置 `b = "build --release"` 可以默认 release 构建。
+
+# 环境变量 (Environment Variables):
+#   CARGO_HOME:  Cargo home 目录 (默认 `~/.cargo`)
+#   CARGO_TARGET_DIR: 构建输出目录 (默认 `target`)
+#   RUSTFLAGS: 传递给 rustc 的 flags
+
+# profiles (构建 profiles):
+#   在 `Cargo.toml` 中配置 `[profile.release]` 和 `[profile.dev]` 自定义构建 profile。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 创建一个新的二进制项目并运行:
+#   cargo new my_app
+#   cd my_app
+#   cargo run
+
+# 添加 `serde` 和 `serde_json` 依赖，并构建:
+#   cargo add serde serde_json --features serde/derive
+#   cargo build
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://doc.rust-lang.org/cargo/
+# https://cheats.rs/#Cargo
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

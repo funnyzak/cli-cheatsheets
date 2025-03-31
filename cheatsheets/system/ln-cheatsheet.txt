@@ -1,0 +1,144 @@
+##############################################################################
+# ln Command 速查表 (ln Command Cheatsheet)
+# 创建链接 (Create Links)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - SOURCE:  源文件或目录 (Source file or directory)
+#   - TARGET:  目标链接名 (Target link name)
+#   - DIR:     目标目录 (Target directory)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+ln SOURCE TARGET                              # 创建硬链接 (Hard link)
+#  - 默认创建硬链接，TARGET 不存在则创建，已存在则报错
+#  - 硬链接与源文件共享 inode，指向相同的数据块
+#  - 删除源文件，硬链接仍然可用
+
+ln -s SOURCE TARGET                           # 创建符号链接 (Symbolic/Soft link)
+#  - 创建软链接，TARGET 是指向 SOURCE 的符号
+#  - 软链接是一个独立的文件，存储 SOURCE 的路径
+#  - 删除源文件，软链接失效 (断开链接)
+
+ln -f SOURCE TARGET                           # 强制创建链接 (Force)
+#  - 如果 TARGET 已存在，则先删除再创建链接 (慎用)
+
+ln -v SOURCE TARGET                           # 显示详细信息 (Verbose)
+#  - 显示链接创建过程的详细信息
+
+ln -n SOURCE TARGET                           # 不覆盖已存在的符号链接 (No clobber)
+#  - 如果 TARGET 是已存在的符号链接，则不覆盖
+
+##############################################################################
+# 目录操作 (Directory Operations)
+##############################################################################
+
+ln SOURCE DIR                                # 在目录下创建同名硬链接
+#  - 在 DIR 目录下创建与 SOURCE 同名的硬链接
+
+ln -s SOURCE DIR                             # 在目录下创建同名软链接
+#  - 在 DIR 目录下创建与 SOURCE 同名的软链接
+
+ln TARGET... DIR                             # 批量创建硬链接到目录
+#  - 将多个 TARGET 文件在 DIR 目录下创建硬链接
+
+ln -s TARGET... DIR                           # 批量创建软链接到目录
+#  - 将多个 TARGET 文件在 DIR 目录下创建软链接
+
+ln -t DIR TARGET...                           # 指定目标目录 (Target directory)
+#  - 将 TARGET 文件链接到 DIR 目录，可用于批量操作
+#  - 例如: ln -t /tmp file1 file2 file3
+
+ln -s -t DIR TARGET...                         # 指定目标目录 (软链接)
+#  - 批量创建软链接到指定目录
+
+##############################################################################
+# 其他选项 (Other Options)
+##############################################################################
+
+ln -i SOURCE TARGET                           # 交互式 (Interactive)
+#  - 如果 TARGET 已存在，则提示是否覆盖
+
+ln --backup[=CONTROL] SOURCE TARGET         # 备份 (Backup)
+#  - 备份已存在的目标文件，CONTROL 控制备份方式 (默认为 numbered)
+#  - 例如: ln --backup=numbered SOURCE TARGET
+#  - CONTROL 可以是:
+#    - none, off:   不备份
+#    - numbered, t:  数字编号备份
+#    - existing, nil: 如果存在备份则编号，否则简单备份
+#    - simple, never: 始终简单备份 (覆盖)
+
+ln -S SUFFIX SOURCE TARGET                     # 自定义备份后缀 (Suffix)
+#  - 配合 --backup 使用，自定义备份文件后缀
+#  - 例如: ln --backup -S .bak SOURCE TARGET
+
+ln --symbolic                               # 强制创建符号链接 (Symbolic, 等同 -s)
+ln --hard                                   # 强制创建硬链接 (Hard, 默认行为)
+
+ln --relative                               # 创建相对链接 (Relative)
+#  - 创建相对于链接位置的相对路径软链接
+#  - 默认软链接路径是绝对路径
+
+ln --no-dereference                          # 不解引用符号链接 (No dereference)
+#  - 当 TARGET 是符号链接时，不解引用，直接操作符号链接本身
+
+##############################################################################
+# 硬链接 vs 软链接 (Hard vs Soft Links)
+##############################################################################
+
+# 硬链接 (Hard Link):
+#   - 与源文件共享相同的 inode 和数据块
+#   - 多个硬链接指向同一份数据，没有原始文件和副本之分
+#   - 删除源文件，硬链接仍然有效
+#   - 不能跨文件系统创建
+#   - 不能链接目录 (通常)
+
+# 软链接 (符号链接, Symbolic/Soft Link):
+#   - 包含指向源文件的路径的特殊文件
+#   - 类似于 Windows 的快捷方式
+#   - 删除源文件，软链接失效 (断开链接)
+#   - 可以跨文件系统创建
+#   - 可以链接目录
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 检查链接类型:
+#   ls -l TARGET  # 查看 TARGET 的详细信息，链接会显示 'l' 开头，并显示指向
+
+# 查找断开的软链接:
+#   find . -xtype l  # 在当前目录及其子目录查找断开的软链接
+
+# 使用相对链接简化目录结构，方便移动和部署。
+
+# 谨慎使用 `ln -f`，避免误删重要文件。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 创建文件硬链接:
+#   ln original.txt hard_link.txt
+
+# 创建文件软链接:
+#   ln -s original.txt soft_link.txt
+
+# 在 /tmp 目录下创建多个文件的软链接:
+#   ln -s -t /tmp file1.txt file2.txt file3.txt
+
+# 创建相对软链接:
+#   ln -s --relative ../original.txt relative_link.txt
+#   (假设 original.txt 在链接文件所在目录的上一级)
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://man7.org/linux/man-pages/man1/ln.1.html
+# https://www.gnu.org/software/coreutils/manual/html_node/ln-invocation.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

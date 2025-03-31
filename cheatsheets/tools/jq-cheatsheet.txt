@@ -1,0 +1,137 @@
+##############################################################################
+# jq 命令速查表 (jq Command Cheatsheet)
+# JSON 命令行处理器
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - input.json:  JSON 输入文件名 (Input JSON filename)
+#   - key:         JSON 对象的键 (Key of a JSON object)
+#   - index:       数组索引 (Array index, 例如: 0, 1, 2...)
+#   - filter:      jq 过滤器表达式 (jq filter expression)
+#   - value:       JSON 值 (JSON value, 字符串, 数字, 布尔, 数组, 对象, null)
+
+##############################################################################
+# 基本操作 (Basic Operations)
+##############################################################################
+
+jq '.' input.json                             # 原样输出 JSON (Pretty-print JSON)
+jq -r '.' input.json                          # 输出原始字符串 (Raw output strings)
+jq '.key' input.json                          # 提取对象键值 (Extract object key value)
+jq '.[index]' input.json                       # 提取数组元素 (Extract array element by index)
+jq '.[]' input.json                           # 迭代数组或对象 (Iterate over array or object)
+jq '.key?' input.json                         # 提取可选键 (Optional key, 不存在返回 null)
+jq 'keys' input.json                          # 获取对象键列表 (Get object keys as array)
+jq 'values' input.json                        # 获取对象值列表 (Get object values as array)
+jq 'length' input.json                        # 获取字符串/数组/对象长度 (Get length)
+jq 'type' input.json                          # 获取 JSON 类型 (Get JSON type: "string", "number", ...)
+
+# 提示:
+#   - 使用 `-c` 参数输出紧凑 JSON (Compact output JSON)
+#   - 使用管道 `|` 连接多个过滤器 (Pipe filters for complex queries)
+#   - 使用 `-s` 参数将多个 JSON 文档读入数组 (Slurp all inputs into an array)
+#   - 使用 `--arg name value` 传递 Shell 变量到 jq (Pass shell variables to jq)
+
+##############################################################################
+# 过滤与选择 (Filtering and Selection)
+##############################################################################
+
+jq '.results | .[] | .name' input.json       # 多级提取 (Nested extraction)
+jq '.results | .[0]' input.json             # 提取数组第一个元素 (First array element)
+jq '.results | .[-1]' input.json            # 提取数组最后一个元素 (Last array element)
+jq '.results | .[1:3]' input.json           # 提取数组切片 (Array slice, index 1 to 2)
+jq '.results | select(.age > 30)' input.json # 条件过滤 (Conditional filtering, age > 30)
+jq '.results | map(.name)' input.json         # 映射数组元素 (Map array elements to .name)
+jq '.results | map_values(.age)' input.json   # 映射对象值 (Map object values to .age)
+jq '.results | to_entries' input.json        # 对象转为键值对数组 (Object to key-value pairs)
+jq '.results | from_entries' input.json      # 键值对数组转为对象 (Key-value pairs to object)
+
+# 提示:
+#   - `select(condition)`:  根据条件过滤元素
+#   - `map(filter)`: 对数组每个元素应用过滤器
+#   - `map_values(filter)`: 对对象每个值应用过滤器
+
+##############################################################################
+# 输出格式化 (Output Formatting)
+##############################################################################
+
+jq '.' input.json                             # 默认美化输出 (Pretty-printed JSON)
+jq -c '.' input.json                          # 紧凑单行输出 (Compact single-line JSON)
+jq '.name' -r input.json                      # 输出原始字符串 (Raw string output, no quotes)
+jq '.name | @text' input.json                 # 强制文本输出 (Force text output)
+jq '.name | @json' input.json                 # 强制 JSON 字符串输出 (Force JSON string output)
+jq '.name | @csv' input.json                  # 输出 CSV 格式 (CSV format output)
+jq '.name | @tsv' input.json                  # 输出 TSV 格式 (TSV format output)
+jq '.name | @sh' input.json                   # 输出 Shell 字符串 (Shell string output, quoted)
+jq 'indent(4)' input.json                     # 自定义缩进 (Custom indentation, 4 spaces)
+jq 'sort_by(.age)' input.json                  # 按字段排序数组 (Sort array by .age)
+jq 'unique' input.json                         # 去重数组元素 (Remove duplicate array elements)
+
+# 提示:
+#   - `@text`, `@json`, `@csv`, `@tsv`, `@sh` 用于格式化字符串输出
+#   - `sort_by(filter)`:  按指定过滤器结果排序数组
+#   - `unique`:          去除数组中的重复元素
+
+##############################################################################
+# 函数与操作符 (Functions and Operators)
+##############################################################################
+
+jq '.age + 10' input.json                     # 数值运算 (Numeric addition)
+jq '.name + " - " + .city' input.json         # 字符串拼接 (String concatenation)
+jq '[.name, .age]' input.json                 # 构建数组 (Array construction)
+jq '{name: .name, age: .age}' input.json       # 构建对象 (Object construction)
+jq '.tags | contains(["jq"])' input.json      # 包含判断 (Contains array/string)
+jq '.name | startswith("J")' input.json       # 判断前缀 (Starts with string)
+jq '.name | endswith("n")' input.json         # 判断后缀 (Ends with string)
+jq '.name | index("a")' input.json            # 查找子串索引 (Index of substring)
+jq '.name | split(" ")' input.json           # 字符串分割 (Split string)
+jq '["a", "b", "c"] | join(", ")' input.json # 数组连接为字符串 (Join array to string)
+jq '.text | gsub("old", "new")' input.json    # 全局替换 (Global string substitution)
+jq '.text | sub("old", "new")' input.json     # 替换第一个匹配项 (Substitute first match)
+jq '.text | ascii_downcase' input.json        # 转换为小写 (Convert to lowercase)
+jq '.text | ascii_upcase' input.json          # 转换为大写 (Convert to uppercase)
+jq '.value | tonumber' input.json             # 转换为数字 (Convert to number)
+jq '.number | tostring' input.json            # 转换为字符串 (Convert to string)
+
+# 提示:
+#   - 常用字符串函数: `contains`, `startswith`, `endswith`, `index`, `split`, `join`, `gsub`, `sub`, `ascii_downcase`, `ascii_upcase`
+#   - 常用类型转换函数: `tonumber`, `tostring`
+
+##############################################################################
+# 变量与控制流 (Variables and Control Flow)
+##############################################################################
+
+jq '$name = .name | {name: $name}' input.json # 定义变量 (Define variable)
+jq 'if .age > 25 then "Adult" else "Minor" end' input.json # 条件判断 (If-then-else)
+jq '.items[] | if .price > 10 then . else empty end' input.json # 条件过滤元素 (Conditional item filter)
+jq 'try .key catch "Error"' input.json         # 错误处理 (Try-catch error handling)
+jq '.[] as $item | $item.name' input.json    # 使用 as 绑定变量 (Bind variable with 'as')
+
+# 提示:
+#   - 使用 `$` 符号定义和引用变量
+#   - `if-then-else-end` 结构进行条件判断
+#   - `try-catch` 结构处理错误
+#   - `as $variable` 将当前值绑定到变量
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 提取 JSON 文件中所有用户的姓名和邮箱：
+# jq '.users[] | {name: .name, email: .email}' users.json
+
+# 从 API 响应中提取所有 ID 并以逗号分隔输出：
+# curl https://api.example.com/items | jq -r '.[].id | @csv'
+
+# 将 JSON 数组转换为 CSV 格式：
+# jq -r '.[] | @csv' data.json
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# jq 官方网站: https://stedolan.github.io/jq/
+# jq 官方手册 (man page): `man jq` 或 `jq --help`
+# jq Cookbook: https://jqcookbook.com/
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

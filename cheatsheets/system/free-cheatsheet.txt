@@ -1,0 +1,81 @@
+##############################################################################
+# Free Command 速查表 (Free Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - total:      总计物理内存/交换空间 (Total installed memory / swap space)
+#   - used:       已使用内存/交换空间 (Used memory / swap space)
+#   - free:       可用内存/交换空间 (Free memory / swap space)
+#   - shared:     共享内存 (Shared memory)
+#   - buff/cache: 缓冲区/缓存区占用内存 (Memory used for buffers/cache)
+#   - available:  可用内存 (估计值，不使用 swap 的情况下程序可用的内存) (Available memory - estimation of how much memory is available for starting new applications, without swapping)
+#   - swap:       交换空间 (Swap space)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+free                                          # 显示内存和交换空间使用情况 (以 KB 为单位) (Display memory and swap usage in KB)
+free -b                                       # 以字节为单位显示 (Display in bytes)
+free -k                                       # 以 KB 为单位显示 (默认) (Display in KB - default)
+free -m                                       # 以 MB 为单位显示 (Display in MB)
+free -g                                       # 以 GB 为单位显示 (Display in GB)
+free -h                                       # 以人类可读格式显示 (自动选择单位) (Display in human-readable format - auto-select units)
+
+##############################################################################
+# 显示选项 (Display Options)
+##############################################################################
+
+free -t                                       # 显示总计列 (Total column - sum of used and free)
+free -s <秒数>                                  # 持续监控，每 <秒数> 秒刷新一次 (Continuously monitor, refresh every <seconds> seconds)
+free -c <次数>                                  # 显示 <次数> 次后退出 (Display <count> times then exit)
+free -w                                       # 宽格式输出 (可能更易读，尤其在终端宽度受限时) (Wide output format, might be more readable in narrow terminals)
+
+##############################################################################
+# 输出内容控制 (Output Control)
+##############################################################################
+
+free --si                                     # 使用 SI 单位 (1000 进制，而非 1024 进制) (Use SI units - powers of 1000 instead of 1024)
+free --mebi                                   # 使用 MebiBytes (1024*1024 字节) 而非 MiB (强制使用 1024*1024 字节) (Use MebiBytes instead of MiB - force MiB units)
+free --kibi                                   # 使用 KibiBytes (1024 字节) 而非 KiB (强制使用 1024 字节) (Use KibiBytes instead of KiB - force KiB units)
+free --gibi                                   # 使用 GibiBytes (1024*1024*1024 字节) 而非 GiB (强制使用 GiB 单位) (Use GibiBytes instead of GiB - force GiB units)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 结合 watch 命令实时监控内存使用情况:
+#   watch free -m                             # 每 2 秒刷新一次，以 MB 为单位显示
+#   watch -n 1 free -h                         # 每 1 秒刷新一次，以人类可读格式显示
+
+# 使用 grep 过滤输出，例如只看 Mem 行:
+#   free | grep Mem
+
+# 使用 awk 提取特定列，例如提取可用内存 (available):
+#   free -m | awk 'NR==2{print $7}'          #  NR==2 表示第二行 (Mem 行), $7 表示第七列 (available)
+
+# 结合 -s 和 -c 选项进行有限次数的监控，例如监控 5 次，每次间隔 1 秒:
+#   free -s 1 -c 5
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 以 MB 为单位，每秒刷新一次，持续监控内存使用情况:
+#   watch free -m
+
+# 查看当前内存和交换空间使用情况，以人类可读格式显示:
+#   free -h
+
+# 查看内存详细信息，包括 total 行，并以 MB 为单位显示:
+#   free -mt
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# `man free`                                  # 查看 free 命令的完整 man 手册
+# https://man7.org/linux/man-pages/man1/free.1.html #  在线 man 手册
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

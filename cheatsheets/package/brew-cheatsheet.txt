@@ -1,0 +1,144 @@
+##############################################################################
+# Brew 速查表 (Homebrew Cheatsheet)
+# macOS/Linux 包管理器 (Package Manager for macOS/Linux)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - FORMULA:  Homebrew 软件包名 (Package name, 例如: wget, git)
+#   - CASK:     Homebrew Cask 软件包名 (Cask name, 例如: google-chrome, docker)
+#   - TAP:      Homebrew 仓库名 (Tap name, 例如: homebrew/core, homebrew/cask)
+
+##############################################################################
+# 基本使用 (Basic Usage)
+##############################################################################
+
+brew install FORMULA                         # 安装软件包
+brew install CASK                            # 安装 Cask 软件包 (GUI 应用等)
+brew uninstall FORMULA                       # 卸载软件包
+brew uninstall CASK                          # 卸载 Cask 软件包
+brew search KEYWORD                          # 搜索软件包 (模糊匹配)
+brew search /REGEX/                         # 搜索软件包 (正则匹配)
+brew info FORMULA                            # 显示软件包信息
+brew info CASK                               # 显示 Cask 软件包信息
+
+##############################################################################
+# 列出与信息 (Listing and Information)
+##############################################################################
+
+brew list                                    # 列出已安装的软件包
+brew list FORMULA                            # 列出指定软件包的文件
+brew list --casks                             # 列出已安装的 Cask 软件包
+brew outdated                                # 列出过时的软件包
+brew outdated --casks                         # 列出过时的 Cask 软件包
+brew deps FORMULA                            # 显示软件包依赖
+brew home FORMULA                            # 在浏览器中打开软件包主页
+brew doctor                                  # 检查 Homebrew 环境问题
+
+##############################################################################
+# 更新与升级 (Updating and Upgrading)
+##############################################################################
+
+brew update                                  # 更新 Homebrew (brew 和 taps)
+brew upgrade                                 # 升级所有过时软件包
+brew upgrade FORMULA                         # 升级指定软件包
+brew upgrade CASK                            # 升级指定 Cask 软件包
+brew pin FORMULA                             # 锁定软件包版本 (防止自动升级)
+brew unpin FORMULA                           # 解锁软件包版本 (允许升级)
+
+##############################################################################
+# Cask 相关 (Cask Management)
+##############################################################################
+
+brew cask install CASK                       # 安装 Cask 软件包
+brew cask uninstall CASK                     # 卸载 Cask 软件包
+brew cask list                                # 列出已安装的 Cask 软件包 (同 brew list --casks)
+brew cask info CASK                           # 显示 Cask 软件包信息
+brew cask outdated                            # 列出过时的 Cask 软件包 (同 brew outdated --casks)
+brew cask upgrade CASK                        # 升级指定 Cask 软件包
+
+##############################################################################
+# Tap 仓库管理 (Tap Management)
+##############################################################################
+
+brew tap                                     # 列出已添加的 Tap 仓库
+brew tap TAP                                 # 添加 Tap 仓库
+brew untap TAP                               # 移除 Tap 仓库
+brew tap-info TAP                            # 显示 Tap 仓库信息
+
+##############################################################################
+# 服务管理 (Services Management)
+##############################################################################
+
+brew services list                             # 列出 Homebrew 服务状态
+brew services start FORMULA                    # 启动 Homebrew 服务
+brew services stop FORMULA                     # 停止 Homebrew 服务
+brew services restart FORMULA                  # 重启 Homebrew 服务
+brew services cleanup                          # 清理已卸载服务的残留配置
+
+# 提示:
+#   - `brew services list` 输出状态: `started`, `stopped`, `error`
+
+##############################################################################
+# 清理与维护 (Cleanup and Maintenance)
+##############################################################################
+
+brew cleanup                                 # 清理旧版本软件包
+brew cleanup -n                              # 模拟清理，显示将要清理的内容
+brew cleanup --prune                         # 清理所有旧版本，包括未链接的
+brew config                                  # 显示 Homebrew 配置信息
+
+##############################################################################
+# 其他实用命令 (Other Useful Commands)
+##############################################################################
+
+brew --version                               # 显示 Homebrew 版本
+brew help                                    # 显示帮助信息
+brew commands                                # 列出所有 brew 命令
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用别名 (Aliases):
+#   alias bi='brew install'
+#   alias bu='brew uninstall'
+#   alias bl='brew list'
+#   alias bs='brew search'
+
+# 使用 Shell 补全 (Shell Completion):
+#   确保你的 Shell 启用了 Homebrew 补全 (通常安装时已配置)
+
+# 查看安装路径:
+#   brew --prefix FORMULA
+
+# 指定安装版本 (通常不推荐，版本管理建议使用 Docker/venv 等):
+#   brew install FORMULA@VERSION  # 例如: brew install node@14
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 安装 wget 和 Google Chrome:
+#   brew install wget
+#   brew install google-chrome
+
+# 列出所有已安装的软件包和 Cask 软件包:
+#   brew list
+#   brew list --casks
+
+# 升级所有过时的软件包和 Cask 软件包:
+#   brew upgrade
+#   brew upgrade --casks
+
+# 启动 nginx 服务:
+#   brew services start nginx
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://brew.sh/
+# man brew
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

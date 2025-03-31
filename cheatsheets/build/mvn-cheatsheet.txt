@@ -1,0 +1,130 @@
+##############################################################################
+# Maven (mvn) 速查表 (Maven Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets (通用速查表来源)
+##############################################################################
+
+# 图例 (Legend):
+#   - GOAL:    Maven 目标 (Goal, 例如: clean, install, package)
+#   - PHASE:   Maven 生命周期阶段 (Lifecycle Phase, 例如: compile, test, deploy)
+#   - PROFILE: Maven 配置文件 (Profile, 例如: dev, prod)
+#   - PROPERTY: Maven 属性 (Property, 例如: -DskipTests=true)
+#   - PLUGIN:  Maven 插件 (Plugin, 例如: compiler, jar)
+#   - GAV:     groupId:artifactId:version (Maven 坐标)
+
+##############################################################################
+# 项目生命周期 (Project Lifecycle)
+##############################################################################
+
+mvn clean                                     # 清理项目 (删除 target 目录)
+mvn compile                                   # 编译源代码
+mvn test                                      # 运行单元测试
+mvn package                                   # 打包项目 (jar, war, ear)
+mvn install                                   # 安装包到本地仓库 (~/.m2/repository)
+mvn deploy                                    # 发布包到远程仓库
+mvn validate                                  # 验证项目是否正确配置
+mvn verify                                    # 运行任何检查以验证包是否有效且可安装
+mvn site                                      # 生成项目站点文档
+
+# 提示:
+#   - 生命周期阶段按顺序执行，例如 `mvn install` 会执行 `clean`, `compile`, `test`, `package`, `install`
+#   - 常用组合: `mvn clean install`, `mvn clean package`
+
+##############################################################################
+# 依赖管理 (Dependency Management)
+##############################################################################
+
+mvn dependency:tree                           # 显示依赖树
+mvn dependency:list                           # 列出项目依赖
+mvn dependency:analyze                        # 分析依赖，查找未使用和声明但未使用的依赖
+mvn dependency:purge-local-repository         # 清理本地仓库 (谨慎使用)
+
+##############################################################################
+# 项目信息 (Project Information)
+##############################################################################
+
+mvn help:effective-pom                        # 显示有效的 pom.xml (合并 profile 等)
+mvn help:effective-settings                     # 显示有效的 settings.xml
+mvn help:describe -Dplugin=PLUGIN -Dgoal=GOAL  # 描述插件目标 (例如: mvn help:describe -Dplugin=compiler -Dgoal=compile)
+mvn --version                                   # 显示 Maven 版本信息
+
+##############################################################################
+# 插件管理 (Plugin Management)
+##############################################################################
+
+mvn plugin:help -Dplugin=PLUGIN                 # 获取插件帮助 (例如: mvn plugin:help -Dplugin=compiler)
+mvn PLUGIN:GOAL                                 # 直接执行插件目标 (例如: mvn compiler:compile)
+
+##############################################################################
+# Profiles (配置文件)
+##############################################################################
+
+mvn -P PROFILE                                  # 使用指定 Profile (例如: mvn -P prod install)
+mvn -P PROFILE1,PROFILE2                        # 使用多个 Profile
+
+##############################################################################
+# 项目创建 (Project Creation)
+##############################################################################
+
+mvn archetype:generate                          # 交互式创建项目骨架
+mvn archetype:generate -DarchetypeGroupId=... -DarchetypeArtifactId=... -DarchetypeVersion=... -DgroupId=... -DartifactId=... -Dversion=...  # 非交互式创建
+
+# 提示:
+#   - 常用 archetype: maven-archetype-quickstart, maven-archetype-webapp
+
+##############################################################################
+# 通用选项 (General Options)
+##############################################################################
+
+mvn -DPROPERTY=VALUE                            # 设置 Maven 属性 (例如: mvn -DskipTests=true install)
+mvn -PPROFILE                                   # 激活 Maven Profile
+mvn -e                                          # 显示详细错误信息 (Error)
+mvn -X                                          # 显示 debug 信息 (Debug, 非常详细)
+mvn -B                                          # 非交互模式 (Batch mode)
+mvn -q                                          # 静默模式 (Quiet mode)
+mvn -U                                          # 强制更新依赖 (Update dependencies)
+mvn -o                                          # 离线模式 (Offline mode)
+mvn -h 或 mvn --help                             # 显示帮助信息
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 `-D` 定义属性，控制构建行为，例如跳过测试:
+#   mvn install -DskipTests=true
+
+# 使用 `-P` 激活 Profile，切换不同环境配置:
+#   mvn install -Pdev
+
+# 查看 effective-pom 了解最终配置:
+#   mvn help:effective-pom
+
+# 使用 `settings.xml` 配置 Maven 全局行为 (仓库, 镜像等)
+#   ~/.m2/settings.xml 或 ${maven.home}/conf/settings.xml
+
+# 快速跳过测试和打包:
+#   mvn package -DskipTests=true
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 清理并安装项目:
+#   mvn clean install
+
+# 打包项目并跳过测试:
+#   mvn package -DskipTests=true
+
+# 使用 'prod' Profile 构建并发布:
+#   mvn -Pprod deploy
+
+# 创建一个 quickstart 项目:
+#   mvn archetype:generate -DarchetypeGroupId=org.apache.maven.archetypes -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DgroupId=com.example -DartifactId=my-app -Dversion=1.0-SNAPSHOT
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Apache Maven 官方文档: https://maven.apache.org/guides/
+# Maven in 5 Minutes: https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

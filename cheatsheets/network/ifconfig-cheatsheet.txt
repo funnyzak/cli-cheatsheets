@@ -1,0 +1,102 @@
+##############################################################################
+# ifconfig 命令速查表 (ifconfig Command Cheatsheet)
+# 经典网络接口配置工具 (Classic Network Interface Configuration Tool)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - IFACE:     网络接口名 (Interface name, 例如: eth0, wlan0)
+#   - ADDR:      IP 地址 (IP Address, 例如: 192.168.1.100)
+#   - MASK:      子网掩码 (Netmask, 例如: 255.255.255.0 或 24)
+#   - BROADCAST: 广播地址 (Broadcast Address, 例如: 192.168.1.255)
+#   - HWADDR/MAC: MAC 地址 (Hardware Address / MAC Address, 例如: 00:11:22:33:44:55)
+#   - MTU:       最大传输单元 (Maximum Transmission Unit, 例如: 1500)
+#   - METRIC:    跃点数 (Metric, 路由开销值)
+
+##############################################################################
+# 显示接口信息 (Display Interface Information)
+##############################################################################
+
+ifconfig                                      # 显示所有活动接口的详细信息
+ifconfig -a                                   # 显示所有接口 (包括非活动接口)
+ifconfig IFACE                                  # 显示指定接口的详细信息
+ifconfig -s                                   # 显示简要接口摘要 (类似 `netstat -i`)
+
+# 提示:
+#   - 不带参数 `ifconfig` 常用于快速查看本机 IP 地址和接口状态
+#   - 输出信息包括: 接口名称, MAC 地址, IP 地址, 子网掩码, 广播地址, MTU, 状态 (UP/DOWN), RX/TX 数据包统计等
+
+##############################################################################
+# 配置接口 (Configure Interface)
+##############################################################################
+
+ifconfig IFACE up                              # 启用 (激活) 接口
+ifconfig IFACE down                            # 禁用 (关闭) 接口
+ifconfig IFACE ADDR                             # 设置接口 IP 地址 (需要同时配置子网掩码)
+ifconfig IFACE ADDR netmask MASK               # 设置接口 IP 地址和子网掩码 (点分十进制格式)
+ifconfig IFACE ADDR/PREFIX                      # 设置接口 IP 地址和子网掩码 (CIDR 格式，例如: 192.168.1.100/24)
+ifconfig IFACE broadcast BROADCAST             # 设置接口广播地址
+ifconfig IFACE pointopoint ADDR                # 设置点对点模式的远端地址 (例如 PPP)
+ifconfig IFACE mtu MTU                         # 设置接口 MTU (最大传输单元)
+ifconfig IFACE hw ether HWADDR                  # 设置接口 MAC 地址 (硬件地址)
+
+# 警告:
+#   - 修改 MAC 地址可能导致网络连接问题，请谨慎操作
+#   - `ifconfig` 修改的网络配置通常是临时的，重启后可能会失效 (取决于系统配置)
+
+##############################################################################
+# 高级配置 (Advanced Configuration)
+##############################################################################
+
+ifconfig IFACE promisc                           # 启用接口混杂模式 (接收所有数据包)
+ifconfig IFACE -promisc                          # 禁用接口混杂模式
+ifconfig IFACE allmulti                          # 启用接收所有组播数据包
+ifconfig IFACE -allmulti                         # 禁用接收所有组播数据包
+ifconfig IFACE metric METRIC                      # 设置接口路由跃点数 (影响路由优先级)
+ifconfig IFACE arp                               # 启用接口 ARP 协议 (默认启用)
+ifconfig IFACE -arp                              # 禁用接口 ARP 协议 (通常不建议)
+
+# 提示:
+#   - 混杂模式常用于网络抓包和监控
+#   - 跃点数 (metric) 值越小，路由优先级越高
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 查看 eth0 接口的详细信息:
+#    ifconfig eth0
+
+# 2. 启用 eth0 接口:
+#    ifconfig eth0 up
+
+# 3. 为 eth0 接口配置 IP 地址 192.168.1.100，子网掩码 255.255.255.0:
+#    ifconfig eth0 192.168.1.100 netmask 255.255.255.0
+
+# 4. 使用 CIDR 格式配置 IP 地址和子网掩码:
+#    ifconfig eth0 192.168.1.100/24
+
+# 5. 禁用 wlan0 接口:
+#    ifconfig wlan0 down
+
+# 6. 设置 eth0 接口的 MAC 地址为 00:11:22:33:44:55:
+#    ifconfig eth0 hw ether 00:11:22:33:44:55
+
+##############################################################################
+# 注意事项 (Important Notes)
+##############################################################################
+
+#  - `ifconfig` 命令在一些较新的 Linux 发行版中可能被 `ip` 命令取代。
+#  - `ifconfig` 主要用于 IPv4 配置，对于 IPv6 配置，通常使用 `ip -6 addr` 等命令。
+#  - 使用 `ifconfig` 修改网络配置通常是临时的，要使配置永久生效，需要修改网络配置文件 (例如: /etc/network/interfaces, /etc/sysconfig/network-scripts/ifcfg-* 等，具体取决于 Linux 发行版)。
+#  - 建议查阅您所使用操作系统的网络配置文档，了解持久化配置方法。
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://www.man7.org/linux/man-pages/man8/ifconfig.8.html
+# (各发行版 `ifconfig` 命令 man page 可能略有差异)
+# 可以搜索 "ifconfig cheat sheet" 获取更多在线速查表
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

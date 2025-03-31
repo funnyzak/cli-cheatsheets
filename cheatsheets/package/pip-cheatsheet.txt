@@ -1,0 +1,166 @@
+##############################################################################
+# pip 命令速查表 (pip Command Cheatsheet)
+# Python 包管理工具 (Python Package Installer)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PACKAGE_NAME:  Python 包名称 (例如: requests, numpy)
+#   - VERSION:       包版本号 (例如: ==2.26.0, >=3.0)
+#   - REQUIREMENTS_FILE: 需求文件路径 (例如: requirements.txt)
+#   - VIRTUAL_ENV:   虚拟环境路径 (例如: venv/)
+
+##############################################################################
+# 常用命令 (Common Commands)
+##############################################################################
+
+pip --version                                 # 显示 pip 版本
+pip help                                    # 显示 pip 帮助信息
+pip help <command>                            # 显示指定命令的帮助
+
+##############################################################################
+# 包安装 (Package Installation, pip install)
+##############################################################################
+
+pip install PACKAGE_NAME                      # 安装最新版本包
+pip install PACKAGE_NAME==VERSION               # 安装指定版本包
+pip install 'PACKAGE_NAME>=VERSION'            # 安装指定版本范围包
+pip install --upgrade PACKAGE_NAME              # 升级包到最新版本
+pip install --force-reinstall PACKAGE_NAME      # 强制重新安装包
+pip install --no-cache-dir PACKAGE_NAME         # 安装时不使用缓存
+pip install --index-url <URL> PACKAGE_NAME      # 从指定索引 URL 安装
+pip install --proxy <[user:passwd@]proxy.server:port> PACKAGE_NAME # 使用代理安装
+pip install --user PACKAGE_NAME                 # 安装到用户本地目录 (不需 sudo)
+pip install -e .                                # 安装当前目录作为 editable 包 (开发模式)
+pip install -r REQUIREMENTS_FILE              # 从需求文件安装包
+
+# 提示:
+#   - 使用 `--pre` 安装预发布版本 (alpha, beta, rc)
+#   - 使用 `--no-index` 忽略 PyPI 索引
+#   - 使用 `--find-links <path/url>` 从本地目录或 URL 查找包
+
+##############################################################################
+# 包卸载 (Package Uninstallation, pip uninstall)
+##############################################################################
+
+pip uninstall PACKAGE_NAME                    # 卸载包
+pip uninstall -r REQUIREMENTS_FILE            # 卸载需求文件中的包
+pip uninstall --yes PACKAGE_NAME                # 卸载时跳过确认提示
+
+# 提示:
+#   - 卸载包时最好在虚拟环境中操作，避免影响全局环境
+
+##############################################################################
+# 包列表 (Package Listing, pip list)
+##############################################################################
+
+pip list                                      # 列出已安装的包
+pip list --outdated                             # 列出可升级的包
+pip list --uptodate                             # 列出已是最新版本的包
+pip list --format=columns                       # 以列格式显示 (默认)
+pip list --format=freeze                        # 以 requirements.txt 格式显示
+pip list --format=json                           # 以 JSON 格式显示
+pip list --user                                 # 列出用户本地安装的包
+pip list --pre                                  # 列出预发布版本包
+
+# 提示:
+#   - 结合 grep 过滤输出，例如: `pip list | grep requests`
+
+##############################################################################
+# 需求文件 (Requirements Files, pip freeze & pip install -r)
+##############################################################################
+
+pip freeze > REQUIREMENTS_FILE                  # 生成 requirements.txt 文件 (当前环境)
+pip freeze --user > REQUIREMENTS_FILE           # 生成用户本地安装包的 requirements.txt
+pip install -r REQUIREMENTS_FILE              # 从 requirements.txt 安装包
+
+# 提示:
+#   - `requirements.txt` 文件通常用于项目依赖管理，方便环境复现
+#   - 建议在虚拟环境中使用 `pip freeze` 生成需求文件，避免包含全局包
+
+##############################################################################
+# 包信息 (Package Information, pip show)
+##############################################################################
+
+pip show PACKAGE_NAME                         # 显示包的详细信息
+pip show -f PACKAGE_NAME                        # 显示包的文件列表
+pip show -v PACKAGE_NAME                        # 显示更详细的信息 (verbose)
+
+##############################################################################
+# 包搜索 (Package Searching, pip search - deprecated)
+##############################################################################
+
+# pip search PACKAGE_NAME                       # 搜索 PyPI 上的包 (已弃用，不推荐使用)
+# 建议使用 PyPI 官网 (pypi.org) 或其他 PyPI 镜像站进行搜索
+
+##############################################################################
+# 包校验 (Package Check, pip check)
+##############################################################################
+
+pip check                                     # 检查已安装包的依赖冲突
+pip check PACKAGE_NAME                          # 检查指定包及其依赖
+
+##############################################################################
+# 下载包 (Package Downloading, pip download)
+##############################################################################
+
+pip download PACKAGE_NAME                     # 下载包 (但不安装)
+pip download -d <directory> PACKAGE_NAME       # 下载到指定目录
+pip download -r REQUIREMENTS_FILE             # 下载需求文件中的包
+
+##############################################################################
+# 缓存管理 (Cache Management, pip cache)
+##############################################################################
+
+pip cache dir                                 # 显示 pip 缓存目录
+pip cache purge                               # 清空所有 pip 缓存
+pip cache remove <wheel_file> ...              # 删除指定的缓存文件
+
+##############################################################################
+# 虚拟环境 (Virtual Environments - 提示)
+##############################################################################
+
+# 强烈建议在虚拟环境中使用 pip，避免包冲突和污染全局环境
+# 常用虚拟环境工具: venv (Python 3 内置), virtualenv
+
+# 创建虚拟环境 (使用 venv):
+#   python3 -m venv <VIRTUAL_ENV>
+# 激活虚拟环境:
+#   source <VIRTUAL_ENV>/bin/activate  (Linux/macOS)
+#   <VIRTUAL_ENV>\Scripts\activate      (Windows)
+# 退出虚拟环境:
+#   deactivate
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 requirements.txt 管理项目依赖
+# 结合虚拟环境隔离项目依赖
+# 使用 `--user` 安装用户本地包，无需管理员权限
+# 使用 Tab 补全命令和包名 (部分 Shell 支持)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 安装 requests 包的 2.26.0 版本:
+#   pip install requests==2.26.0
+
+# 从 requirements.txt 文件安装项目依赖:
+#   pip install -r requirements.txt
+
+# 生成当前环境的 requirements.txt 文件:
+#   pip freeze > requirements.txt
+
+# 升级所有可升级的包 (谨慎操作):
+#   pip list --outdated --format=freeze | pip install --upgrade -r -
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://pip.pypa.io/en/stable/cli/
+# https://packaging.python.org/en/latest/tutorials/managing-dependencies/
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

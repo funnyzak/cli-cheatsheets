@@ -1,0 +1,123 @@
+##############################################################################
+# APK 包管理器速查表 (APK Package Manager Cheatsheet)
+# Alpine Linux 包管理器 - 简洁高效 (Alpine Linux Package Manager - Simple and Efficient)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PACKAGE_NAME:  软件包名称 (Package name, 例如: bash, openssh)
+#   - VERSION:       软件包版本 (Package version, 例如: =5.1-r0, <5.0, >=3.2)
+#   - REPOSITORY:    仓库名称 (Repository name, 例如: community, main)
+#   - ARCH:          系统架构 (Architecture, 例如: x86_64, armv7)
+
+##############################################################################
+# 软件包管理 (Package Management - apk add, del, update, upgrade)
+##############################################################################
+
+apk add PACKAGE_NAME [VERSION]                # 安装软件包 (Install package)
+apk add PACKAGE_NAME=VERSION                  # 安装指定版本 (Install specific version)
+apk add PACKAGE_NAME~=VERSION                 # 安装兼容版本 (Install compatible version)
+apk add --no-cache PACKAGE_NAME               # 安装时不使用缓存 (Install without cache)
+apk add --virtual BUILD_DEPS ...              # 创建虚拟依赖包 (Install virtual build dependencies)
+
+apk del PACKAGE_NAME                          # 删除软件包 (Remove package)
+apk del --purge PACKAGE_NAME                    # 彻底删除软件包 (包括配置文件) (Purge package - including config files)
+
+apk update                                    # 更新仓库索引 (Update repository index)
+apk upgrade                                   # 升级所有可升级软件包 (Upgrade all upgradable packages)
+apk upgrade PACKAGE_NAME                      # 升级指定软件包 (Upgrade specific package)
+apk fix                                       # 修复损坏的软件包 (Fix broken packages)
+
+apk policy [PACKAGE_NAME]                     # 显示软件包策略 (显示可安装版本和仓库) (Show package policy - available versions and repositories)
+apk info [PACKAGE_NAME]                       # 显示软件包信息 (Show package information)
+apk info -v [PACKAGE_NAME]                    # 显示详细软件包信息 (Show verbose package information)
+apk info -l [PACKAGE_NAME]                    # 显示软件包文件列表 (List package files)
+apk info -L [PACKAGE_NAME]                    # 显示软件包配置文件列表 (List package config files)
+apk info --provides [PACKAGE_NAME]             # 显示软件包提供的依赖 (Show package provided dependencies)
+apk info --requires [PACKAGE_NAME]             # 显示软件包依赖 (Show package dependencies)
+
+apk search PACKAGE_NAME                       # 搜索软件包 (Search for package)
+apk search -v PACKAGE_NAME                    # 详细搜索 (Verbose search)
+apk search -e REGEX                           # 使用正则表达式搜索 (Search with regular expression)
+apk search -t TAG                             # 按标签搜索 (Search by tag)
+
+##############################################################################
+# 仓库管理 (Repository Management - apk repo, repositories)
+##############################################################################
+
+apk repositories                              # 显示当前启用的仓库列表 (List enabled repositories)
+apk repositories > /etc/apk/repositories      # 重定向仓库列表到配置文件 (Redirect repository list to config file)
+apk add --repository FILE PACKAGE_NAME        # 从本地仓库文件安装 (Install from local repository file)
+apk index -w /path/to/APK_FILE ...            # 创建本地仓库索引 (Create local repository index)
+
+# 提示:
+#   - 仓库配置文件通常位于 `/etc/apk/repositories`
+#   - 可以编辑仓库配置文件来启用/禁用或添加新的仓库
+
+##############################################################################
+# 缓存管理 (Cache Management - apk cache)
+##############################################################################
+
+apk cache                                     # 显示缓存目录 (Show cache directory)
+apk cache dir                                 # 仅显示缓存目录路径 (Show only cache directory path)
+apk cache ls                                  # 列出缓存中的软件包 (List cached packages)
+apk cache add /path/to/APK_FILE ...           # 添加 APK 文件到缓存 (Add APK files to cache)
+apk cache clean                               # 清理软件包缓存 (Remove package cache)
+apk cache clean-cache                         # 仅清理下载的软件包缓存 (Remove only downloaded package cache)
+apk cache clean-contents                      # 清理软件包内容缓存 (Remove package content cache)
+
+# 提示:
+#   - 默认缓存目录通常是 `/var/cache/apk`
+#   - 定期清理缓存可以节省磁盘空间
+
+##############################################################################
+# 其他实用命令 (Other Useful Commands)
+##############################################################################
+
+apk checksum [PACKAGE_NAME]                     # 校验软件包完整性 (Verify package integrity)
+apk verify [PACKAGE_NAME]                       # 验证软件包文件 (Verify package files)
+apk audit                                     # 审计安全漏洞 (Audit security vulnerabilities)
+apk stats                                     # 显示 APK 包管理器统计信息 (Show APK package manager statistics)
+apk dot PACKAGE_NAME                          # 生成软件包依赖关系 DOT 图 (Generate package dependency DOT graph)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用别名简化常用命令 (Aliases for common commands):
+#   alias apka='apk add'
+#   alias apkd='apk del'
+#   alias apku='apk update'
+#   alias apkg='apk upgrade'
+
+# 结合 grep 过滤输出 (Filter output with grep):
+#   apk info | grep version                     # 仅显示软件包版本信息
+#   apk search openssh | grep community           # 搜索 community 仓库中的 openssh
+
+# 使用 `--dry-run` 或 `--simulate` 进行模拟操作 (Simulate operations with --dry-run or --simulate):
+#   apk add --dry-run PACKAGE_NAME              # 模拟安装，不实际执行
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 安装 bash 和 vim:
+#   apk add bash vim
+
+# 升级所有软件包并清理缓存:
+#   apk update && apk upgrade && apk cache clean
+
+# 搜索以 "nginx" 开头的软件包，并显示详细信息:
+#   apk search -v nginx
+
+# 查看已安装的 openssh 版本信息:
+#   apk info openssh
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Alpine Wiki: https://wiki.alpinelinux.org/wiki/Apk
+# apk(8) man page: man apk
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

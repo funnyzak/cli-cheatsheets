@@ -1,0 +1,100 @@
+##############################################################################
+# More 命令速查表 (More Command Cheatsheet)
+# 用于浏览文本文件 (For viewing text files)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - FILE:  要浏览的文件路径 (Path to the file to view)
+
+##############################################################################
+# 基本导航 (Basic Navigation)
+##############################################################################
+
+空格 (Space)                         # 向下滚动一屏 (Scroll down one screen)
+b                                     # 向上滚动一屏 (Scroll up one screen)
+回车 (Enter)                         # 向下滚动一行 (Scroll down one line)
+j                                     # 向下滚动一行 (Scroll down one line)
+k                                     # 向上滚动一行 (Scroll up one line)
+d 或 Ctrl+D                         # 向下滚动半屏 (Scroll down half screen)
+u 或 Ctrl+U                         # 向上滚动半屏 (Scroll up half screen)
+q 或 Q                              # 退出 more (Quit more)
+h 或 ?                              # 显示帮助信息 (Display help information)
+
+##############################################################################
+# 文件定位 (File Positioning)
+##############################################################################
+
+行号G (Line number G)                 # 跳转到指定行号 (Go to specified line number), 例如: 100G
+G                                     # 跳转到文件末尾 (Go to end of file)
+1G 或 g                              # 跳转到文件开头 (Go to beginning of file)
+Ctrl+L                               # 刷新屏幕 (Redraw screen)
+. (点)                               # 重复上次命令 (Repeat last command)
+
+##############################################################################
+# 搜索 (Searching)
+##############################################################################
+
+/pattern                              # 向下搜索 pattern (Search forward for pattern)
+?pattern                              # 向上搜索 pattern (Search backward for pattern)
+n                                     # 查找下一个匹配项 (Find next match)
+N 或 Shift+n                         # 查找上一个匹配项 (Find previous match)
+
+# 提示:
+#   - 搜索时忽略大小写，可以使用 -i 选项启动 more
+#   - Pattern 支持正则表达式 (Basic regular expressions are supported in patterns)
+
+##############################################################################
+# 显示选项 (Display Options)
+##############################################################################
+
+-num                                 # 设置每屏显示的行数 (Set number of lines per screen to num)
+-c                                   # 从顶部清除屏幕，而不是滚动 (Clear screen from top instead of scrolling)
+-d                                   # 显示友好的错误信息而不是响铃 (Display helpful error messages instead of ringing bell)
+-f                                   # 逻辑行折叠长行 (Fold long lines logically)
+-l                                   # 忽略换页符 (Ignore form feed characters)
+-p                                   # 清屏后显示每一屏 (Clear screen before displaying each page)
+-s                                   # 压缩多个空行为一个 (Squeeze multiple blank lines into one)
+-u                                   # 取消下划线和粗体 (Suppress underlining and bold)
+
+# 启动选项 (Startup Options):
+#   more -i FILE                      # 启动时忽略大小写搜索 (Case-insensitive search at startup)
+#   more -num FILE                    # 指定每屏行数启动 (Specify lines per screen at startup)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 管道输出到 more:
+#   command | more                    # 查看命令的输出 (View output of a command)
+#   ls -l /etc | more                 # 分页查看目录列表 (View directory listing page by page)
+
+# 查看多个文件:
+#   more file1 file2 file3            # 依次浏览多个文件 (View multiple files in sequence)
+#   more *.log                      # 浏览当前目录下所有 .log 文件 (View all .log files in current directory)
+
+# 结合搜索快速定位:
+#   more +/keyword FILE               # 打开文件并定位到第一个 keyword (Open file and jump to first keyword)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 查看文件内容:
+#   more my_document.txt
+
+# 查看命令输出并分页:
+#   dmesg | more
+
+# 启动 more 并忽略大小写搜索:
+#   more -i logfile.txt
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# man more
+# https://www.computerhope.com/unix/umore.htm
+# https://en.wikipedia.org/wiki/More_(command)
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

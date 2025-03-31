@@ -1,0 +1,208 @@
+##############################################################################
+# Shell 运算符速查表 (Shell Operators Cheatsheet)
+# 用于 Bash 及其他常见 Shell 环境
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - VAR: 变量名 (Variable name)
+#   - NUM: 数字 (Number)
+#   - STR: 字符串 (String)
+#   - FILE: 文件路径 (File path)
+#   - COND: 条件表达式 (Conditional expression)
+#   - CMD:  命令 (Command)
+
+##############################################################################
+# 算术运算符 (Arithmetic Operators) -  通常用于 `(( ))` 或 `let` 命令中
+##############################################################################
+
++ NUM1 NUM2                              # 加法 (Addition)
+- NUM1 NUM2                              # 减法 (Subtraction)
+* NUM1 NUM2                              # 乘法 (Multiplication)
+/ NUM1 NUM2                              # 除法 (Division)
+% NUM1 NUM2                              # 取余 (Modulo)
+** NUM1 NUM2                             # 幂运算 (Exponentiation)
+++VAR                                  # 自增 (Increment, 前缀/后缀)
+--VAR                                  # 自减 (Decrement, 前缀/后缀)
+
+# 示例:
+#   (( sum = 10 + 5 ))
+#   let "count++"
+
+##############################################################################
+# 比较运算符 (Comparison Operators)
+#  - 数字比较:  用于 `(( ))` 或 `[ ]` / `test` 命令的 `-eq`, `-ne`, `-lt` 等
+#  - 字符串比较: 用于 `[[ ]]` 或 `[ ]` / `test` 命令的 `=`, `!=`, `<`, `>` 等
+#  - 文件测试:  用于 `[ ]` / `test` 命令的 `-f`, `-d`, `-e` 等
+##############################################################################
+
+# 数字比较 (Numeric Comparison):  用于 `(( ))` 或 `[ ... ]`  (注意空格)
+-eq NUM1 NUM2                             # 等于 (Equal to)
+-ne NUM1 NUM2                             # 不等于 (Not equal to)
+-lt NUM1 NUM2                             # 小于 (Less than)
+-le NUM1 NUM2                             # 小于等于 (Less than or equal to)
+-gt NUM1 NUM2                             # 大于 (Greater than)
+-ge NUM1 NUM2                             # 大于等于 (Greater than or equal to)
+
+# 字符串比较 (String Comparison):  用于 `[[ ... ]]` 或 `[ ... ]` (注意空格和引号)
+=  STR1 STR2                              # 等于 (Equal to)
+== STR1 STR2                              # 等于 (Equal to, 某些 Shell)
+!= STR1 STR2                              # 不等于 (Not equal to)
+<  STR1 STR2                              # 小于 (Less than, 字典序)
+>  STR1 STR2                              # 大于 (Greater than, 字典序)
+-z STR                                   # 字符串为空 (Zero length)
+-n STR                                   # 字符串非空 (Non-zero length)
+
+# 文件测试运算符 (File Test Operators): 用于 `[ ... ]` (注意空格)
+-f FILE                                  # 文件存在且为普通文件 (Regular file)
+-d FILE                                  # 文件存在且为目录 (Directory)
+-e FILE                                  # 文件存在 (Exists)
+-x FILE                                  # 文件存在且可执行 (Executable)
+-r FILE                                  # 文件存在且可读 (Readable)
+-w FILE                                  # 文件存在且可写 (Writable)
+-s FILE                                  # 文件存在且大小大于 0 (Size greater than zero)
+-L FILE                                  # 文件存在且为符号链接 (Symbolic link)
+
+# 示例:
+#   if (( count > 10 )); then ... fi
+#   if [ "$NAME" = "John" ]; then ... fi
+#   if [[ "$FILE" == *.txt ]]; then ... fi  # 模式匹配 (Bash)
+#   if [ -f "my_script.sh" ]; then ... fi
+
+##############################################################################
+# 逻辑运算符 (Logical Operators) -  用于 `[[ ]]` 或 `[ ]` / `test` 命令中
+##############################################################################
+
+&& COND1 COND2                           # 逻辑与 (AND) -  短路求值
+|| COND1 COND2                           # 逻辑或 (OR)  -  短路求值
+!  COND                                   # 逻辑非 (NOT)
+
+# -a COND1 COND2                           # 逻辑与 (AND) -  `[ ]` / `test` 中 (不推荐)
+# -o COND1 COND2                           # 逻辑或 (OR)  -  `[ ]` / `test` 中 (不推荐)
+
+# 示例:
+#   if [[ $USER = "root" && -f "/etc/shadow" ]]; then ... fi
+#   if [ -d "docs" || -d "documentation" ]; then ... fi
+#   if ! [ -z "$STRING" ]; then ... fi
+
+##############################################################################
+# 字符串操作运算符 (String Operators) -  常用于参数扩展 `${}` 中
+##############################################################################
+
+${#VAR}                                 # 字符串长度 (Length of string)
+${VAR:POS}                               # 从 POS 位置开始截取子串 (Substring from position)
+${VAR:POS:LEN}                           # 从 POS 位置开始截取长度为 LEN 的子串 (Substring of length LEN)
+${VAR#PATTERN}                           # 从开头删除最短匹配 PATTERN 的子串 (Remove shortest prefix pattern)
+${VAR##PATTERN}                          # 从开头删除最长匹配 PATTERN 的子串 (Remove longest prefix pattern)
+${VAR%PATTERN}                           # 从结尾删除最短匹配 PATTERN 的子串 (Remove shortest suffix pattern)
+${VAR%%PATTERN}                          # 从结尾删除最长匹配 PATTERN 的子串 (Remove longest suffix pattern)
+${VAR/PATTERN/REPLACE}                   # 替换第一个匹配 PATTERN 的子串为 REPLACE (Replace first occurrence)
+${VAR//PATTERN/REPLACE}                  # 替换所有匹配 PATTERN 的子串为 REPLACE (Replace all occurrences)
+
+# 示例:
+#   STRING="Hello World"
+#   echo ${#STRING}                      # 输出 11
+#   echo ${STRING:6}                      # 输出 "World"
+#   echo ${STRING/World/Shell}            # 输出 "Hello Shell"
+
+##############################################################################
+# 命令列表运算符 (Command List Operators)
+##############################################################################
+
+;  CMD1 ; CMD2                           # 顺序执行命令 (Sequential execution)
+&  CMD &                                 # 后台执行命令 (Background execution)
+&& CMD1 && CMD2                          # 逻辑与 -  CMD1 成功才执行 CMD2 (Conditional AND)
+|| CMD1 || CMD2                          # 逻辑或 -  CMD1 失败才执行 CMD2 (Conditional OR)
+|  CMD1 | CMD2                           # 管道 - CMD1 的输出作为 CMD2 的输入 (Pipe)
+
+# 示例:
+#   command1 ; command2 ; command3
+#   long_running_command &
+#   command1 && command2
+#   command1 || command2
+#   ls -l | grep ".txt"
+
+##############################################################################
+# 重定向运算符 (Redirection Operators)
+##############################################################################
+
+>  FILE                                  # 标准输出重定向到文件 (Overwrite)
+>> FILE                                  # 标准输出追加重定向到文件 (Append)
+<  FILE                                  # 标准输入重定向自文件 (Input redirection)
+2> FILE                                  # 标准错误输出重定向到文件 (Error redirection)
+2>> FILE                                 # 标准错误输出追加重定向到文件 (Error append redirection)
+&> FILE                                  # 标准输出和标准错误输出都重定向到文件 (All output redirection, Bash)
+>& FILE                                  # 同 &> (All output redirection, 兼容性更好)
+<< DELIMITER                              # Here document -  多行输入
+<<< WORD                                 # Here string -  单行字符串输入
+
+# 示例:
+#   ls -l > file_list.txt
+#   command >> logfile.log
+#   sort < input.txt
+#   command 2> error.log
+#   command &> output.log
+#   cat << EOF
+#   This is a
+#   multi-line input.
+#   EOF
+#   grep "keyword" <<< "This is a string to search."
+
+##############################################################################
+# 其他运算符 (Other Operators)
+##############################################################################
+
+=  VAR=VALUE                              # 赋值运算符 (Assignment operator)
+$VAR 或 ${VAR}                            # 变量取值 (Variable expansion)
+`CMD` 或 $(CMD)                           # 命令替换 (Command substitution)
+() CMD                                   # 子 Shell 中执行命令 (Subshell execution)
+{} CMD                                   # 代码块分组 (Code block grouping)
+,  CMD1 , CMD2                           # 逗号运算符 (Comma operator, 顺序执行并返回最后一个命令的结果)
+
+# 示例:
+#   NAME="Alice"
+#   echo "Hello, $NAME"
+#   DATE=$(date +%Y-%m-%d)
+#   (cd /tmp && touch temp_file)
+#   { echo "Start"; command; echo "End"; }
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 1.  空格很重要:  在 `[ ... ]` 和 `test` 命令中，运算符和操作数之间要有空格。
+# 2.  引号的使用:  字符串变量建议用双引号 `"$VAR"`，防止空格和特殊字符引起问题。
+# 3.  `[[ ]]` 扩展:  `[[ ]]` 比 `[ ]` 功能更强大，支持模式匹配、正则表达式等，Bash 和 zsh 中推荐使用。
+# 4.  算术运算:  `(( ))` 和 `let` 用于算术运算，效率比 `expr` 高。
+# 5.  查看帮助:  使用 `help test` 或 `man test` 查看 `test` 命令 (即 `[ ]`) 的详细帮助。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 示例 1:  判断文件是否存在且可读，并输出文件大小
+# FILE_PATH="my_script.sh"
+# if [ -r "$FILE_PATH" ]; then
+#   SIZE=$(stat -c %s "$FILE_PATH")
+#   echo "File '$FILE_PATH' is readable and size is $SIZE bytes."
+# else
+#   echo "File '$FILE_PATH' is not readable or does not exist."
+# fi
+
+# 示例 2:  循环处理文件列表，只处理文本文件
+# for file in *; do
+#   if [[ "$file" == *.txt ]]; then
+#     echo "Processing text file: $file"
+#     # ... 对文本文件进行处理 ...
+#   fi
+# done
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Bash 手册:  `man bash` (搜索 "CONDITIONAL EXPRESSIONS", "ARITHMETIC EVALUATION", "Shell Command Language")
+# GNU `test` 命令文档: https://www.gnu.org/software/coreutils/manual/html_node/test-invocation.html
+# ShellCheck - Shell 脚本静态分析工具: https://www.shellcheck.net/
+
+# vim: set ts=4 sw=4 tw=0 et ft=sh :

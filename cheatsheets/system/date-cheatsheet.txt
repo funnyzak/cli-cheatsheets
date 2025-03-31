@@ -1,0 +1,157 @@
+##############################################################################
+# DATE 命令速查表 (DATE Command Cheatsheet)
+# 用于显示和设置系统日期和时间
+# 用于 shell 脚本和日常操作的时间处理
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - FORMAT:  日期时间格式字符串 (Format string, 例如: +%Y-%m-%d)
+#   - TIME_STRING:  日期时间字符串 (Date/Time string, 例如: "2024-01-01 12:00:00")
+#   - ZONE:  时区 (Timezone, 例如: UTC, Asia/Shanghai)
+
+##############################################################################
+# 显示日期和时间 (Display Date and Time)
+##############################################################################
+
+date                                        # 显示当前日期和时间 (默认格式)
+date "+FORMAT"                              # 按指定 FORMAT 显示
+date -u                                     # 显示 UTC 时间
+date --utc                                  # 显示 UTC 时间 (同 -u)
+date --iso-8601                             # 以 ISO 8601 格式显示日期
+date --iso-8601=seconds                     # 以 ISO 8601 格式显示日期和秒
+date --iso-8601=minutes                     # 以 ISO 8601 格式显示日期和分钟
+date --iso-8601=hours                       # 以 ISO 8601 格式显示日期和小时
+date --rfc-2822                              # 以 RFC 2822 格式显示日期和时间
+date -R                                     # 以 RFC 2822 格式显示日期和时间 (同 --rfc-2822)
+
+# 常用 FORMAT 选项:
+#   %Y  年 (Year, 例如: 2023)
+#   %m  月 (Month, 01-12)
+#   %d  日 (Day of month, 01-31)
+#   %H  小时 (Hour, 00-23)
+#   %M  分钟 (Minute, 00-59)
+#   %S  秒 (Second, 00-60)
+#   %s  时间戳 (Unix timestamp, 1970-01-01 00:00:00 UTC 起始的秒数)
+#   %N  纳秒 (Nanosecond, 000000000-999999999)
+#   %F  完整日期 (Full date, %Y-%m-%d)
+#   %T  完整时间 (Full time, %H:%M:%S)
+#   %c  日期和时间 (Date and time, 例如: Tue Jan 2 10:00:00 2024)
+#   %x  日期 (Date, 例如: 01/02/24)
+#   %X  时间 (Time, 例如: 10:00:00)
+#   %Z  时区名称 (Timezone name, 例如: UTC, EST)
+#   %z  时区偏移 (Timezone offset, 例如: +0800)
+
+# 提示:
+#   - FORMAT 字符串前使用 `+` 号
+#   - 可以组合多个 FORMAT 选项，例如: `date "+%Y-%m-%d %H:%M:%S"`
+#   - 使用 `--date='STRING'` 显示指定日期/时间的格式化输出 (见 "日期时间调整")
+
+##############################################################################
+# 设置日期和时间 (Set Date and Time)
+##############################################################################
+
+sudo date -s "TIME_STRING"                 # 设置系统时间 (需要 sudo 权限)
+sudo date --set="TIME_STRING"              # 设置系统时间 (同 -s)
+sudo date -s "YYYY-MM-DD HH:MM:SS"           # 设置指定格式的时间
+sudo date -s @TIMESTAMP                    # 从时间戳设置时间 (秒)
+
+# 注意:
+#   - 设置系统时间需要 root 或 sudo 权限
+#   - 建议使用 NTP 服务同步时间，手动设置仅用于临时调整
+
+##############################################################################
+# 日期时间调整 (Date and Time Adjustment)
+##############################################################################
+
+date --date='now'                          # 显示当前时间 (同 `date`)
+date --date='today'                        # 显示今天 (同 `date`)
+date --date='yesterday'                      # 显示昨天
+date --date='tomorrow'                       # 显示明天
+date --date='1 days ago'                     # 显示 1 天前
+date --date='2 weeks ago'                    # 显示 2 周前
+date --date='next month'                    # 显示下个月的今天 (如果存在)
+date --date='last year'                     # 显示去年的今天
+date --date='+1 year'                       # 显示明年的今天 (相对当前日期)
+date --date='-3 months'                     # 显示 3 个月前的今天 (相对当前日期)
+date --date='+'"$OFFSET days"'`              # 计算 N 天后的日期 (Shell 变量)
+
+# 时间单位:
+#   years, months, days, hours, minutes, seconds, weeks
+
+# 提示:
+#   - `--date='STRING'` 可以接受各种人类可读的日期时间字符串
+#   - 可以进行相对日期时间计算，例如 "yesterday", "next week", "+2 hours" 等
+#   - 结合 FORMAT 选项，可以格式化输出调整后的日期时间，例如:
+#     `date --date='tomorrow' "+%Y-%m-%d"`
+
+##############################################################################
+# 时区处理 (Timezone Handling)
+##############################################################################
+
+date -u                                     # 显示 UTC 时间
+date --utc                                  # 显示 UTC 时间 (同 -u)
+date --timezone=ZONE                         # 以指定时区显示时间
+date --timezone=UTC                          # 以 UTC 时区显示
+date --timezone='Asia/Shanghai'              # 以上海时区显示
+
+# 查看系统当前时区:
+#   timedatectl status | grep "Time zone"
+#   或者读取 /etc/timezone 文件 (取决于系统)
+
+# 设置系统时区 (需要 sudo 权限，不同系统方法可能不同):
+#   sudo timedatectl set-timezone ZONE       # (systemd 系统)
+#   sudo dpkg-reconfigure tzdata             # (Debian/Ubuntu)
+#   sudo tzselect                              # (通用交互式时区选择)
+
+# 提示:
+#   - 使用 `--timezone=` 选项可以在不更改系统时区的情况下，显示指定时区的时间
+#   - 确保系统时区设置正确，尤其是在服务器环境中
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 获取当前时间戳 (秒):
+#   date +%s
+
+# 获取当前时间戳 (纳秒):
+#   date +%s%N
+
+# 将时间戳转换为日期时间:
+#   date -d @TIMESTAMP "+%Y-%m-%d %H:%M:%S"
+
+# 在脚本中等待指定时间 (秒):
+#   sleep SECONDS
+
+# 在脚本中获取格式化的日期时间字符串:
+#   NOW=$(date "+%Y%m%d-%H%M%S")
+#   LOG_FILE="log-${NOW}.txt"
+
+# 批量处理日期 (例如，生成过去 7 天的日期列表):
+#   for i in $(seq 0 6); do date --date="$i days ago" "+%Y-%m-%d"; done
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 显示当前日期，格式为 YYYY/MM/DD:
+#   date "+%Y/%m/%d"
+
+# 显示明天的日期和时间:
+#   date --date='tomorrow'
+
+# 设置系统时间为 2024年1月1日 12:00:00 (需要 sudo):
+#   sudo date -s "2024-01-01 12:00:00"
+
+# 计算 30 天后的日期，并格式化输出:
+#   date --date='+30 days' "+%Y-%m-%d"
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://man7.org/linux/man-pages/man1/date.1.html
+# https://www.gnu.org/software/coreutils/manual/html_node/date-invocation.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

@@ -1,0 +1,178 @@
+##############################################################################
+# yq 命令速查表 (yq Command Cheatsheet)
+# YAML, JSON, XML and CSV processor - jq wrapper for YAML
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PATH_EXPR:  YAML 路径表达式 (YAML Path Expression, 例如: .name, .items[0].value)
+#   - YAML_FILE:  YAML 文件路径 (YAML File Path, 例如: config.yaml)
+#   - JSON_FILE:  JSON 文件路径 (JSON File Path, 例如: data.json)
+#   - XML_FILE:   XML 文件路径 (XML File Path, 例如: data.xml)
+#   - CSV_FILE:   CSV 文件路径 (CSV File Path, 例如: data.csv)
+#   - KEY:        YAML/JSON 键名 (Key name)
+#   - VALUE:      YAML/JSON 值 (Value)
+#   - INDEX:      数组索引 (Array index)
+#   - NEW_VALUE:  新的值 (New value)
+#   - FORMAT:     输出格式 (Output format, 例如: yaml, json, xml, csv)
+
+##############################################################################
+# 基本操作 (Basic Operations)
+##############################################################################
+
+yq '.' YAML_FILE                               # 读取整个 YAML 文件内容 (Read all)
+yq '.PATH_EXPR' YAML_FILE                      # 读取指定路径的值 (Read path value)
+yq -r '.PATH_EXPR' YAML_FILE                   # 读取原始字符串 (Raw string output)
+yq -y '.PATH_EXPR' YAML_FILE                   # 以 YAML 格式输出 (YAML output, 默认)
+yq -j '.PATH_EXPR' YAML_FILE                   # 以 JSON 格式输出 (JSON output)
+yq -x '.PATH_EXPR' YAML_FILE                   # 以 XML 格式输出 (XML output)
+yq -c '.PATH_EXPR' YAML_FILE                   # 紧凑格式输出 (Compact output, JSON/YAML)
+yq --prettyPrint '.PATH_EXPR' YAML_FILE        # 格式化输出 (Pretty print, JSON/YAML)
+
+# 从标准输入读取 (Read from stdin)
+cat YAML_FILE | yq '.'                         # 读取标准输入 YAML
+echo '{"a": 1}' | yq '.'                      # 读取标准输入 JSON
+
+# 写入文件 (Write to file)
+yq '.PATH_EXPR = NEW_VALUE' -i YAML_FILE       # 修改 YAML 文件 (In-place edit)
+yq '.PATH_EXPR = NEW_VALUE' YAML_FILE > output.yaml # 输出到新文件 (Output to new file)
+
+##############################################################################
+# 路径表达式 (Path Expressions)
+##############################################################################
+
+.                                               # 根节点 (Root node)
+.KEY                                            # 获取键 KEY 的值 (Get value by key)
+.KEY1.KEY2                                       # 嵌套键 (Nested keys)
+."KEY WITH SPACE"                                # 键名包含空格 (Key with space)
+.[INDEX]                                         # 数组索引 (Array index)
+.[INDEX1, INDEX2]                                # 多个数组索引 (Multiple array indices)
+.[START:END]                                     # 数组切片 (Array slice)
+.KEY[]                                          # 遍历数组 KEY 下的所有元素 (Iterate array)
+.KEY[].SUB_KEY                                   # 遍历数组并获取子键 (Iterate and get sub-key)
+.KEY | .SUB_KEY                                 # 管道操作，先获取 KEY，再获取 SUB_KEY (Pipe operation)
+
+# 过滤器 (Filters)
+.KEY | select(. == "VALUE")                     # 选择值等于 VALUE 的元素 (Select where value equals)
+.KEY | select(. > 10)                          # 选择值大于 10 的元素 (Select where value is greater than)
+.KEY | select(. < 10)                          # 选择值小于 10 的元素 (Select where value is less than)
+.KEY | select(. != "VALUE")                     # 选择值不等于 VALUE 的元素 (Select where value is not equal)
+.KEY | select(has("SUB_KEY"))                   # 选择包含子键 SUB_KEY 的元素 (Select where has sub-key)
+.KEY | select(length > 2)                       # 选择长度大于 2 的元素 (Select where length is greater than)
+
+##############################################################################
+# YAML 操作 (YAML Operations)
+##############################################################################
+
+# 读取 (Read)
+yq '.metadata.name' YAML_FILE                   # 读取 YAML 文件中 metadata.name 的值
+yq '.spec.containers[0].image' YAML_FILE        # 读取数组中第一个容器的镜像名
+
+# 写入/更新 (Write / Update)
+yq '.metadata.name = "new-name"' -i YAML_FILE  # 更新 metadata.name 的值
+yq '.spec.replicas = 3' -i YAML_FILE           # 更新 spec.replicas 的值
+yq '.new_key = "new value"' -i YAML_FILE        # 添加新的键值对
+yq '.spec.containers[0].ports[0].containerPort = 8080' -i YAML_FILE # 更新嵌套值
+
+# 删除 (Delete)
+yq 'del(.metadata.annotations)' -i YAML_FILE    # 删除 metadata.annotations 键
+yq 'del(.spec.containers[0].ports[1])' -i YAML_FILE # 删除数组中第二个端口
+
+# 合并 (Merge)
+yq '(.doc1 + .doc2)' doc1.yaml doc2.yaml       # 合并两个 YAML 文件 (Merge two documents)
+yq '(.doc1 * .doc2)' doc1.yaml doc2.yaml       # 深度合并 (Deep merge)
+yq --merge-strategy=override '(.doc1 * .doc2)' doc1.yaml doc2.yaml # 指定合并策略 (Override strategy)
+
+# 转换格式 (Convert Format)
+yq -o json '.PATH_EXPR' YAML_FILE               # 输出为 JSON 格式 (Output as JSON)
+yq -o xml '.PATH_EXPR' YAML_FILE                # 输出为 XML 格式 (Output as XML)
+yq -o csv '.PATH_EXPR' YAML_FILE                # 输出为 CSV 格式 (Output as CSV)
+yq -i --from-json JSON_FILE YAML_FILE           # 从 JSON 文件更新 YAML (Update YAML from JSON)
+yq -i --from-xml XML_FILE YAML_FILE             # 从 XML 文件更新 YAML (Update YAML from XML)
+yq -i --from-csv CSV_FILE YAML_FILE             # 从 CSV 文件更新 YAML (Update YAML from CSV)
+
+##############################################################################
+# JSON 操作 (JSON Operations) - 大部分 YAML 操作也适用于 JSON
+##############################################################################
+
+# 读取 JSON (Read JSON)
+yq '.name' JSON_FILE                           # 读取 JSON 文件中的 name 键值
+yq '.[0].value' JSON_FILE                      # 读取 JSON 数组中第一个元素的 value
+
+# 写入/更新 JSON (Write / Update JSON)
+yq '.name = "new-name"' -i JSON_FILE          # 更新 JSON 文件中的 name 键值
+yq '.[0].value = "new-value"' -i JSON_FILE     # 更新 JSON 数组中第一个元素的 value
+
+# 转换 JSON 为 YAML (Convert JSON to YAML)
+yq -o yaml '.' JSON_FILE                        # 将 JSON 转换为 YAML 输出
+
+##############################################################################
+# XML 操作 (XML Operations)
+##############################################################################
+
+# 读取 XML (Read XML)
+yq -x '.book.title' XML_FILE                    # 读取 XML 文件 book 节点的 title 子节点
+yq -x '.book[0].author' XML_FILE               # 读取 XML 数组中第一个 book 的 author
+
+# 写入/更新 XML (Write / Update XML)
+# XML 修改相对复杂，yq 对 XML 的支持不如 YAML/JSON 强大
+
+# 转换 XML 为 YAML/JSON (Convert XML to YAML/JSON)
+yq -o yaml -x '.' XML_FILE                     # 将 XML 转换为 YAML 输出
+yq -o json -x '.' XML_FILE                     # 将 XML 转换为 JSON 输出
+
+##############################################################################
+# CSV 操作 (CSV Operations)
+##############################################################################
+
+# 读取 CSV (Read CSV)
+yq -o csv '.[].column1' CSV_FILE                # 读取 CSV 文件中 column1 列
+yq -o csv '.[0]' CSV_FILE                       # 读取 CSV 文件第一行 (作为数组)
+
+# 写入/更新 CSV (Write / Update CSV)
+# CSV 修改相对复杂，yq 对 CSV 的支持不如 YAML/JSON 强大
+
+# 转换 CSV 为 YAML/JSON (Convert CSV to YAML/JSON)
+yq -o yaml -c -s '.' CSV_FILE                  # 将 CSV 转换为 YAML 输出 (单文档)
+yq -o json -c -s '.' CSV_FILE                  # 将 CSV 转换为 JSON 输出 (单文档)
+
+##############################################################################
+# 高级技巧 (Advanced Tips)
+##############################################################################
+
+# 使用 `env` 函数引用环境变量 (Use `env` function for environment variables)
+yq '.image = "docker.io/${env(DOCKER_REGISTRY)}/my-image:${env(VERSION)}"' -i deployment.yaml
+
+# 使用 `load` 函数加载外部 YAML/JSON 文件 (Use `load` function to load external files)
+yq '(.config + load("defaults.yaml"))' config.yaml # 合并当前配置和默认配置
+
+# 使用 `select` 和 `|=` 进行条件更新 (Conditional update with `select` and `|=`)
+yq '.items[] | select(.status == "Pending") |= .status = "Running"' -i data.yaml
+
+# 处理多文档 YAML (Process multi-document YAML)
+yq 'select(documentIndex == 0) .spec.containers[0].image' multi-doc.yaml # 选择第一个文档并提取镜像
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 示例 1: 读取 Kubernetes Deployment 的镜像名称
+# Example 1: Get image name from Kubernetes Deployment
+yq '.spec.template.spec.containers[0].image' deployment.yaml
+
+# 示例 2: 更新 Kubernetes Service 的端口号为 8080
+# Example 2: Update Kubernetes Service port to 8080
+yq '.spec.ports[0].port = 8080' -i service.yaml
+
+# 示例 3: 从 JSON 文件提取 'name' 字段并输出为 YAML
+# Example 3: Extract 'name' field from JSON file and output as YAML
+yq -o yaml '.name' data.json
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# yq 官方 GitHub: https://github.com/mikefarah/yq
+# yq 官方文档: https://mikefarah.gitbook.io/yq/
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

@@ -1,0 +1,101 @@
+##############################################################################
+# killall 命令速查表 (killall Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PROCESS_NAME:  进程名 (Process name, 例如: firefox, python)
+#   - SIGNAL:       信号名或信号编号 (Signal name or number, 例如: SIGTERM, 9, HUP)
+#                   常用信号: TERM (15, 默认), KILL (9), HUP (1),  可以 man 7 signal 查看完整信号列表
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+killall PROCESS_NAME                         # 杀死所有匹配进程名的进程 (默认发送 SIGTERM)
+killall -v PROCESS_NAME                      # 详细模式，显示被杀死的进程
+killall -w PROCESS_NAME                      # 等待进程终止后返回
+
+##############################################################################
+# 信号控制 (Signal Control)
+##############################################################################
+
+killall -s SIGNAL PROCESS_NAME               # 发送指定信号到进程 (信号名)
+killall -SIGNAL PROCESS_NAME                # 发送指定信号到进程 (信号名简写，例如 -KILL)
+killall -信号编号 PROCESS_NAME               # 发送指定信号到进程 (信号编号，例如 -9)
+
+# 常用信号:
+#   - SIGTERM (15):  终止 (Term, 默认信号, 允许进程清理资源后退出)
+#   - SIGKILL (9):   强行终止 (Kill, 立即终止进程, 无法清理资源)
+#   - SIGHUP (1):    挂起信号 (Hang Up, 常用于重新加载配置文件)
+
+killall -l                                   # 列出所有信号名 (List signal names)
+
+##############################################################################
+# 匹配选项 (Matching Options)
+##############################################################################
+
+killall -e PROCESS_NAME                      # 精确匹配进程名 (Exact match)
+killall -r REGEX                             # 正则表达式匹配进程名 (Regular expression match)
+
+##############################################################################
+# 用户和组过滤 (User and Group Filtering)
+##############################################################################
+
+killall -u USER PROCESS_NAME                 # 杀死指定用户拥有的进程 (User filter)
+killall -g GROUP PROCESS_NAME                # 杀死指定组拥有的进程 (Group filter)
+killall -o USER PROCESS_NAME                 # 杀死非指定用户拥有的进程 (Other user's processes)
+
+##############################################################################
+# 其他选项 (Other Options)
+##############################################################################
+
+killall -i PROCESS_NAME                      # 交互模式，杀死每个进程前需要确认 (Interactive mode)
+killall -q PROCESS_NAME                      # 静默模式，不输出任何信息 (Quiet mode)
+killall -V                                   # 显示版本信息 (Version)
+killall --help                               # 显示帮助信息 (Help)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 谨慎使用 killall:
+#   - killall 会杀死所有匹配进程名的进程，请务必确认进程名正确。
+#   - 尤其避免在不加任何选项的情况下使用高危进程名，例如 "sh", "bash", "python" 等。
+#   - 建议先使用 `ps aux | grep PROCESS_NAME` 或 `pgrep PROCESS_NAME` 确认要杀死的进程。
+
+# 信号选择:
+#   - 优先使用默认的 SIGTERM (不加 -s 参数)，允许进程优雅退出。
+#   - 仅在 SIGTERM 无效时，才考虑使用 SIGKILL 强制终止。
+
+# 结合 -v 选项进行调试:
+#   - 使用 `-v` 选项可以查看 killall 实际杀死了哪些进程，方便确认操作是否正确。
+
+# 等待进程退出:
+#   - 使用 `-w` 选项可以确保 killall 命令在所有目标进程退出后才结束，方便脚本编写。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 杀死所有名为 firefox 的进程 (优雅终止)
+#   killall firefox
+
+# 强制杀死所有名为 hung_process 的进程 (强制终止)
+#   killall -KILL hung_process
+#   killall -9 hung_process
+
+# 杀死用户 john 拥有的所有名为 test.py 的进程
+#   killall -u john test.py
+
+# 交互式杀死所有名为 temp_script.sh 的进程，逐个确认
+#   killall -i temp_script.sh
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://man7.org/linux/man-pages/man1/killall.1.html
+# https://www.computerhope.com/unix/ukillall.htm
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

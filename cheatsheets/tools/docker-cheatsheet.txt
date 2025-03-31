@@ -1,0 +1,204 @@
+##############################################################################
+# Docker 速查表 (Docker Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - CONTAINER_ID:  容器 ID (Container ID, 例如: a1b2c3d4e5f6)
+#   - IMAGE_NAME:    镜像名称 (Image Name, 例如: ubuntu, nginx:latest)
+#   - PORT:          端口号 (Port number, 例如: 80, 8080)
+#   - VOLUME_NAME:   数据卷名称 (Volume Name, 例如: my-data-volume)
+#   - NETWORK_NAME:  网络名称 (Network Name, 例如: my-network)
+
+##############################################################################
+# 容器管理 (Container Management)
+##############################################################################
+
+docker run [OPTIONS] IMAGE_NAME [COMMAND] [ARG...]   # 运行一个新的容器
+#   - -d, --detach        后台运行容器 (Detached mode)
+#   - -p, --publish PORT:PORT  端口映射 (Publish a container's port to the host)
+#   - -v, --volume HOST_DIR:CONTAINER_DIR  数据卷挂载 (Bind mount a volume)
+#   - --name NAME         指定容器名称 (Assign a name to the container)
+#   - -it                 交互式终端 (Interactive)
+#   - --rm                容器停止后自动删除 (Automatically remove the container when it exits)
+#   - --env KEY=VALUE     设置环境变量 (Set environment variables)
+
+docker ps [OPTIONS]                                  # 列出容器 (List containers)
+#   - -a, --all           显示所有容器 (Show all containers, including stopped ones)
+#   - -q, --quiet         只显示容器 ID (Only display container IDs)
+#   - -l, --latest        显示最近创建的容器 (Show the latest created container)
+
+docker stop CONTAINER_ID [CONTAINER_ID...]            # 停止一个或多个容器
+docker start CONTAINER_ID [CONTAINER_ID...]           # 启动一个或多个容器
+docker restart CONTAINER_ID [CONTAINER_ID...]         # 重启一个或多个容器
+docker kill CONTAINER_ID [CONTAINER_ID...]            # 强制停止一个或多个容器 (发送 SIGKILL)
+docker rm CONTAINER_ID [CONTAINER_ID...]              # 删除一个或多个容器
+#   - -f, --force         强制删除运行中的容器 (Force the removal of a running container)
+#   - -v                  删除容器关联的匿名数据卷 (Remove anonymous volumes associated with the container)
+
+docker exec [OPTIONS] CONTAINER_ID COMMAND [ARG...]   # 在运行的容器中执行命令
+#   - -it                 交互式终端 (Interactive)
+#   - -d, --detach        后台运行命令 (Detached mode)
+#   - -u, --user USER     以指定用户身份运行命令 (Username or UID)
+
+docker logs [OPTIONS] CONTAINER_ID                     # 获取容器日志
+#   - -f, --follow        跟踪日志输出 (Follow log output)
+#   - --tail N            显示末尾 N 行日志 (Number of lines to show from the end of the logs)
+#   - --since TIME        显示指定时间之后的日志 (Show logs since timestamp)
+
+docker inspect CONTAINER_ID                             # 查看容器详细信息 (JSON 格式)
+docker port CONTAINER_ID [PORT]                        # 列出端口映射或特定端口映射
+docker top CONTAINER_ID                               # 显示容器的进程信息 (类似 top 命令)
+docker stats [CONTAINER_ID...]                          # 显示容器资源使用统计信息
+docker diff CONTAINER_ID                              # 检查容器文件系统变更
+
+docker rename CONTAINER_ID NEW_NAME                     # 重命名容器
+docker pause CONTAINER_ID                              # 暂停容器中所有的进程
+docker unpause CONTAINER_ID                            # 恢复容器中所有的进程
+docker wait CONTAINER_ID                               # 阻塞直到容器停止运行
+
+docker cp CONTAINER_ID:SRC_PATH DEST_PATH             # 从容器复制文件到主机
+docker cp SRC_PATH CONTAINER_ID:DEST_PATH             # 从主机复制文件到容器
+
+##############################################################################
+# 镜像管理 (Image Management)
+##############################################################################
+
+docker pull IMAGE_NAME                                 # 从镜像仓库拉取镜像
+docker push IMAGE_NAME                                 # 推送镜像到镜像仓库 (需要登录)
+docker build [OPTIONS] PATH | URL | -                  # 从 Dockerfile 构建镜像
+#   - -t, --tag IMAGE_NAME[:TAG]  镜像名称和标签 (Name and optionally a tag in the 'name:tag' format)
+#   - -f, --file PATH/Dockerfile  指定 Dockerfile 路径 (Path to the Dockerfile)
+#   - --build-arg ARG=VALUE       设置构建时变量 (Set build-time variables)
+#   - --no-cache                不使用缓存构建 (Do not use cache when building the image)
+
+docker images [OPTIONS]                                # 列出镜像 (List images)
+#   - -a, --all           显示所有镜像 (Show all images, including intermediate image layers)
+#   - -q, --quiet         只显示镜像 ID (Only display image IDs)
+
+docker rmi IMAGE_NAME [IMAGE_NAME...]                   # 删除一个或多个镜像
+#   - -f, --force         强制删除镜像 (Force removal of the image)
+#   - --no-prune          不要删除未打标签的父镜像 (Do not delete untagged parents)
+
+docker tag SOURCE_IMAGE[:TAG] TARGET_IMAGE[:TAG]        # 创建镜像标签 (为镜像打别名)
+docker inspect IMAGE_NAME                               # 查看镜像详细信息 (JSON 格式)
+docker history IMAGE_NAME                               # 显示镜像历史 (层信息)
+docker save [OPTIONS] IMAGE_NAME [IMAGE_NAME...]        # 将镜像保存为 tar 归档文件
+#   - -o, --output FILENAME  输出文件名 (Output to a file, defaults to stdout)
+docker load [OPTIONS]                                  # 从 tar 归档文件加载镜像
+#   - -i, --input FILENAME   输入文件名 (Read from tar archive file, defaults to stdin)
+
+docker import [OPTIONS] FILE|URL [IMAGE_NAME[:TAG]]      # 从 tar 归档文件或 URL 导入镜像 (不包含历史层)
+docker export CONTAINER_ID                             # 将容器文件系统导出为 tar 归档文件
+
+##############################################################################
+# 数据卷管理 (Volume Management)
+##############################################################################
+
+docker volume create [OPTIONS] [VOLUME_NAME]             # 创建一个数据卷
+#   - -d, --driver DRIVER    指定卷驱动 (Specify volume driver name, default is 'local')
+#   - --label LABEL          设置卷标签 (Set metadata for a volume)
+#   - -o, --opt KEY=VALUE   驱动选项 (Driver specific options)
+
+docker volume ls [OPTIONS]                               # 列出数据卷
+#   - -q, --quiet         只显示数据卷名称 (Only display volume names)
+#   - -f, --filter FILTER   过滤输出 (Filter output based on conditions provided)
+
+docker volume inspect VOLUME_NAME [VOLUME_NAME...]       # 查看数据卷详细信息 (JSON 格式)
+docker volume rm VOLUME_NAME [VOLUME_NAME...]            # 删除一个或多个数据卷
+#   - -f, --force         强制删除数据卷 (Force the removal of one or more volumes)
+
+docker volume prune [OPTIONS]                              # 删除未被使用的本地数据卷
+#   - -f, --force         不提示确认 (Do not prompt for confirmation)
+#   - --filter filter     过滤输出 (Provide filter values)
+
+##############################################################################
+# 网络管理 (Network Management)
+##############################################################################
+
+docker network create [OPTIONS] NETWORK_NAME             # 创建一个网络
+#   - -d, --driver DRIVER    网络驱动类型 (Driver to manage the Network, default 'bridge')
+#   - --subnet SUBNET      子网 (Subnet in CIDR format that represents a network segment)
+#   - --gateway GATEWAY    网关 (Set custom gateway for the external layer of the network)
+
+docker network ls [OPTIONS]                               # 列出网络
+#   - -q, --quiet         只显示网络 ID (Only display network IDs)
+#   - -f, --filter FILTER   过滤输出 (Filter output based on conditions provided)
+
+docker network inspect NETWORK_NAME [NETWORK_NAME...]     # 查看网络详细信息 (JSON 格式)
+docker network rm NETWORK_NAME [NETWORK_NAME...]          # 删除一个或多个网络
+
+docker network connect [OPTIONS] NETWORK_NAME CONTAINER_ID  # 连接容器到网络
+#   - --alias ALIAS        网络内的别名 (Add network-scoped alias for the container)
+#   - --ip ADDR           指定 IP 地址 (Assign a specific IP address on the network)
+
+docker network disconnect [OPTIONS] NETWORK_NAME CONTAINER_ID # 断开容器与网络的连接
+
+docker network prune [OPTIONS]                              # 删除未被使用的网络
+#   - -f, --force         不提示确认 (Do not prompt for confirmation)
+#   - --filter filter     过滤输出 (Provide filter values)
+
+
+##############################################################################
+# 系统信息和工具 (System Info & Utilities)
+##############################################################################
+
+docker info                                           # 显示 Docker 系统信息
+docker version                                        # 显示 Docker 版本信息
+docker login [OPTIONS] [SERVER]                         # 登录到 Docker 镜像仓库
+docker logout [SERVER]                                 # 登出 Docker 镜像仓库
+
+docker system df                                       # 显示 Docker 磁盘使用情况
+docker system prune [OPTIONS]                             # 清理不再使用的 Docker 资源
+#   - -a, --all           清理所有未使用的镜像，不仅仅是悬虚镜像 (Remove all unused images not just dangling ones)
+#   - -f, --force         不提示确认 (Do not prompt for confirmation)
+#   --volumes             清理未使用的卷 (Prune volumes)
+
+docker events [OPTIONS]                                 # 获取 Docker 事件的实时流
+#   - -f, --filter filter   过滤事件 (Filter output based on conditions provided)
+#   --since TIME          显示指定时间之后的事件 (Show events since timestamp)
+#   --until TIME          显示指定时间之前的事件 (Stream events until this timestamp)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 -it 运行交互式容器:
+#   docker run -it ubuntu bash    # 运行 Ubuntu 容器并进入 bash shell
+
+# 使用 --rm 清理临时容器:
+#   docker run --rm ubuntu echo "Hello, Docker!" # 运行后自动删除容器
+
+# 使用别名简化常用命令 (例如在 .bashrc 或 .zshrc 中):
+#   alias dps='docker ps'
+#   alias drm='docker rm'
+#   alias dim='docker images'
+
+# 查找容器/镜像 ID 的简便方法 (使用 grep 和 awk):
+#   docker ps -q | grep 'nginx'  # 查找包含 "nginx" 的容器 ID
+#   docker images -q | grep 'ubuntu' # 查找包含 "ubuntu" 的镜像 ID
+
+# 使用 docker compose 管理多容器应用 (超出本速查表范围，请参考 docker-compose --help)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 运行一个简单的 Nginx Web 服务器 (端口映射到 host 8080):
+#   docker run -d -p 8080:80 --name my-nginx nginx:latest
+
+# 进入正在运行的 nginx 容器的 bash shell:
+#   docker exec -it my-nginx bash
+
+# 构建一个 Docker 镜像 (Dockerfile 在当前目录):
+#   docker build -t my-app:latest .
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://docs.docker.com/reference/cli/docker/
+# https://www.docker.com/101-tutorial/
+# https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

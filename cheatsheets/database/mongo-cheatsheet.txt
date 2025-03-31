@@ -1,0 +1,192 @@
+##############################################################################
+# MongoDB Shell 速查表 (mongo Cheatsheet)
+# MongoDB 官方 Shell 工具 `mongo` 常用命令速查
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - DATABASE:    数据库名称 (Database name)
+#   - COLLECTION:  集合名称 (Collection name)
+#   - FIELD:       字段名称 (Field name)
+#   - VALUE:       字段值 (Field value)
+#   - QUERY:       查询条件 (Query condition, JSON format)
+#   - UPDATE:      更新操作 (Update operation, JSON format)
+#   - DOCUMENT:    文档 (Document, JSON format)
+
+##############################################################################
+# 连接与认证 (Connection & Authentication)
+##############################################################################
+
+mongo                                         # 连接到本地 MongoDB 服务 (默认端口)
+mongo <host>                                    # 连接到指定主机 MongoDB 服务 (默认端口)
+mongo <host>:<port>                             # 连接到指定主机和端口
+mongo --port <port>                             # 连接到本地指定端口
+mongo --host <host> --port <port>               # 连接到指定主机和端口
+
+mongo -u <username> -p <password>               # 使用用户名密码认证 (连接后认证)
+mongo mongodb://<username>:<password>@<host>:<port>/<database>?authSource=<authDatabase> # 连接时认证 (URI 格式)
+mongo --authenticationDatabase <authDatabase> -u <username> -p <password> # 指定认证数据库
+
+##############################################################################
+# 数据库操作 (Database Operations)
+##############################################################################
+
+show dbs                                      # 显示所有数据库
+use <DATABASE>                                # 切换到指定数据库 (不存在则创建)
+db                                            # 显示当前数据库
+db.getName()                                  # 显示当前数据库名称
+db.dropDatabase()                             # 删除当前数据库 (谨慎使用)
+db.stats()                                    # 显示当前数据库状态信息
+
+##############################################################################
+# 集合操作 (Collection Operations)
+##############################################################################
+
+show collections                              # 显示当前数据库所有集合
+db.createCollection("<COLLECTION>")            # 创建集合
+db.<COLLECTION>.drop()                        # 删除集合 (谨慎使用)
+db.<COLLECTION>.stats()                       # 显示集合状态信息
+db.<COLLECTION>.getIndexes()                    # 显示集合索引
+db.<COLLECTION>.createIndex({ <FIELD>: 1 })    # 创建升序索引 (1 升序, -1 降序)
+db.<COLLECTION>.dropIndex({ <FIELD>: 1 })      # 删除索引
+db.<COLLECTION>.getShardDistribution()          # 查看分片集群集合分布 (Sharding)
+
+##############################################################################
+# 文档操作 (Document Operations - CRUD)
+##############################################################################
+
+# 插入文档 (Insert)
+db.<COLLECTION>.insertOne(<DOCUMENT>)          # 插入单个文档
+db.<COLLECTION>.insertMany([<DOCUMENT>, ...])   # 插入多个文档
+
+# 查询文档 (Read / Find)
+db.<COLLECTION>.find()                         # 查询所有文档
+db.<COLLECTION>.find(<QUERY>)                    # 根据条件查询文档
+db.<COLLECTION>.findOne(<QUERY>)                 # 查询单个文档 (第一个匹配)
+db.<COLLECTION>.find(<QUERY>).pretty()          # 美化输出查询结果 (易读)
+db.<COLLECTION>.find(<QUERY>).limit(<NUMBER>)    # 限制返回文档数量
+db.<COLLECTION>.find(<QUERY>).skip(<NUMBER>)     # 跳过指定数量的文档
+db.<COLLECTION>.find(<QUERY>).sort({ <FIELD>: 1 }) # 排序结果 (1 升序, -1 降序)
+db.<COLLECTION>.countDocuments(<QUERY>)          # 统计符合条件的文档数量
+
+# 更新文档 (Update)
+db.<COLLECTION>.updateOne(<QUERY>, <UPDATE>)     # 更新单个文档 (第一个匹配)
+db.<COLLECTION>.updateMany(<QUERY>, <UPDATE>)    # 更新多个文档
+db.<COLLECTION>.replaceOne(<QUERY>, <DOCUMENT>)  # 替换单个文档 (第一个匹配)
+# 更新操作符 (Update Operators): $set, $unset, $inc, $push, $pull, $addToSet 等
+# 例如: db.<COLLECTION>.updateOne({name: "oldName"}, {$set: {name: "newName"}})
+
+# 删除文档 (Delete)
+db.<COLLECTION>.deleteOne(<QUERY>)             # 删除单个文档 (第一个匹配)
+db.<COLLECTION>.deleteMany(<QUERY>)            # 删除多个文档
+db.<COLLECTION>.deleteMany({})                 # 删除集合中所有文档 (清空集合, 谨慎使用)
+
+##############################################################################
+# 查询操作符 (Query Operators)
+##############################################################################
+
+# 比较操作符: $eq (等于), $ne (不等于), $gt (大于), $gte (大于等于), $lt (小于), $lte (小于等于), $in (在集合中), $nin (不在集合中)
+# 逻辑操作符: $and, $or, $not, $nor
+# 元素操作符: $exists (字段存在), $type (字段类型)
+# 评估操作符: $regex (正则表达式), $mod (取模), $where (JavaScript 表达式)
+# 数组操作符: $all (匹配所有), $elemMatch (匹配数组元素), $size (数组大小)
+
+# 示例:
+# db.<COLLECTION>.find({ age: { $gt: 25 } })       # 查找年龄大于 25 的文档
+# db.<COLLECTION>.find({ name: { $in: ["Alice", "Bob"] } }) # 查找名字为 Alice 或 Bob 的文档
+# db.<COLLECTION>.find({ tags: { $all: ["mongodb", "database"] } }) # 查找 tags 数组包含 "mongodb" 和 "database" 的文档
+
+##############################################################################
+# 聚合管道 (Aggregation Pipeline)
+##############################################################################
+
+db.<COLLECTION>.aggregate([
+  { $match: <QUERY> },                       # 筛选文档 (类似 find)
+  { $group: { _id: "$<FIELD>", count: { $sum: 1 } } }, # 分组统计
+  { $sort: { count: -1 } },                  # 排序
+  { $limit: <NUMBER> },                     # 限制结果数量
+  { $project: { _id: 0, category: "$_id", count: 1 } } # 字段投影 (选择显示字段)
+  # 更多 stage: $lookup (join), $unwind (展开数组), $addFields, $bucket, $geoNear 等
+])
+
+# 示例:
+# db.<COLLECTION>.aggregate([
+#   { $group: { _id: "$category", totalSales: { $sum: "$sales" } } }
+# ]) # 按 category 分组统计 sales 总和
+
+##############################################################################
+# 用户管理 (User Management - 需要 admin 数据库权限)
+##############################################################################
+
+use admin
+db.createUser({ user: "<USERNAME>", pwd: "<PASSWORD>", roles: [ { role: "readWrite", db: "<DATABASE>" } ] }) # 创建用户
+db.updateUser("<USERNAME>", { pwd: "<NEW_PASSWORD>", roles: [ { role: "readWrite", db: "<DATABASE>" } ] }) # 更新用户密码/角色
+db.deleteUser("<USERNAME>")                                    # 删除用户
+db.changeUserPassword("<USERNAME>", "<NEW_PASSWORD>")             # 修改当前用户密码
+db.getUsers()                                                 # 列出所有用户
+db.getUser("<USERNAME>")                                       # 获取指定用户信息
+db.revokeRolesFromUser("<USERNAME>", [ { role: "read", db: "<DATABASE>" } ]) # 撤销用户角色
+
+# 常用角色 (Roles):
+#   - read, readWrite, dbOwner, userAdmin, dbAdmin, clusterAdmin, root (谨慎使用)
+
+##############################################################################
+# 备份与恢复 (Backup & Restore - 使用 mongodump 和 mongorestore 外部工具)
+##############################################################################
+
+# 备份 (mongodump) - 在 Shell 命令行执行 (非 mongo shell 内部)
+# mongodump --host <host> --port <port> --username <username> --password <password> --authenticationDatabase admin --db <DATABASE> --out <backup_directory>
+# 备份所有数据库: mongodump --host <host> --port <port> --username <username> --password <password> --authenticationDatabase admin --allDb --out <backup_directory>
+
+# 恢复 (mongorestore) - 在 Shell 命令行执行 (非 mongo shell 内部)
+# mongorestore --host <host> --port <port> --username <username> --password <password> --authenticationDatabase admin --db <DATABASE> <backup_directory>/<DATABASE>
+# 恢复所有数据库: mongorestore --host <host> --port <port> --username <username> --password <password> --authenticationDatabase admin --allDb <backup_directory>
+
+##############################################################################
+# Shell 辅助命令 (Shell Helpers)
+##############################################################################
+
+help                                          # 显示帮助信息
+exit 或 quit() 或 Ctrl+C                       # 退出 mongo shell
+cls 或 clear                                    # 清屏
+show profile                                  # 显示 profiling 信息 (性能分析)
+use <DATABASE>                                # 切换数据库并设置当前数据库上下文为 `db`
+
+# JavaScript 语法支持:
+# 可以执行 JavaScript 代码, 例如:
+# for (var i = 0; i < 10; i++) { db.test.insert({count: i}); }
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 .pretty() 美化 JSON 输出, 方便阅读
+# 使用 Tab 键自动补全命令和集合/字段名
+# 使用 Ctrl+R 反向搜索历史命令
+# 可以将 JavaScript 代码写在 .js 文件中, 然后在 mongo shell 中执行: load("script.js")
+# 使用 `--quiet` 参数启动 mongo shell 可以减少启动信息输出
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 连接本地 MongoDB, 切换到 "mydatabase" 数据库, 插入一个文档, 并查询:
+# mongo
+# use mydatabase
+# db.mycollection.insertOne({ name: "Example Document", value: 123 })
+# db.mycollection.find().pretty()
+
+# 创建索引加速查询:
+# use mydatabase
+# db.users.createIndex({ email: 1 })
+# db.users.find({ email: "test@example.com" }) # 查询将使用 email 索引
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# MongoDB 官方文档: https://www.mongodb.com/docs/
+# MongoDB Shell (mongo) 文档: https://www.mongodb.com/docs/mongodb-shell/
+# MongoDB Cheat Sheet (各种格式): 可以搜索 "mongodb cheat sheet" 获取更多资源
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

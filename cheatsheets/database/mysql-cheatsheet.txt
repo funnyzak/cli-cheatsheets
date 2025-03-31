@@ -1,0 +1,207 @@
+##############################################################################
+# MySQL 客户端速查表 (MySQL Client Cheatsheet)
+# MySQL Command-Line Client - 快速参考常用命令和选项
+# GitHub: https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - USER:       MySQL 用户名 (Username)
+#   - PASSWORD:   MySQL 用户密码 (Password)
+#   - DATABASE:   数据库名 (Database name)
+#   - HOST:       MySQL 服务器主机名或 IP 地址 (Hostname or IP Address)
+#   - PORT:       MySQL 服务器端口号 (Port number, 默认 3306)
+#   - FILE:       文件路径 (File path)
+#   - SQL_FILE:   SQL 脚本文件路径 (SQL script file path)
+#   - TABLE:      表名 (Table name)
+#   - COLUMN:     列名 (Column name)
+
+##############################################################################
+# 连接和基本操作 (Connection & Basic Usage)
+##############################################################################
+
+mysql -u USER -p                                # 连接到 MySQL 服务器 (提示输入密码)
+mysql -u USER -pPASSWORD                         # 连接到 MySQL 服务器 (密码在命令行中 - 不推荐)
+mysql -u USER -p -h HOST                         # 连接到指定主机上的 MySQL 服务器
+mysql -u USER -p -h HOST -P PORT                  # 连接到指定主机和端口的 MySQL 服务器
+mysql -u USER -p DATABASE                        # 连接到指定数据库
+mysql -u USER -p < SQL_FILE                       # 执行 SQL 脚本文件
+mysql --help                                     # 显示 mysql 客户端帮助信息
+mysql -V 或 mysql --version                       # 显示 mysql 客户端版本
+
+status                                         # 显示服务器和连接状态
+\s 或 status                                    # 显示服务器和连接状态 (简写)
+\q 或 quit 或 exit                              # 退出 mysql 客户端
+\c 或 clear                                     # 清除当前命令行
+\g                                             # 执行当前命令 (同分号 ';')
+\G                                             # 垂直格式化输出查询结果
+\h 或 help                                      # 显示 mysql 客户端命令帮助
+help contents                                  # 显示 MySQL 服务器帮助内容
+help COMMAND                                   # 显示特定 MySQL 命令的帮助 (例如 help select)
+
+##############################################################################
+# 数据库操作 (Database Operations)
+##############################################################################
+
+show databases;                                 # 显示所有数据库
+create database DATABASE;                         # 创建数据库
+create database if not exists DATABASE;          # 创建数据库 (如果不存在)
+drop database DATABASE;                           # 删除数据库
+drop database if exists DATABASE;            # 删除数据库 (如果存在)
+use DATABASE;                                   # 选择/使用数据库
+select database();                               # 显示当前使用的数据库
+
+##############################################################################
+# 表操作 (Table Operations)
+##############################################################################
+
+show tables;                                    # 显示当前数据库中的所有表
+describe TABLE; 或 desc TABLE;                    # 显示表结构 (列, 类型, 索引等)
+show create table TABLE;                         # 显示创建表的 SQL 语句
+create table TABLE (                             # 创建表
+    COLUMN1 datatype,
+    COLUMN2 datatype,
+    ...
+);
+drop table TABLE;                                 # 删除表
+drop table if exists TABLE;                      # 删除表 (如果存在)
+truncate table TABLE;                             # 清空表数据 (更快, 但不可回滚)
+rename table OLD_TABLE to NEW_TABLE;              # 重命名表
+alter table TABLE ...                             # 修改表结构 (添加列, 修改列类型等)
+# 示例: alter table TABLE add COLUMN datatype;
+# 示例: alter table TABLE modify COLUMN new_datatype;
+# 示例: alter table TABLE drop COLUMN;
+# 示例: alter table TABLE rename column OLD_COLUMN to NEW_COLUMN;
+
+##############################################################################
+# 数据操作 (Data Manipulation - CRUD)
+##############################################################################
+
+# SELECT - 查询数据
+select * from TABLE;                              # 查询表的所有数据
+select COLUMN1, COLUMN2 from TABLE;                # 查询指定列
+select * from TABLE where CONDITION;               # 带条件查询
+select * from TABLE order by COLUMN [ASC|DESC];    # 排序
+select * from TABLE limit N;                       # 限制结果行数
+select * from TABLE group by COLUMN;                # 分组
+select count(*), avg(COLUMN) from TABLE;           # 聚合函数 (计数, 平均值等)
+select distinct COLUMN from TABLE;                  # 去重查询
+
+# INSERT - 插入数据
+insert into TABLE (COLUMN1, COLUMN2, ...) values (value1, value2, ...); # 插入单行数据
+insert into TABLE values (value1, value2, ...);     # 插入单行数据 (列顺序与表结构一致)
+insert into TABLE (COLUMN1, COLUMN2, ...) values (value1_1, value2_1, ...), (value1_2, value2_2, ...); # 插入多行数据
+
+# UPDATE - 更新数据
+update TABLE set COLUMN1 = new_value1, COLUMN2 = new_value2 where CONDITION; # 更新数据
+
+# DELETE - 删除数据
+delete from TABLE where CONDITION;                  # 删除数据
+delete from TABLE;                                # 删除表的所有数据 (不推荐, 用 truncate table)
+
+##############################################################################
+# 用户和权限管理 (User & Permissions - 需要管理员权限)
+##############################################################################
+
+# 注意: 以下命令可能需要在 mysql 命令行中使用 `delimiter //` 修改分隔符
+
+show users;                                     # 显示所有用户 (MySQL 8.0+ 不直接显示密码)
+create user 'USER'@'HOST' identified by 'PASSWORD'; # 创建用户 (指定主机)
+create user 'USER'@'%' identified by 'PASSWORD';    # 创建用户 (允许任意主机连接)
+drop user 'USER'@'HOST';                         # 删除用户
+rename user 'OLD_USER'@'HOST' to 'NEW_USER'@'HOST'; # 重命名用户
+
+grant ALL PRIVILEGES on DATABASE.* to 'USER'@'HOST'; # 授予用户对数据库的所有权限
+grant SELECT, INSERT on DATABASE.TABLE to 'USER'@'HOST'; # 授予用户对特定表的特定权限
+revoke ALL PRIVILEGES on DATABASE.* from 'USER'@'HOST'; # 撤销用户的所有权限
+revoke SELECT on DATABASE.TABLE from 'USER'@'HOST';      # 撤销用户的特定权限
+flush privileges;                               # 刷新权限 (使权限更改生效)
+
+show grants for 'USER'@'HOST';                   # 显示用户的权限信息
+
+##############################################################################
+# 导入和导出数据 (Import & Export)
+##############################################################################
+
+# 导出数据到文件 (在 mysql 客户端外执行)
+# mysql -u USER -p -h HOST -P PORT -e "SELECT * FROM DATABASE.TABLE" > output.txt  # 导出到文本文件 (TAB 分隔)
+# mysql -u USER -p -h HOST -P PORT DATABASE -e "SELECT * FROM TABLE" > output.txt   # 导出到文本文件 (TAB 分隔)
+# mysqldump -u USER -p DATABASE > backup.sql                                     # 导出数据库为 SQL 备份文件 (包含结构和数据)
+# mysqldump -u USER -p -h HOST -P PORT DATABASE TABLE > table_backup.sql           # 导出特定表
+# mysqldump -u USER -p --no-data DATABASE > schema_backup.sql                       # 仅导出数据库结构 (不包含数据)
+# mysqldump -u USER -p --routines --triggers DATABASE > routines_triggers.sql       # 导出存储过程、函数和触发器
+
+# 导入数据
+source SQL_FILE;                                # 在 mysql 客户端中执行 SQL 文件 (例如备份文件)
+# mysql -u USER -p DATABASE < backup.sql                                        # 从 SQL 备份文件导入数据 (在 mysql 客户端外执行)
+# mysqlimport -u USER -p --local -d DATABASE -c column1,column2,... --fields-terminated-by=, --lines-terminated-by='\n' FILE.csv TABLE # 导入 CSV 文件 (mysqlimport 命令)
+load data infile 'FILE.txt' into table TABLE;    # 从文本文件导入数据 (mysql 客户端内)
+load data local infile 'FILE.txt' into table TABLE; # 从本地文件导入数据 (mysql 客户端内, 需要开启 local-infile)
+
+##############################################################################
+# 服务器管理 (Server Administration - 常用客户端命令)
+##############################################################################
+
+show processlist;                               # 显示当前服务器进程列表 (需要 SUPER 权限)
+kill PROCESS_ID;                                # 终止指定进程 (需要 SUPER 权限)
+show variables;                                 # 显示 MySQL 服务器系统变量
+show variables like 'variable_name%';            # 显示特定系统变量
+show global status;                              # 显示全局服务器状态信息
+show global status like 'status_name%';          # 显示特定全局状态信息
+show engines;                                   # 显示 MySQL 支持的存储引擎
+show plugins;                                   # 显示已安装的插件
+
+##############################################################################
+# 常用选项 (Useful Options - 连接时使用)
+##############################################################################
+
+-N 或 --skip-column-names                      # 查询结果不显示列名
+-B 或 --batch                                  # 批处理模式 (非交互式)
+-e "COMMAND"                                   # 执行单条 SQL 命令后退出
+--vertical                                     # 垂直格式化输出
+--html                                         # HTML 格式输出
+--xml                                          # XML 格式输出
+--table                                        # 表格格式输出
+--compress                                     # 使用压缩协议
+--reconnect                                    # 连接断开后自动重连
+--default-character-set=utf8mb4                # 设置默认字符集 (推荐 utf8mb4)
+--prompt="your_prompt> "                        # 自定义 mysql 客户端提示符
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 \. SQL_FILE;  执行 SQL 文件 (同 source SQL_FILE;)
+# 使用 Ctrl+R 搜索历史命令 (reverse-i-search)
+# 使用 mysql 命令行的 tab 补全功能 (补全命令, 表名, 列名等)
+# 使用 `pager less -S` 或 `pager more`  设置分页器，查看长输出 (例如 `pager less -S`, `\G`)
+# 使用 `nopager` 取消分页器
+# 使用 `--comments` 或 `-c` 选项在 mysql 命令行中执行带注释的 SQL 文件
+# 使用 `tee FILE` 将 mysql 客户端的输出同时保存到文件和屏幕 (例如 `tee output.log`, `notee` 取消)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 连接到本地 MySQL 服务器，选择 'mydatabase' 数据库，执行查询并退出
+# mysql -u root -p mydatabase -e "SELECT COUNT(*) FROM mytable;"
+
+# 导出 'mydatabase' 数据库到 backup.sql 文件
+# mysqldump -u root -p mydatabase > backup.sql
+
+# 从 backup.sql 文件导入数据到 'mydatabase' 数据库
+# mysql -u root -p mydatabase < backup.sql
+
+# 创建用户 'webapp' 允许从任意主机连接，密码 'securepass'，并授予 'webappdb' 数据库的所有权限
+# CREATE USER 'webapp'@'%' IDENTIFIED BY 'securepass';
+# GRANT ALL PRIVILEGES ON webappdb.* TO 'webapp'@'%';
+# FLUSH PRIVILEGES;
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# MySQL 官方文档: https://dev.mysql.com/doc/refman/en/
+# MySQL 客户端 mysql: https://dev.mysql.com/doc/refman/en/mysql.html
+# MySQL 实用速查表 (英文): https://www.petefreitag.com/cheatsheets/mysql-client/
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

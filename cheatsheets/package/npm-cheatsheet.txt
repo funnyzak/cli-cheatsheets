@@ -1,0 +1,166 @@
+##############################################################################
+# NPM Command 速查表 (NPM Command Cheatsheet)
+# Node.js 包管理器 (Node Package Manager)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - package_name:  Node.js 包名 (Package name, 例如: express, lodash)
+#   - version:       版本号 (Version, 例如: 1.2.3, latest, @next)
+#   - script_name:   package.json 中定义的脚本名 (Script name, 例如: start, build, test)
+#   - path:          文件或目录路径 (File or directory path, 例如: ./src, dist)
+
+##############################################################################
+# 包管理 (Package Management)
+##############################################################################
+
+npm install [package_name[@version]]             # 安装包 (最新版本或指定版本)
+npm i [package_name[@version]]                   # install 简写
+npm install                                     # 安装 package.json 中所有依赖
+npm install --save package_name                 # 安装并添加到 dependencies (生产依赖)
+npm install --save-dev package_name             # 安装并添加到 devDependencies (开发依赖)
+npm install --global package_name               # 全局安装包 (-g 简写)
+npm uninstall package_name                      # 卸载包
+npm un package_name                             # uninstall 简写
+npm uninstall --global package_name             # 全局卸载包
+npm update [package_name]                       # 更新包 (所有或指定包)
+npm outdated                                    # 检查过期的包
+npm list                                        # 列出已安装的包
+npm ls                                          # list 简写
+npm list --depth=0                              # 仅列出顶层依赖
+npm list --global                               # 列出全局安装的包
+
+# 提示:
+#   - 使用 `npm install <folder>` 安装本地包
+#   - 使用 `npm install <tarball>` 安装 tarball 包
+#   - 使用 `npm install <github username>/<repo>` 从 GitHub 安装
+
+##############################################################################
+# 脚本执行 (Script Execution)
+##############################################################################
+
+npm run script_name                             # 运行 package.json 中定义的脚本
+npm run dev                                     # 运行名为 "dev" 的脚本
+npm start                                       # 运行 "start" 脚本 (默认启动脚本)
+npm test                                        # 运行 "test" 脚本 (默认测试脚本)
+npm stop                                        # 运行 "stop" 脚本 (默认停止脚本)
+npm restart                                     # 运行 "restart" 脚本 (默认重启脚本)
+
+# 提示:
+#   - `npm run` 可以省略 `run`，例如 `npm start` 等同于 `npm run start`
+#   - 使用 `-- <args>` 传递参数给脚本，例如 `npm run test -- --watch`
+
+##############################################################################
+# 包信息查看 (Package Information)
+##############################################################################
+
+npm info package_name                           # 显示包的详细信息
+npm info package_name versions                  # 显示包的所有版本
+npm info package_name description               # 显示包的描述信息
+npm view package_name                           # 显示包信息 (简略版)
+npm show package_name                           # view 别名
+npm view package_name version                   # 显示包的最新版本
+npm view package_name dependencies              # 显示包的依赖
+npm repo package_name                           # 在浏览器中打开包的仓库
+npm home package_name                           # 在浏览器中打开包的主页
+npm docs package_name                           # 在浏览器中打开包的文档
+
+##############################################################################
+# Registry 交互 (Registry Interaction)
+##############################################################################
+
+npm publish                                     # 发布包到 npm registry (当前目录)
+npm login                                       # 登录 npm registry
+npm logout                                      # 登出 npm registry
+npm whoami                                      # 显示当前登录用户
+npm adduser                                     # 创建 npm 用户
+npm owner ls package_name                       # 列出包的维护者
+npm owner add <user> package_name               # 添加包维护者
+npm owner rm <user> package_name                # 移除包维护者
+npm deprecate package_name[@version] "<message>"  # 废弃包的指定版本或所有版本
+
+##############################################################################
+# 缓存管理 (Cache Management)
+##############################################################################
+
+npm cache clean --force                         # 清理 npm 缓存 (强制清理)
+npm cache verify                                # 验证缓存完整性
+npm cache ls                                    # 列出缓存内容 (不常用)
+
+# 提示:
+#   - 清理缓存通常在遇到安装问题时使用
+
+##############################################################################
+# 配置管理 (Configuration Management)
+##############################################################################
+
+npm config get key                              # 获取 npm 配置项的值
+npm config get registry                         # 获取 registry 配置
+npm config set key value                          # 设置 npm 配置项的值
+npm config set init.author.name "Your Name"      # 设置作者名字
+npm config list                                   # 列出所有 npm 配置
+npm config edit                                   # 编辑 npm 配置文件
+
+# 提示:
+#   - npm 配置文件通常位于 `~/.npmrc`
+
+##############################################################################
+# 初始化与创建 (Initialization & Creation)
+##############################################################################
+
+npm init                                        # 初始化 package.json (交互式)
+npm init -y                                     # 初始化 package.json (默认配置)
+npm create <initializer> [app-name]             # 使用脚手架创建项目 (例如: npm create vite my-app)
+npm create vite my-vue-app                      # 使用 vite 创建 Vue 应用示例
+
+# 提示:
+#   - `npm init <initializer>` 可以使用各种官方或社区维护的脚手架
+
+##############################################################################
+# 其他实用命令 (Other Useful Commands)
+##############################################################################
+
+npm doctor                                      # 检查 npm 和 Node.js 环境问题
+npm help command                                # 查看命令的帮助信息 (例如: npm help install)
+npm -v                                          # 查看 npm 版本
+npm version                                     # 查看 npm 版本 (同上)
+npm -g root                                     # 查看全局安装目录
+npm root -g                                     # 查看全局安装目录 (同上)
+npm shrinkwrap                                  # 生成 npm-shrinkwrap.json (锁定依赖版本)
+npm ci                                          # 从 package-lock.json 或 npm-shrinkwrap.json 安装 (CI 场景推荐)
+npm audit                                       # 检查项目依赖的安全漏洞
+npm audit fix                                     # 尝试修复安全漏洞 (自动更新)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 npm ci 提高 CI/CD 环境安装速度和一致性 (基于 lock 文件)
+# 使用 --save-exact 选项安装精确版本依赖 (例如: npm install package_name --save-exact)
+# 利用 npx 执行本地未安装的包 (例如: npx create-react-app my-app)
+# 使用 npm workspaces 管理 monorepo 项目 (需要 npm 7+)
+# 结合 scripts 和 package.json 实现自动化构建、测试和部署流程
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 初始化项目并安装 express 作为生产依赖:
+#   npm init -y
+#   npm install express --save
+
+# 运行开发服务器 (假设 package.json 中 scripts 定义了 "dev" 脚本):
+#   npm run dev
+
+# 清理缓存并重新安装所有依赖 (解决安装问题时常用):
+#   rm -rf node_modules package-lock.json && npm cache clean --force && npm install
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://docs.npmjs.com/cli/v9/commands
+# https://www.npmjs.com/
+# https://cheatography.com/davechild/cheat-sheets/npm/
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

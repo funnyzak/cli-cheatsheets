@@ -1,0 +1,197 @@
+##############################################################################
+# SSH 命令速查表 (SSH Command Cheatsheet)
+# 安全 Shell 客户端，用于远程登录和执行命令
+# Secure Shell Client for Remote Login and Command Execution
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - USER:     远程用户名 (Remote Username)
+#   - HOST:     远程主机名或 IP 地址 (Remote Hostname or IP Address)
+#   - PORT:     SSH 端口号 (SSH Port Number, 默认为 22)
+#   - FILE:     本地或远程文件路径 (Local or Remote File Path)
+#   - KEYFILE:  私钥文件路径 (Private Key File Path)
+
+##############################################################################
+# 基本连接 (Basic Connection)
+##############################################################################
+
+ssh USER@HOST                                 # 连接到远程主机 (默认端口 22)
+ssh USER@HOST -p PORT                         # 连接到指定端口
+ssh HOST                                    # 使用当前用户名连接 (如果与远程用户名相同)
+ssh -l USER HOST                              # 指定用户名连接 (旧语法，但仍然可用)
+ssh -v USER@HOST                              # 详细模式连接 (Verbose mode, 用于调试)
+ssh -vv USER@HOST                             # 更详细模式 (Very verbose mode)
+ssh -vvv USER@HOST                            # 最详细模式 (Debug mode)
+
+# 提示:
+#   - 首次连接未知主机时，会提示是否添加主机密钥到 known_hosts 文件，输入 yes 确认。
+#   - 可以使用 IP 地址或域名作为 HOST。
+
+##############################################################################
+# 免密登录 (Passwordless Login - Key-based Authentication)
+##############################################################################
+
+ssh-keygen -t rsa                             # 生成 RSA 密钥对 (公钥 id_rsa.pub, 私钥 id_rsa)
+ssh-copy-id USER@HOST                          # 将公钥复制到远程主机的 authorized_keys
+ssh USER@HOST                                 # 免密码登录 (前提是已配置公钥)
+
+# 提示:
+#   - 密钥对默认保存在 ~/.ssh 目录。
+#   - ssh-copy-id 脚本简化了公钥复制过程，需要远程主机已启动 SSH 服务。
+#   - 也可以手动复制公钥内容到远程主机的 ~/.ssh/authorized_keys 文件。
+
+##############################################################################
+# 指定密钥文件 (Specify Key File)
+##############################################################################
+
+ssh -i KEYFILE USER@HOST                       # 使用指定的私钥文件登录
+ssh -i ~/.ssh/my_private_key USER@HOST          # 示例: 使用 my_private_key 登录
+
+# 提示:
+#   - 当私钥文件名不是默认的 id_rsa 或 id_dsa 时，需要使用 -i 选项指定。
+#   - 可以使用多个 -i 选项，ssh 会尝试所有指定的密钥。
+
+##############################################################################
+# 执行远程命令 (Execute Remote Command)
+##############################################################################
+
+ssh USER@HOST COMMAND                         # 在远程主机执行命令并返回结果
+ssh USER@HOST "df -h"                          # 示例: 远程执行 df -h 命令
+ssh USER@HOST "ls -l /home/user"               # 示例: 远程执行 ls 命令
+ssh USER@HOST "command1; command2"             # 执行多个命令 (用分号分隔)
+
+# 提示:
+#   - 命令需要用引号包裹，特别是包含空格或特殊字符时。
+#   - 远程命令的输出会显示在本地终端。
+
+##############################################################################
+# 端口转发 (Port Forwarding / Tunneling)
+##############################################################################
+
+# 本地端口转发 (Local Port Forwarding, -L):
+#   本地端口 -> SSH 服务器 -> 目标主机:目标端口
+ssh -L LOCAL_PORT:TARGET_HOST:TARGET_PORT USER@SSH_SERVER
+ssh -L 8080:localhost:80 USER@HOST           # 示例: 本地 8080 端口转发到远程主机 HOST 的 80 端口
+
+# 远程端口转发 (Remote Port Forwarding, -R):
+#   远程 SSH 服务器端口 -> SSH 服务器 -> 本地主机:本地端口
+ssh -R REMOTE_PORT:LOCAL_HOST:LOCAL_PORT USER@SSH_SERVER
+ssh -R 8080:localhost:80 USER@HOST           # 示例: 远程主机 8080 端口转发到本地主机的 80 端口
+
+# 动态端口转发 (Dynamic Port Forwarding, -D):
+#   本地端口 -> SSH 服务器 (SOCKS 代理)
+ssh -D LOCAL_PORT USER@SSH_SERVER
+ssh -D 1080 USER@HOST                         # 示例: 本地 1080 端口作为 SOCKS 代理
+
+# 提示:
+#   - 端口转发用于穿透防火墙或访问内网资源。
+#   - 本地端口转发常用于访问远程服务器的服务，远程端口转发常用于从外网访问内网服务。
+#   - 动态端口转发创建 SOCKS5 代理，可用于浏览器或其他应用。
+
+##############################################################################
+# 文件传输 (File Transfer - scp, sftp)
+##############################################################################
+
+# scp (Secure Copy): 基于 SSH 的文件复制
+#   scp [选项] [USER@]SOURCE_HOST:FILE [USER@]TARGET_HOST:FILE
+scp FILE USER@HOST:REMOTE_DIR                  # 上传本地文件到远程目录
+scp USER@HOST:REMOTE_FILE LOCAL_DIR             # 下载远程文件到本地目录
+scp -r LOCAL_DIR USER@HOST:REMOTE_DIR           # 递归上传本地目录
+scp -r USER@HOST:REMOTE_DIR LOCAL_DIR          # 递归下载远程目录
+
+# sftp (Secure File Transfer Protocol): 交互式文件传输
+sftp USER@HOST                                # 启动 sftp 交互式会话
+# sftp 命令 (常用):
+#   get REMOTE_FILE [LOCAL_FILE]               # 下载文件
+#   put LOCAL_FILE [REMOTE_FILE]               # 上传文件
+#   ls [REMOTE_PATH]                          # 列出远程目录
+#   cd REMOTE_PATH                            # 切换远程目录
+#   lcd LOCAL_PATH                             # 切换本地目录
+#   pwd                                       # 显示远程当前目录
+#   lpwd                                      # 显示本地当前目录
+#   bye / exit / quit                         # 退出 sftp
+
+# 提示:
+#   - scp 更适合简单的文件复制，sftp 提供更丰富的功能，如目录浏览、交互式操作。
+#   - 可以使用 -P 选项为 scp 和 sftp 指定端口。
+
+##############################################################################
+# SSH 配置 (SSH Configuration - ~/.ssh/config)
+##############################################################################
+
+# ~/.ssh/config 文件允许配置 SSH 客户端行为，简化连接命令
+# 示例 ~/.ssh/config:
+# Host my-server
+#     HostName server.example.com
+#     User myuser
+#     Port 2222
+#     IdentityFile ~/.ssh/my_private_key
+
+# 配置后，只需使用 `ssh my-server` 即可连接到 server.example.com:2222，并使用 myuser 用户和指定的私钥。
+
+# 常用配置项:
+#   Host:             主机别名
+#   HostName:         实际主机名或 IP 地址
+#   User:             用户名
+#   Port:             端口号
+#   IdentityFile:     私钥文件路径
+#   ProxyCommand:     SSH 代理命令
+#   ForwardAgent:     是否启用 SSH Agent 转发
+#   ServerAliveInterval:  保持连接活跃的间隔 (秒)
+#   ServerAliveCountMax:  服务器无响应超时次数
+
+# 提示:
+#   - 配置文件可以大大简化 SSH 连接，特别是当需要连接多个不同配置的服务器时。
+#   - 使用 `man ssh_config` 查看完整配置选项。
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 后台运行 SSH 会话 (并保持会话):
+#   nohup ssh USER@HOST COMMAND &
+#   screen 或 tmux 会话管理工具更强大，推荐使用。
+
+# 使用 ControlMaster 和 ControlPersist 加速 SSH 连接复用:
+#   在 ~/.ssh/config 中配置:
+#   Host *
+#       ControlMaster auto
+#       ControlPersist 10m
+#       ControlPath ~/.ssh/control-%r@%h:%p
+#   首次连接后，后续连接同一主机将复用已有连接，加速连接建立。
+
+# SSH Agent 转发 (-A):
+#   ssh -A USER@HOST
+#   允许在远程主机上使用本地 SSH Agent 中的密钥，方便跳板机场景。
+#   注意安全风险，谨慎使用。
+
+# 使用 -t 选项强制分配伪终端 (Force pseudo-tty allocation):
+#   ssh -t USER@HOST COMMAND
+#   有时用于解决远程命令交互式输入问题，或强制分配 TTY。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 示例 1: 连接到 example.com 主机，用户名为 ubuntu，使用私钥 ~/.ssh/id_rsa
+#   ssh -i ~/.ssh/id_rsa ubuntu@example.com
+
+# 示例 2: 本地 8080 端口转发到远程主机 192.168.1.100 的 80 端口，SSH 服务器为 jump.example.com
+#   ssh -L 8080:192.168.1.100:80 user@jump.example.com
+
+# 示例 3: 下载远程主机 user@remote.com 的 /home/user/data.txt 文件到本地 /tmp 目录
+#   scp user@remote.com:/home/user/data.txt /tmp/
+
+# 示例 4: 使用配置文件 ~/.ssh/config 中定义的 "my-server" 别名连接
+#   ssh my-server
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://www.ssh.com/ssh/command/
+# https://man.openbsd.org/ssh.1
+# https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

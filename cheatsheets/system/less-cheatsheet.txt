@@ -1,0 +1,151 @@
+##############################################################################
+# less 命令速查表 (less Command Cheatsheet)
+# 用于在终端中浏览文本文件，功能强大的分页器
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - [count]:  数字，表示重复次数或行数 (Number, repetition count or line number)
+#   - [file]:   文件名 (Filename)
+#   - [pattern]:  搜索模式，支持正则表达式 (Search pattern, supports regular expressions)
+
+##############################################################################
+# 基本导航 (Basic Navigation)
+##############################################################################
+
+Space, PgDn, ^V, f            # 向下翻页 (Scroll down one page)
+b, PgUp, ^B, ESC-v            # 向上翻页 (Scroll up one page)
+j, Down Arrow, CR, e, ^E      # 向下滚动一行 (Scroll down one line)
+k, Up Arrow, y, ^Y, ^K        # 向上滚动一行 (Scroll up one line)
+d, ^D                        # 向下滚动半页 (Scroll down half page)
+u, ^U                        # 向上滚动半页 (Scroll up half page)
+g, <, ESC-<, 1G               # 跳到文件开头 (Go to beginning of file)
+G, >, ESC->                   # 跳到文件末尾 (Go to end of file)
+[count]g, [count]G            # 跳到文件第 [count] 行 (Go to line number [count])
+%                             # 跳到文件开头/末尾的另一端 (Go to beginning/end of file, toggle)
+
+##############################################################################
+# 搜索 (Searching)
+##############################################################################
+
+/pattern                       # 向前搜索 pattern (Forward search for pattern)
+?pattern                       # 向后搜索 pattern (Backward search for pattern)
+n                             # 查找下一个匹配项 (Find next match)
+N, Shift-n                    # 查找上一个匹配项 (Find previous match)
+ESC-u                         # 取消高亮所有匹配项 (Unhighlight all matches)
+ESC-U                         # 恢复高亮所有匹配项 (Re-highlight all matches)
+! pattern                     # 搜索不匹配 pattern 的行 (Search lines NOT matching pattern)
+& pattern                     # 仅显示匹配 pattern 的行 (Display ONLY lines matching pattern)
+
+# 提示:
+#   - 搜索支持正则表达式 (Regular expressions are supported)
+#   - 搜索时忽略大小写: -i 选项或运行时按 -i (Case-insensitive search: -i option or -i at runtime)
+
+##############################################################################
+# 标记和导航 (Marks and Navigation)
+##############################################################################
+
+ma - mz                         # 标记当前位置，使用字母 a-z (Mark current position, using letters a-z)
+'a - 'z                        # 跳转到标记 a-z 的位置 (Go to mark a-z position)
+'' (双引号)                     # 返回上次跳转前的位置 (Return to position before last jump)
+^                             # 跳到当前行第一个非空字符 (Go to first non-blank character of current line)
+ESC-)                         # 跳到下一个括号 (Jump to next parenthesis)
+ESC-(                         # 跳到上一个括号 (Jump to previous parenthesis)
+{                             # 跳到上一个 { (Jump to previous { )
+}                             # 跳到下一个 } (Jump to next } )
+[                             # 跳到上一个 [ (Jump to previous [ )
+]                             # 跳到下一个 ] (Jump to next ] )
+
+##############################################################################
+# 文件操作 (File Operations)
+##############################################################################
+
+:n                            # 浏览下一个文件 (Next file)
+:p                            # 浏览上一个文件 (Previous file)
+:x                            # 浏览第一个文件 (First file)
+:d                            # 删除当前文件 (Delete current file from list)
+:e [file]                      # 浏览新文件 (Examine new file)
+^X^V, v                        # 使用 $EDITOR 编辑当前文件 (Edit current file with $EDITOR)
+s [file]                      # 保存当前文件到 [file]，默认同名 (Save current file to [file], default same name)
+| <shell_command>             # 将当前文件内容管道输出到 shell 命令 (Pipe current file to shell command)
+! <shell_command>             # 执行 shell 命令 (Execute shell command)
+
+##############################################################################
+# 选项 (Options - Runtime Commands)
+##############################################################################
+
+-i                            # 切换忽略/区分搜索大小写 (Toggle ignore/respect case in searches)
+-g                            # 切换高亮/不高亮搜索匹配项 (Toggle highlight/unhighlight search matches)
+-N                            # 切换显示/隐藏行号 (Toggle display/hide line numbers)
+-m                            # 切换显示/隐藏更多提示 (Toggle display/hide more prompts)
+-r                            # 切换 raw mode (显示控制字符) (Toggle raw mode (display control chars))
+-x                            # 切换关闭/开启 tab 扩展 (Toggle expand/not expand tabs)
+-S                            # 切换单行/多行显示 (Toggle single-line/multi-line display, chop long lines)
+=                             # 显示当前文件名和行号 (Display current filename and line number)
+z [count]                     # 窗口大小设置为 [count] 行 (Set window size to [count] lines)
+-[num]                        # 设置滚动行数为 [num] 行 (Set scroll lines to [num] lines)
+_                             # 重新显示当前行，并将当前行置于窗口中央 (Redraw screen, center current line)
+^L                            # 重新显示屏幕 (Redraw screen)
+
+##############################################################################
+# 命令行选项 (Command Line Options)
+##############################################################################
+
+less [options] [file ...]
+
+# 常用选项:
+#   -N, --行号: 显示行号 (Display line numbers)
+#   -i, --忽略大小写: 搜索时忽略大小写 (Ignore case in searches)
+#   -S, --单行: 单行显示长行，截断 (Chop long lines, single-line display)
+#   -X, --无init:  不发送 termcap 初始化和反初始化字符串到终端 (Don't send termcap init/deinit strings)
+#   -+, --从行号开始: 从指定行号开始显示 (Start displaying from specified line number)
+#   -n, --无缓冲:  强制无缓冲输出 (Force no buffering of output)
+#   -f, --强制:  强制打开特殊文件，如管道 (Force open non-regular files, even pipes)
+#   -r, --raw-control-chars: 显示 "raw" 控制字符 (Display "raw" control characters)
+#   -c, --clear-screen: 每次翻页前清屏 (Clear screen before each page)
+#   -e, --quit-at-eof: 到达文件末尾后自动退出 (Quit automatically at end of file)
+#   -E, --QUIT-AT-EOF: 到达文件末尾两次后自动退出 (Quit automatically at end of file TWICE)
+#   -q, --silent, --quiet: 静默模式，不响铃 (Silent mode, no ringing bell)
+#   -Q, --QUIET-IF-ONE-SCREEN: 如果文件内容少于一屏，则静默模式 (Quiet if file fits on one screen)
+#   -s, --squeeze-blank-lines: 压缩空行 (Squeeze multiple blank lines into one)
+#   -w, --hilite-search, --highlight-search: 高亮搜索匹配项 (Highlight search matches)
+#   -x[num], --tabs=[num]: 设置 tab 宽度为 [num] (Set tab width to [num])
+#   --help: 显示帮助信息 (Display help information)
+#   --version: 显示版本信息 (Display version information)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 less -N filename | grep pattern  在 less 中显示行号并结合 grep 过滤
+# 使用 less '+/pattern' filename  打开文件并直接搜索 pattern
+# 使用 less -p pattern filename  打开文件并直接搜索 pattern (POSIX 兼容)
+# 使用 less -o outputfile filename  将 less 的输出保存到 outputfile (通常用于管道)
+# 使用 less -m filename 查看更详细的状态信息 (More prompts)
+# 使用 less -F filename 如果文件小于一屏则直接显示全部内容，否则分页
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 查看文件并显示行号:
+#   less -N my_log.txt
+
+# 打开文件并搜索 "error" (忽略大小写):
+#   less -i +/error my_log.txt
+
+# 查看命令的输出并分页:
+#   command | less
+
+# 查看多个文件:
+#   less file1.txt file2.log file3.conf
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# less 官方手册页: man less
+# GNU less 官方网站: https://www.gnu.org/software/less/
+# 鸟哥的 Linux 私房菜 - less 命令: https://linux.vbird.org/linux_basic/0320bash_part2.php#less
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

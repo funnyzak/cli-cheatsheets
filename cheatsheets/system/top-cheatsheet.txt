@@ -1,0 +1,158 @@
+##############################################################################
+# top 命令速查表 (top Command Cheatsheet)
+# 实时系统监视器 (Real-time system monitor)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PID:    进程 ID (Process ID)
+#   - USER:   进程所有者用户名 (Username of process owner)
+#   - PR:     优先级 (Priority)
+#   - NI:     nice 值 (Nice value, 负值更高优先级)
+#   - VIRT:   虚拟内存使用量 (Virtual memory usage)
+#   - RES:    常驻内存使用量 (Resident memory usage)
+#   - SHR:    共享内存使用量 (Shared memory usage)
+#   - S:      进程状态 (Process Status: S=休眠, R=运行, Z=僵尸, T=停止)
+#   - %CPU:   CPU 使用率 (CPU usage percentage)
+#   - %MEM:   内存使用率 (Memory usage percentage)
+#   - TIME+:  CPU 时间累积 (Cumulative CPU time)
+#   - COMMAND: 命令名或命令行 (Command name or command line)
+
+##############################################################################
+# 基本操作 & 导航 (Basic Operations & Navigation)
+##############################################################################
+
+top                                         # 启动 top (默认排序: CPU 使用率)
+top -d <秒>                                   # 设置刷新间隔 (例如: top -d 2  每 2 秒刷新)
+top -u <用户名>                                 # 监控指定用户的进程 (例如: top -u www-data)
+top -p <PID,PID,...>                           # 监控指定 PID 的进程 (例如: top -p 1234,5678)
+top -n <次数>                                   # 运行指定次数后退出 (例如: top -n 5  运行 5 次后退出)
+top -b                                        # 批处理模式 (非交互式输出, 适合脚本)
+top -H                                        # 显示线程 (Threads mode)
+top -i                                        # 忽略闲置和僵尸进程 (显示活动进程)
+top -c                                        # 显示完整命令行 (默认只显示命令名)
+top -s                                        # 安全模式启动 (禁用一些潜在危险的命令)
+top -S                                        # 累积模式 (CPU 时间累积显示)
+
+# 交互命令 (在 top 运行时按键):
+#   h 或 ?                                     # 显示帮助信息 (Help)
+#   q                                         # 退出 top (Quit)
+#   <空格>                                      # 立即刷新 (立即更新显示)
+#   k                                         # 杀死进程 (Kill process)
+#   r                                         # 重新设置进程优先级 (Renice process)
+#   n 或 #                                     # 修改显示进程数 (Change number of processes to display)
+#   P                                         # 按 CPU 使用率排序 (Sort by CPU usage, 默认)
+#   M                                         # 按内存使用率排序 (Sort by Memory usage)
+#   N                                         # 按 PID 排序 (Sort by PID)
+#   T                                         # 按 CPU 时间累积排序 (Sort by CPU Time)
+#   a                                         # 按 USER 排序 (Sort by USER)
+#   u                                         # 显示指定用户的进程 (Filter by User)
+#   o                                         # 过滤显示进程 (Filter processes by other criteria)
+#   c                                         # 切换显示命令行/命令名 (Toggle command line/command name)
+#   H                                         # 切换线程模式 (Toggle Threads mode)
+#   i                                         # 切换忽略闲置/僵尸进程 (Toggle idle/zombie processes)
+#   s                                         # 修改刷新间隔 (Change refresh interval)
+#   l                                         # 切换显示平均负载和运行时间 (Toggle load average and uptime)
+#   m                                         # 切换显示内存信息 (Toggle memory information)
+#   t                                         # 切换显示进程/CPU 状态 (Toggle task/CPU states)
+#   1                                         # 切换显示单核/多核 CPU 信息 (Toggle single/all CPU cores - 数字1)
+#   W                                         # 保存当前配置到 ~/.toprc (Write current configuration to ~/.toprc)
+
+##############################################################################
+# 排序 (Sorting)
+##############################################################################
+
+# 默认启动时按 CPU 使用率排序 (Default sort is by CPU usage)
+# 交互模式下按键切换排序 (Use keys in interactive mode to change sorting)
+
+# P        :  按 %CPU 排序 (Sort by CPU usage)
+# M        :  按 %MEM 排序 (Sort by Memory usage)
+# N        :  按 PID 排序 (Sort by PID)
+# T        :  按 TIME+ 排序 (Sort by CPU Time)
+# a        :  按 USER 排序 (Sort by USER)
+# < 和 >    :  切换排序字段 (Cycle sort fields, 按当前排序字段的前后字段排序)
+# R        :  反向排序 (Reverse sort order)
+
+##############################################################################
+# 过滤和选择进程 (Filtering and Process Selection)
+##############################################################################
+
+# u <用户名> :  只显示指定用户的进程 (Show processes for specific user)
+# o <字段> <操作符> <值> :  高级过滤 (Advanced filtering, 例如: o %MEM > 10  显示内存占用超过 10% 的进程)
+#     常用字段 (Common fields): PID, USER, PR, NI, VIRT, RES, SHR, S, %CPU, %MEM, TIME+, COMMAND
+#     常用操作符 (Common operators): ==, !=, >, <, >=, <=, =~ (正则匹配), !~ (正则不匹配)
+#     示例 (Examples):
+#         o USER == root                      # 显示 root 用户的进程
+#         o %CPU > 50                       # 显示 CPU 使用率超过 50% 的进程
+#         o COMMAND =~ nginx                  # 显示命令名包含 nginx 的进程
+#         o S != S                          # 显示状态不是休眠的进程 (例如运行或停止)
+
+# i          :  切换忽略闲置和僵尸进程 (Toggle ignore idle/zombie processes)
+
+##############################################################################
+# 显示选项 (Display Options)
+##############################################################################
+
+# c          :  切换显示命令行/命令名 (Toggle command line/command name)
+# H          :  切换线程模式 (Toggle Threads mode)
+# l          :  切换显示平均负载和运行时间 (Toggle load average and uptime)
+# m          :  切换显示内存信息 (Toggle memory information)
+# t          :  切换显示进程/CPU 状态 (Toggle task/CPU states)
+# 1          :  切换显示单核/多核 CPU 信息 (Toggle single/all CPU cores - 数字1)
+
+##############################################################################
+# 进程管理 (Process Management - 交互模式)
+##############################################################################
+
+# k          :  杀死进程 (Kill process)
+#     输入要杀死的 PID, 然后输入信号 (默认 15, TERM, 可用 9, KILL 强制杀死)
+#     (Enter PID to kill, then signal - default 15 (TERM), use 9 (KILL) for force kill)
+
+# r          :  重新设置进程优先级 (Renice process)
+#     输入要 renice 的 PID, 然后输入新的 nice 值 (范围 -20 到 19, 负值更高优先级)
+#     (Enter PID to renice, then new nice value - range -20 to 19, negative value higher priority)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 自定义配置文件 (~/.toprc):
+#   - top 启动时会读取 ~/.toprc 文件，保存上次的配置 (排序, 显示字段等)
+#   - 使用 'W' 命令保存当前配置到 ~/.toprc
+
+# 批处理模式用于脚本 (Batch mode for scripting):
+#   top -b -n 1 > top_output.txt       # 运行一次 top 并将输出保存到文件
+#   可以使用 grep, awk, sed 等工具分析批处理输出
+
+# 监控特定资源 (Monitor specific resources):
+#   - 使用排序功能 (P, M, T) 快速定位 CPU/内存/时间 消耗高的进程
+#   - 使用过滤功能 (u, o) 聚焦关注的进程
+
+# 结合 watch 命令 (Combine with watch command - 虽然通常没必要，top 本身就是实时更新):
+#   watch -n 1 top -n 1                  #  (多余，top 本身就是实时的，除非需要结合其他命令)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 监控 CPU 使用率最高的 10 个进程:
+#   top -o %CPU -n 10
+
+# 监控用户 www-data 的进程，并按内存使用率排序:
+#   top -u www-data -o %MEM
+
+# 批处理模式，运行 3 次，输出到文件 top_batch.log:
+#   top -b -n 3 > top_batch.log
+
+# 监控 PID 为 1234 和 5678 的进程:
+#   top -p 1234,5678
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# man top
+# https://www.man7.org/linux/man-pages/man1/top.1.html
+# https://www.redhat.com/sysadmin/linux-top-command
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

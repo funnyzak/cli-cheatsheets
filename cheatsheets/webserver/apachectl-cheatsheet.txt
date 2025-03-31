@@ -1,0 +1,69 @@
+##############################################################################
+# Apachectl 速查表 (Apachectl Cheatsheet)
+# 用于控制 Apache HTTP 服务器
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - [OPTIONS]:  通用选项 (General Options)
+
+##############################################################################
+# 基本控制 (Basic Control)
+##############################################################################
+
+apachectl start                             # 启动 Apache 服务器
+apachectl stop                              # 停止 Apache 服务器
+apachectl restart                           # 重启 Apache 服务器 (先停止再启动)
+apachectl graceful                          # 平滑重启 Apache (不中断现有连接)
+apachectl graceful-stop                     # 平滑停止 Apache (等待现有连接结束)
+apachectl configtest                        # 测试配置文件语法是否正确
+
+##############################################################################
+# 状态与配置 (Status & Configuration)
+##############################################################################
+
+apachectl status                            # 显示服务器简要状态 (需 mod_status 模块)
+apachectl fullstatus                        # 显示服务器完整状态 (需 mod_status 模块)
+apachectl version                           # 显示 Apache 版本信息
+apachectl -V                                # 显示详细版本和编译信息 (等同 version)
+apachectl -M                                # 列出所有已加载的模块
+apachectl -t                                # 测试配置文件语法 (等同 configtest)
+apachectl -D parameter                      # 定义配置参数 (用于条件配置)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 sudo 运行:  apachectl 通常需要 sudo 权限来执行
+#   sudo apachectl start
+#   sudo apachectl restart
+
+# 检查错误日志:  启动或重启失败时，查看 Apache 错误日志 (通常在 /var/log/apache2/error.log 或 /var/log/httpd/error_log)
+
+# 平滑重启的优势:  graceful restart 适用于配置更改，避免服务中断
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 启动 Apache 并检查状态:
+#   sudo apachectl start
+#   apachectl status
+
+# 测试配置文件并平滑重启:
+#   sudo apachectl configtest
+#   sudo apachectl graceful
+
+# 查看版本信息:
+#   apachectl version
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Apache HTTP Server 官方文档:
+#   https://httpd.apache.org/docs/current/programs/apachectl.html
+
+# 搜索 "apachectl tutorial" 或 "apachectl commands" 获取更多教程和示例
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

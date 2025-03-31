@@ -1,0 +1,160 @@
+##############################################################################
+# grep 速查表 (grep Cheatsheet)
+# 强大的文本搜索工具 (Powerful text searching tool)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PATTERN:  要搜索的模式 (Search pattern, 可以是字符串或正则表达式)
+#   - FILE:     要搜索的文件 (File to search, 可以是单个文件或多个文件)
+#   - TEXT:     要搜索的文本 (Text to search, 可以来自管道或直接输入)
+
+##############################################################################
+# 基本搜索 (Basic Searching)
+##############################################################################
+
+grep PATTERN FILE                             # 在文件中搜索 PATTERN
+grep PATTERN FILE1 FILE2 FILE3 ...             # 在多个文件中搜索 PATTERN
+grep PATTERN                                  # 从标准输入读取并搜索 PATTERN
+grep "literal string" FILE                     # 搜索字面字符串 (用双引号包裹)
+grep 'literal string' FILE                     # 搜索字面字符串 (用单引号包裹)
+
+# 选项 (Options):
+#   - -i, --ignore-case         忽略大小写 (Ignore case)
+#   - -v, --invert-match        反向匹配，显示不匹配的行 (Invert match)
+#   - -w, --word-regexp         全词匹配 (Match whole words only)
+#   - -x, --line-regexp         全行匹配 (Match whole lines only)
+#   - -c, --count               仅显示匹配行数 (Count matches)
+#   - -l, --files-with-matches  仅显示包含匹配项的文件名 (Files with matches)
+#   - -L, --files-without-match 仅显示不包含匹配项的文件名 (Files without matches)
+#   - -n, --line-number         显示匹配行号 (Line number)
+#   - -h, --no-filename         不显示文件名 (No filename in output)
+#   - -s, --no-messages         静默模式，不显示错误信息 (Silent mode)
+
+##############################################################################
+# 上下文控制 (Context Control)
+##############################################################################
+
+grep -A NUM PATTERN FILE                      # 显示匹配行及之后 NUM 行 (After context)
+grep -B NUM PATTERN FILE                      # 显示匹配行及之前 NUM 行 (Before context)
+grep -C NUM PATTERN FILE                      # 显示匹配行及前后 NUM 行 (Context)
+
+# 示例 (Examples):
+#   grep -A 2 "error" log.txt                  # 显示包含 "error" 行及其后 2 行
+#   grep -B 1 "warning" log.txt                # 显示包含 "warning" 行及其前 1 行
+#   grep -C 3 "keyword" document.txt            # 显示包含 "keyword" 行及其前后 3 行
+
+##############################################################################
+# 输出控制 (Output Control)
+##############################################################################
+
+grep -o PATTERN FILE                          # 仅显示匹配的部分 (仅匹配到的字符串) (Only matching part)
+grep -q PATTERN FILE                          # 静默模式，只返回退出状态 (Quiet mode, exit status only)
+grep --color[=WHEN] PATTERN FILE              # 高亮显示匹配部分 (Colorize output)
+                                              #   WHEN 可以是 'always', 'auto', 'never'
+
+# 示例 (Examples):
+#   grep -o "[0-9]\+" log.txt                 # 仅显示日志中的数字
+#   grep -q "success" script.sh && echo "Found" # 检查是否包含 "success" 并输出
+
+##############################################################################
+# 文件和目录处理 (File and Directory Handling)
+##############################################################################
+
+grep -r PATTERN DIR                           # 递归搜索目录 DIR 下的文件 (Recursive search)
+grep -R PATTERN DIR                           # 递归搜索目录 DIR 下的文件，并跟随符号链接 (Recursive with symlinks)
+grep -d ACTION PATTERN FILE                   # 如何处理目录 (Directory handling)
+                                              #   ACTION 可以是 'read', 'skip', 'recurse'
+
+# 示例 (Examples):
+#   grep -r "config" /etc/                     # 递归搜索 /etc/ 目录下的 "config"
+#   grep -d skip "error" /var/log/             # 跳过目录，仅搜索 /var/log/ 下的文件
+
+##############################################################################
+# 正则表达式 (Regular Expressions)
+##############################################################################
+
+grep -E PATTERN FILE                          # 使用扩展正则表达式 (Extended regex)
+grep -P PATTERN FILE                          # 使用 Perl 正则表达式 (Perl regex - 更强大)
+grep -F PATTERN FILE                          # 将 PATTERN 视为字面字符串 (Fixed strings - 快速搜索)
+
+# 元字符 (Metacharacters - Basic Regex):
+#   .       匹配任意单个字符 (Any single character)
+#   *       匹配前一个字符零次或多次 (Zero or more occurrences)
+#   +       匹配前一个字符一次或多次 (One or more occurrences - Extended/Perl)
+#   ?       匹配前一个字符零次或一次 (Zero or one occurrence - Extended/Perl)
+#   ^       行首 (Start of line)
+#   $       行尾 (End of line)
+#   []      字符集 (Character set, 例如 [abc], [a-z], [0-9])
+#   [^]     排除字符集 (Negated character set, 例如 [^abc])
+#   \       转义字符 (Escape character, 例如 \., \*, \\)
+#   \|      或 (OR - Extended/Perl)
+#   \(\)    分组 (Grouping - Basic)
+#   \<\>    词边界 (Word boundary - Basic, \<word\>, \>word)
+#   \b      词边界 (Word boundary - Extended/Perl)
+#   \{\}    限定符 (Quantifiers - Extended/Perl, 例如 {n}, {n,}, {n,m})
+
+# 示例 (Examples):
+#   grep -E "^[0-9]+" log.txt                # 搜索以数字开头的行 (扩展正则)
+#   grep -P "\d{3}-\d{4}" phone.txt           # 搜索 "XXX-XXXX" 格式的电话号码 (Perl 正则)
+#   grep -F "exact string" config.txt         # 搜索字面字符串 "exact string"
+
+##############################################################################
+# 高级选项 (Advanced Options)
+##############################################################################
+
+grep --exclude=PATTERN FILE                  # 排除匹配 PATTERN 的文件 (Exclude files)
+grep --include=PATTERN FILE                  # 仅包含匹配 PATTERN 的文件 (Include files)
+grep --exclude-dir=PATTERN DIR               # 排除匹配 PATTERN 的目录 (Exclude directories)
+grep --m NUM PATTERN FILE                    # 最多匹配 NUM 行后停止 (Max count)
+grep -f PATTERN_FILE FILE                    # 从文件 PATTERN_FILE 读取模式 (Read patterns from file)
+grep -e PATTERN FILE                         # 指定模式，当模式以 '-' 开头时有用 (Specify pattern)
+
+# 示例 (Examples):
+#   grep --exclude="*.log" "error" .           # 排除 .log 文件搜索 "error"
+#   grep --include="*.txt" "keyword" .           # 仅在 .txt 文件中搜索 "keyword"
+#   grep -f patterns.txt data.txt              # 从 patterns.txt 读取模式搜索 data.txt
+#   grep -e "-v" file.txt                     # 搜索字面字符串 "-v"
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 结合管道 (Piping):
+#   command | grep PATTERN                    # 搜索命令输出
+#   ls -l | grep "^d"                         # 列出目录 (以 'd' 开头的行)
+
+# 快速查找配置文件中的注释行:
+#   grep "^#" config.conf
+
+# 查找不包含特定字符串的行:
+#   grep -v "exclude_string" file.txt
+
+# 查找空行:
+#   grep "^$" file.txt
+
+# 结合 find 命令:
+#   find . -name "*.txt" -exec grep "keyword" {} \;  # 在所有 .txt 文件中查找 "keyword"
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 在当前目录下所有 .txt 文件中查找包含 "important" 的行，并显示文件名和行号:
+#   grep -nr "important" *.txt
+
+# 查找 web 服务器日志中所有 404 错误，并显示前后一行上下文:
+#   grep -C 1 " 404 " access.log
+
+# 查找进程列表中包含 "java" 的进程，并高亮显示匹配部分:
+#   ps aux | grep --color=auto "java"
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# GNU grep 官方文档: https://www.gnu.org/software/grep/manual/grep.html
+# grep 维基百科: https://en.wikipedia.org/wiki/Grep
+# 鸟哥的 Linux 私房菜 - grep: https://linux.vbird.org/linux_basic/0330regularex.php#grep_intro
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

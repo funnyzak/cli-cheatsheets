@@ -1,0 +1,282 @@
+##############################################################################
+# IP Command 速查表 (IP Command Cheatsheet)
+# 用于 Linux 网络配置和管理的 'ip' 命令速查手册
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - IFACE:  网络接口名 (Interface name, 例如: eth0, wlan0, ens33)
+#   - ADDR:   IP 地址 (IP Address, 例如: 192.168.1.1, 2001:db8::1)
+#   - PREFIX: 网络前缀长度 (Network prefix length, 例如: 24 for IPv4, 64 for IPv6)
+#   - GATEWAY: 网关 IP 地址 (Gateway IP Address, 例如: 192.168.1.254)
+#   - TABLE_ID: 路由表 ID (Routing table ID, 例如: main, default, local, 100)
+#   - NS_NAME: 网络命名空间名 (Network Namespace name, 例如: netns1, vpn-ns)
+#   - PID:    进程 ID (Process ID)
+#   - VLAN_ID: VLAN 标识符 (VLAN Identifier, 例如: 10, 100)
+#   - VXLAN_ID: VXLAN 网络标识符 (VXLAN Network Identifier, 例如: 1000, 5000)
+#   - PORT:  端口号 (Port number, 例如: 80, 443, 4789)
+#   - MAC:   MAC 地址 (MAC Address, 例如: 00:11:22:33:44:55)
+
+##############################################################################
+# 通用选项 (General Options)
+##############################################################################
+
+ip -V                                        # 显示 ip 命令版本
+ip -h                                        # 显示帮助信息 (help)
+ip -c                                        # 彩色输出 (Colorized output)
+ip -br                                       # 简洁格式输出 (Brief output)
+ip -o                                        # 单行输出 (One-line output)
+ip -s                                        # 显示统计信息 (Statistics)
+ip -f inet                                   # 仅限 IPv4 (Force IPv4)
+ip -f inet6                                  # 仅限 IPv6 (Force IPv6)
+ip -4                                        # 仅限 IPv4 (shorthand for -f inet)
+ip -6                                        # 仅限 IPv6 (shorthand for -f inet6)
+ip -n NS_NAME                                 # 在指定网络命名空间执行 (Namespace)
+ip netns exec NS_NAME ip [OPTIONS] OBJECT COMMAND [ARGUMENTS] # 在命名空间执行完整命令
+
+##############################################################################
+# IP 地址管理 (IP Address Management, ip addr)
+##############################################################################
+
+ip addr show [IFACE]                           # 显示地址 (所有或指定接口)，默认所有
+ip -br addr show [IFACE]                        # 简洁格式显示地址
+ip -o addr show [IFACE]                        # 单行格式显示地址
+ip addr add ADDR/PREFIX dev IFACE              # 添加地址到接口
+ip addr add ADDR/PREFIX dev IFACE label LABEL  # 添加带标签的地址 (方便管理)
+ip addr replace ADDR/PREFIX dev IFACE          # 替换接口地址 (如果存在)
+ip addr del ADDR/PREFIX dev IFACE              # 从接口删除地址
+ip addr flush dev IFACE                         # 清空接口所有地址
+ip addr show dev IFACE to ADDR/PREFIX          # 显示匹配特定网段的地址
+ip addr show scope {global|link|host}          # 显示特定作用域的地址
+
+# 提示:
+#   - 使用 -4 或 -6 限制 IPv4/IPv6 地址显示和操作
+#   - `ip addr flush dev IFACE to 0/0` 清空所有地址 (谨慎使用)
+#   - `label` 用于区分和管理同一接口上的多个地址 (例如虚拟 IP)
+
+##############################################################################
+# 链路管理 (Link Management, ip link)
+##############################################################################
+
+ip link show [IFACE]                           # 显示接口 (所有或指定接口)，默认所有
+ip -br link show [IFACE]                        # 简洁格式显示接口
+ip -o link show [IFACE]                        # 单行格式显示接口
+ip link set IFACE up                           # 启用接口
+ip link set IFACE down                         # 禁用接口
+ip link set IFACE {arp {on|off}}              # 启用/禁用 ARP 协议
+ip link set IFACE mtu SIZE                      # 设置接口 MTU (最大传输单元)
+ip link set IFACE qlen LENGTH                  # 设置接口 txqueuelen (发送队列长度)
+ip link set IFACE name NEW_NAME                 # 重命名接口
+ip link set IFACE address MAC_ADDR              # 修改接口 MAC 地址 (谨慎使用)
+ip link set IFACE promisc {on|off}             # 设置混杂模式 (Promiscuous mode)
+ip link set IFACE allmulticast {on|off}        # 设置接收所有组播 (Allmulticast)
+ip link set IFACE txqueuelen LENGTH            # 设置发送队列长度
+ip link add link IFACE name VETH_NAME type veth peer name PEER_NAME  # 创建 veth pair
+ip link add name BRIDGE_NAME type bridge       # 创建桥接接口
+ip link del name BRIDGE_NAME type bridge       # 删除桥接接口
+ip link set IFACE master BRIDGE_NAME            # 将接口加入桥接
+ip link set IFACE nomaster                      # 将接口从桥接移除
+ip link set IFACE type bridge stp {on|off}    # 启用/禁用 STP (Spanning Tree Protocol)
+ip link set IFACE type bridge forward_delay TIME # 设置转发延迟 (Forward Delay)
+ip link set IFACE type bridge hello_time TIME   # 设置 Hello 时间 (Hello Time)
+ip link set IFACE type bridge max_age TIME     # 设置最大老化时间 (Max Age)
+ip link add name VLAN_IFACE link IFACE type vlan id VLAN_ID  # 创建 VLAN 接口
+ip link del dev VLAN_IFACE                      # 删除 VLAN 接口
+ip link add name VXLAN_IFACE type vxlan id VXLAN_ID group MCAST_ADDR port PORT dev IFACE # 创建 VXLAN 接口
+ip link del dev VXLAN_IFACE                     # 删除 VXLAN 接口
+
+# 提示:
+#   - `ip link set dev IFACE alias ALIAS_NAME` 设置接口别名 (内核可见)
+#   - `ip link set IFACE vf NUM mac MAC_ADDR` 为 SR-IOV 虚拟功能设置 MAC 地址
+
+##############################################################################
+# 路由管理 (Routing, ip route)
+##############################################################################
+
+ip route show                                 # 显示路由表 (默认 main 表)
+ip route show table TABLE_ID                  # 显示指定路由表 (ID 或名称: main, default, local)
+ip route show table all                       # 显示所有路由表
+ip route get ADDR                              # 查询到 ADDR 的路由 (测试路由)
+ip route get ADDR from SRC_ADDR                # 查询从 SRC_ADDR 到 ADDR 的路由
+ip route add default via GATEWAY dev IFACE      # 添加默认路由 (经网关)
+ip route add PREFIX via GATEWAY                # 添加静态路由 (经网关)
+ip route add PREFIX dev IFACE                   # 添加直连路由 (Direct Route)
+ip route replace default via GATEWAY dev IFACE # 替换默认路由
+ip route replace PREFIX via GATEWAY             # 替换静态路由
+ip route replace PREFIX dev IFACE                # 替换直连路由
+ip route del default via GATEWAY dev IFACE      # 删除默认路由
+ip route del PREFIX via GATEWAY                # 删除静态路由
+ip route del PREFIX dev IFACE                   # 删除直连路由
+ip route flush cache                           # 清空路由缓存
+ip route save                                 # 保存当前路由表配置 (标准输出)
+ip route load                                 # 从标准输入加载路由表配置
+ip route monitor                               # 实时监控路由变化
+
+# 提示:
+#   - `ip route show dev IFACE` 显示指定接口路由
+#   - `ip route show via GATEWAY` 显示经由网关的路由
+#   - `ip route add blackhole PREFIX`  丢弃到 PREFIX 的流量 (黑洞路由)
+#   - `ip route add unreachable PREFIX`  目标不可达路由
+
+##############################################################################
+# 策略路由 (Policy Routing, ip rule)
+##############################################################################
+
+ip rule show                                  # 显示策略路由规则列表
+ip rule add from PREFIX table TABLE_ID         # 添加策略路由规则 (源地址匹配)
+ip rule add to PREFIX table TABLE_ID           # 添加策略路由规则 (目标地址匹配)
+ip rule add fwmark MARK table TABLE_ID        # 添加策略路由规则 (防火墙标记匹配)
+ip rule add iif IFACE table TABLE_ID          # 添加策略路由规则 (入接口匹配)
+ip rule add oif IFACE table TABLE_ID          # 添加策略路由规则 (出接口匹配)
+ip rule del rule RULE_NUMBER                  # 删除指定规则编号的策略路由规则
+ip rule flush                                 # 清空所有策略路由规则
+ip rule save                                  # 保存策略路由规则 (标准输出)
+ip rule load                                  # 从标准输入加载策略路由规则
+ip rule monitor                               # 实时监控策略路由规则变化
+
+# 提示:
+#   - 规则编号越小优先级越高
+#   - 默认规则 (编号 0, 32766, 32767) 通常不要删除或修改
+#   - `fwmark` 结合 iptables/nftables 实现更复杂的策略路由
+
+##############################################################################
+# 网络命名空间 (Network Namespaces, ip netns)
+##############################################################################
+
+ip netns list                                 # 列出所有网络命名空间
+ip netns add NS_NAME                           # 创建新的网络命名空间
+ip netns delete NS_NAME                        # 删除网络命名空间
+ip netns exec NS_NAME COMMAND                  # 在指定命名空间中执行命令
+ip netns identify [PID]                        # 显示进程 PID 所属的命名空间 ID
+ip netns pids NS_NAME                          # 显示命名空间中进程的 PIDs
+ip netns monitor                              # 监控网络命名空间事件
+ip netns save NS_NAME                           # 保存命名空间配置到文件 (标准输出)
+ip netns load NS_NAME                           # 从文件加载命名空间配置 (标准输入)
+
+# 提示:
+#   - 使用 `ip netns exec NS_NAME ip ...` 在命名空间内执行 ip 命令
+#   - `ip -n NS_NAME ...`  是 `ip netns exec NS_NAME ip ...` 的简写
+#   - 命名空间隔离网络环境，常用于容器、虚拟化、网络测试
+
+##############################################################################
+# 邻居管理 (ARP/NDP, Neighbor Management, ip neigh)
+##############################################################################
+
+ip neigh show [IFACE]                          # 显示邻居表 (ARP for IPv4, NDP for IPv6)
+ip -br neigh show [IFACE]                       # 简洁格式显示邻居表
+ip neigh add ADDR dev IFACE lladdr MAC         # 手动添加静态邻居条目 (MAC 地址)
+ip neigh replace ADDR dev IFACE lladdr MAC     # 替换邻居条目 (如果存在)
+ip neigh del ADDR dev IFACE                     # 删除邻居条目
+ip neigh flush dev IFACE                        # 清空接口邻居表
+ip neigh change ADDR dev IFACE lladdr MAC       # 修改现有邻居条目
+ip neigh confirm ADDR dev IFACE                 # 标记邻居条目为已确认
+ip neigh proxy add ADDR dev IFACE               # 添加 ARP 代理 (Proxy ARP)
+ip neigh proxy del ADDR dev IFACE               # 删除 ARP 代理
+
+# 提示:
+#   - `ip neigh show nud {all|permanent|noarp|reachable|stale|delay|probe|failed}`  按状态过滤邻居条目
+#   - `nud` 代表 Neighbor Unreachability Detection 状态
+#   - `lladdr` 指定链路层地址 (Link Layer Address, 即 MAC 地址)
+
+##############################################################################
+# 隧道管理 (Tunneling, ip tunnel)
+##############################################################################
+
+ip tunnel add NAME mode {gre|ipip|sit|vti|vti6|geneve|vxlan} [OPTIONS] # 创建隧道
+ip tunnel del NAME                               # 删除隧道
+ip tunnel show [NAME]                            # 显示隧道信息 (所有或指定隧道)
+ip tunnel change NAME [OPTIONS]                  # 修改隧道配置
+ip tunnel prl add NAME dst ADDR/PREFIX           # 添加隧道策略路由 (Policy Routing for Tunnels)
+ip tunnel prl del NAME dst ADDR/PREFIX           # 删除隧道策略路由
+
+# 常用隧道模式 (mode):
+#   - gre:  通用路由封装 (Generic Routing Encapsulation)
+#   - ipip: IPv4 in IPv4 隧道
+#   - sit:  IPv6 in IPv4 隧道 (Simple Internet Transition)
+#   - vxlan: 虚拟可扩展局域网 (Virtual eXtensible LAN)
+
+# GRE 隧道示例:
+#   ip tunnel add gre1 mode gre local SRC_IP remote DST_IP ttl 255
+# VXLAN 隧道示例:
+#   ip tunnel add vxlan1 mode vxlan id VXLAN_ID group MCAST_ADDR port PORT dev IFACE
+
+##############################################################################
+# 监控 (Monitoring, ip monitor)
+##############################################################################
+
+# 实时监控网络事件 (链路状态, 地址变化, 路由变化等), Ctrl+C 退出
+# Monitors network events in real-time (link state changes, address changes, routing changes, etc.), Ctrl+C to exit
+
+ip monitor                                   # 监控所有网络事件 (默认: link, addr, route)
+ip monitor link                               # 监控链路状态变化
+ip monitor address                            # 监控地址变化
+ip monitor route                              # 监控路由变化
+ip monitor netns                              # 监控网络命名空间事件
+ip monitor rule                               # 监控策略路由规则变化
+
+# 提示:
+#   - 结合 `watch` 命令可以定时监控，例如: `watch -n 1 ip monitor link`
+#   - 可以将 `ip monitor` 输出重定向到文件记录网络事件: `ip monitor > network_events.log`
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 grep 过滤输出，快速查找特定信息:
+#   ip addr show | grep 192.168.1.           # 查找包含 "192.168.1." 的地址
+#   ip link show | grep UP                   # 查找状态为 UP 的接口
+#   ip route show | grep default              # 查找默认路由
+
+# 结合 watch 监控实时变化，例如接口状态或路由表:
+#   watch -n 1 ip -br link show               # 每秒刷新显示简洁接口状态
+#   watch -n 5 ip route show                  # 每 5 秒刷新显示路由表
+
+# 使用别名 (alias) 简化常用命令 (添加到 ~/.bashrc 或 ~/.zshrc):
+#   alias ips='ip -br addr show'
+#   alias ipl='ip -br link show'
+#   alias ipr='ip route show'
+
+# 脚本中使用 `-o` (单行输出) 和 `awk` 等工具解析 `ip` 命令输出:
+#   IP_ADDR=$(ip -o addr show eth0 | awk '/inet / {print $4}')  # 获取 eth0 的 IPv4 地址
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 启动 eth0, 分配静态 IPv4 地址, 添加默认网关:
+#   sudo ip link set eth0 up
+#   sudo ip addr add 192.168.1.100/24 dev eth0
+#   sudo ip route add default via 192.168.1.1
+
+# 2. 创建 veth pair 连接两个网络命名空间:
+#   sudo ip link add veth0 type veth peer name veth1
+#   sudo ip link set veth0 netns ns1
+#   sudo ip link set veth1 netns ns2
+#   sudo ip netns exec ns1 ip addr add 10.0.1.1/24 dev veth0
+#   sudo ip netns exec ns2 ip addr add 10.0.2.1/24 dev veth1
+#   sudo ip netns exec ns1 ip link set veth0 up
+#   sudo ip netns exec ns2 ip link set veth1 up
+#   sudo ip netns exec ns1 ip route add default via 10.0.1.254
+#   sudo ip netns exec ns2 ip route add default via 10.0.2.254
+
+# 3. 创建 VLAN 接口并配置地址:
+#   sudo ip link add link eth0 name eth0.10 type vlan id 10
+#   sudo ip addr add 192.168.2.10/24 dev eth0.10
+#   sudo ip link set eth0.10 up
+
+# 4. 创建 VXLAN 接口并配置地址 (假设 eth0 连接到物理网络):
+#   sudo ip link add vxlan0 type vxlan id 1000 group 239.1.1.1 port 4789 dev eth0
+#   sudo ip addr add 10.10.10.1/24 dev vxlan0
+#   sudo ip link set vxlan0 up
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://man7.org/linux/man-pages/man8/ip.8.html     (官方 man page)
+# https://ipset.netfilter.org/iproute2.html             (iproute2 工具集官方文档)
+# https://access.redhat.com/sites/default/files/attachments/rh_ip_command_cheatsheet_1214_jcs_print.pdf (RedHat 速查表)
+# https://cheatography.com/tme520/cheat-sheets/iproute2/ (Cheatography 速查表)
+# 各种 Linux 发行版的文档和网络配置指南
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

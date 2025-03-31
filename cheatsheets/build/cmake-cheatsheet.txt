@@ -1,0 +1,247 @@
+##############################################################################
+# CMake 命令速查表 (CMake Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - SOURCE_DIR:  CMakeLists.txt 文件所在的源代码目录
+#   - BUILD_DIR:   CMake 生成构建文件的目录 (通常是单独的目录)
+#   - GENERATOR:   CMake 生成器 (例如: Ninja, Unix Makefiles, Xcode)
+#   - CMAKE_BUILD_TYPE: 构建类型 (例如: Debug, Release, RelWithDebInfo, MinSizeRel)
+#   - VARIABLE:    CMake 变量名
+#   - VALUE:       变量值
+#   - TARGET:      CMake 目标名 (例如: 可执行文件, 库)
+#   - CONFIG:      构建配置 (例如: Debug, Release)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+cmake <SOURCE_DIR> [OPTIONS]                  # 配置构建 (在当前目录)
+cmake -B <BUILD_DIR> -S <SOURCE_DIR> [OPTIONS] # 配置构建 (指定构建目录)
+cmake --build <BUILD_DIR> [OPTIONS]           # 构建项目 (默认配置)
+cmake --install <BUILD_DIR> [OPTIONS]         # 安装项目
+cmake --clean-cache <BUILD_DIR>               # 清理 CMake 缓存
+cmake --preset <preset-name>                  # 使用预设配置和构建
+
+# 常用选项 (Common Options):
+#   - -B <BUILD_DIR>: 指定构建目录
+#   - -S <SOURCE_DIR>: 指定源代码目录
+#   - -G <GENERATOR>: 指定生成器 (例如: Ninja, "Unix Makefiles")
+#   - -D <VARIABLE>=<VALUE>: 定义 CMake 缓存变量
+#   - -DCMAKE_BUILD_TYPE=<CMAKE_BUILD_TYPE>: 设置构建类型
+#   - -Wdev: 启用开发者警告
+#   - -Wno-dev: 禁用开发者警告
+#   - --fresh: 清空构建目录并重新配置
+#   - --install-prefix <PREFIX>: 指定安装前缀
+
+##############################################################################
+# 构建类型 (Build Types)
+##############################################################################
+
+# 设置构建类型 (通过 -DCMAKE_BUILD_TYPE)
+# Set Build Type (using -DCMAKE_BUILD_TYPE)
+
+cmake -DCMAKE_BUILD_TYPE=Debug <SOURCE_DIR>   # Debug 构建 (带调试信息)
+cmake -DCMAKE_BUILD_TYPE=Release <SOURCE_DIR> # Release 构建 (优化性能)
+cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo <SOURCE_DIR> # Release with Debug Info
+cmake -DCMAKE_BUILD_TYPE=MinSizeRel <SOURCE_DIR> # Release optimized for size
+
+# 提示:
+#   - 构建类型影响编译优化和调试信息
+#   - 默认构建类型可能为空或 "Debug" (取决于生成器)
+
+##############################################################################
+# 生成器 (Generators)
+##############################################################################
+
+# 常用生成器 (通过 -G 选项指定)
+# Common Generators (specified with -G option)
+
+cmake -G "Unix Makefiles" <SOURCE_DIR>        # 使用 Unix Makefiles
+cmake -G Ninja <SOURCE_DIR>                   # 使用 Ninja (推荐, 速度快)
+cmake -G "CodeBlocks - Unix Makefiles" <SOURCE_DIR> # CodeBlocks IDE 项目
+cmake -G "Eclipse CDT4 - Unix Makefiles" <SOURCE_DIR> # Eclipse CDT 项目
+cmake -G Xcode <SOURCE_DIR>                     # Xcode (macOS)
+cmake -G "Visual Studio 17 2022" <SOURCE_DIR>   # Visual Studio (Windows)
+
+# 查看可用生成器
+# List available generators
+cmake --help-command generators
+
+# 提示:
+#   - Ninja 通常比 Makefiles 更快
+#   - IDE 生成器方便在 IDE 中打开项目
+
+##############################################################################
+# 构建目标 (Build Targets)
+##############################################################################
+
+cmake --build <BUILD_DIR> --target <TARGET>    # 构建指定目标
+cmake --build <BUILD_DIR> --target install      # 构建 install 目标 (安装)
+cmake --build <BUILD_DIR> --target clean        # 构建 clean 目标 (清理)
+cmake --build <BUILD_DIR> --target package      # 构建 package 目标 (打包)
+cmake --build <BUILD_DIR> --target test         # 构建 test 目标 (测试)
+
+# 查看可用构建目标 (在构建目录中执行 make help 或 ninja help)
+# List available build targets (run make help or ninja help in build directory)
+# 例如: cd <BUILD_DIR> && make help
+
+##############################################################################
+# 变量和缓存 (Variables and Cache)
+##############################################################################
+
+cmake -L[A|H|W] <BUILD_DIR>                   # 列出 CMake 缓存变量
+cmake -LA <BUILD_DIR>                         # 列出所有缓存变量
+cmake -LH <BUILD_DIR>                         # 列出可读性好的缓存变量
+cmake -LW <BUILD_DIR>                         # 列出不常用的缓存变量
+
+cmake -D <VARIABLE>=<VALUE> <SOURCE_DIR>       # 设置缓存变量
+cmake -U <VARIABLE> <SOURCE_DIR>               # 删除缓存变量
+
+# 提示:
+#   - CMake 缓存存储在 BUILD_DIR/CMakeCache.txt
+#   - 使用 cmake-gui 或 ccmake 图形界面工具编辑缓存
+
+##############################################################################
+# 预设 (Presets)
+##############################################################################
+
+# 使用预设配置和构建 (CMake 3.19+)
+# Use presets for configuration and build (CMake 3.19+)
+
+cmake --list-presets                              # 列出可用预设
+cmake --preset <configure-preset-name>            # 使用配置预设
+cmake --preset <build-preset-name> --build         # 使用构建预设
+cmake --preset <install-preset-name> --install     # 使用安装预设
+cmake --preset <test-preset-name> --test           # 使用测试预设
+
+# 提示:
+#   - 预设在 cmake-presets.json 文件中定义
+#   - 预设可以简化配置和构建流程
+
+##############################################################################
+# CTest (测试)
+##############################################################################
+
+ctest                                         # 运行测试 (在构建目录)
+ctest -N                                        # 列出可用测试
+ctest -V                                        # 详细输出
+ctest -j <N>                                      # 并行运行 N 个测试
+ctest -R <regex>                                  # 运行匹配正则表达式的测试
+ctest -E <regex>                                  # 排除匹配正则表达式的测试
+ctest -C <CONFIG>                                 # 指定构建配置 (Debug/Release)
+
+# 提示:
+#   - CTest 通常在构建目录中执行
+#   - 需要在 CMakeLists.txt 中使用 add_test() 添加测试
+
+##############################################################################
+# CPack (打包)
+##############################################################################
+
+cpack                                         # 执行默认打包 (在构建目录)
+cpack -G <GENERATOR>                            # 指定打包生成器 (例如: TGZ, ZIP, DEB, RPM)
+cpack --config <CPACK_CONFIG_FILE>                # 指定 CPack 配置文件
+cpack -C <CONFIG>                                 # 指定构建配置 (Debug/Release)
+
+# 提示:
+#   - CPack 需要在 CMakeLists.txt 中配置
+#   - 常用打包生成器: TGZ, ZIP, DEB, RPM, NSIS
+
+##############################################################################
+# CMakeLists.txt 常用命令 (Common CMakeLists.txt Commands)
+##############################################################################
+
+# 项目信息 (Project Information)
+project(<PROJECT_NAME> [VERSION <VERSION>] [LANGUAGES <LANGUAGES>]) # 定义项目
+
+# 可执行文件 (Executable)
+add_executable(<TARGET_NAME> <SOURCE_FILES>)     # 添加可执行文件目标
+target_sources(<TARGET_NAME> PRIVATE <SOURCE_FILES>) # 添加源文件 (现代 CMake)
+target_include_directories(<TARGET_NAME> PRIVATE <INCLUDE_DIRS>) # 添加头文件搜索路径
+target_compile_definitions(<TARGET_NAME> PRIVATE <DEFINITIONS>) # 添加编译宏
+target_link_libraries(<TARGET_NAME> PRIVATE <LIBRARIES>) # 链接库
+
+# 库 (Library)
+add_library(<TARGET_NAME> <SHARED|STATIC|MODULE> <SOURCE_FILES>) # 添加库目标
+set_target_properties(<TARGET_NAME> PROPERTIES OUTPUT_NAME "newName") # 设置输出名
+
+# 安装 (Installation)
+install(TARGETS <TARGETS> DESTINATION <DESTINATION>) # 安装目标 (库, 可执行文件)
+install(FILES <FILES> DESTINATION <DESTINATION>)     # 安装文件 (头文件, 配置文件)
+install(DIRECTORY <DIRS> DESTINATION <DESTINATION>) # 安装目录
+
+# 查找包 (Find Package)
+find_package(<PackageName> [REQUIRED] [COMPONENTS <COMPONENTS>]) # 查找外部包
+if(<PackageName>_FOUND)                                        # 检查包是否找到
+    target_include_directories(<TARGET_NAME> PRIVATE ${<PackageName>_INCLUDE_DIRS})
+    target_link_libraries(<TARGET_NAME> PRIVATE ${<PackageName>_LIBRARIES})
+endif()
+
+# 条件判断和循环 (Control Flow)
+if(<CONDITION>)
+    # ...
+elseif()
+    # ...
+else()
+    # ...
+endif()
+
+foreach(<LOOP_VAR> <ITEMS>)
+    # ...
+endforeach()
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 Ninja 生成器加速构建
+# Use Ninja generator for faster builds
+#   cmake -G Ninja <SOURCE_DIR>
+
+# 使用构建预设简化配置和构建 (CMake 3.19+)
+# Use build presets to simplify configuration and build (CMake 3.19+)
+#   cmake --preset ci-debug-build --build
+
+# 使用 ccache 加速编译 (如果安装了 ccache)
+# Use ccache to speed up compilation (if ccache is installed)
+#   export CMAKE_C_COMPILER_LAUNCHER=ccache
+#   export CMAKE_CXX_COMPILER_LAUNCHER=ccache
+#   cmake <SOURCE_DIR>
+
+# 使用 out-of-source build (推荐)
+# Use out-of-source build (recommended)
+#   mkdir build
+#   cd build
+#   cmake ../src
+
+# 使用 `-DCMAKE_EXPORT_COMPILE_COMMANDS=1` 生成 compile_commands.json (方便 clangd, 代码分析工具)
+# Use `-DCMAKE_EXPORT_COMPILE_COMMANDS=1` to generate compile_commands.json (for clangd, code analysis tools)
+#   cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 <SOURCE_DIR>
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 典型配置和构建流程 (使用 Ninja, Release 构建)
+# Typical configuration and build process (using Ninja, Release build)
+#   mkdir build
+#   cd build
+#   cmake -G Ninja -DCMAKE_BUILD_TYPE=Release ../src
+#   cmake --build .
+
+# 2. 使用预设配置和构建 (假设有名为 "dev-build" 的预设)
+# Using presets for configuration and build (assuming a preset named "dev-build")
+#   cmake --preset dev-build --build
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# CMake 官方文档 (Official Documentation): https://cmake.org/documentation/
+# CMake Tutorial: https://cmake.org/cmake/help/latest/guide/tutorial/index.html
+# CMake Wiki: https://gitlab.kitware.com/cmake/community/-/wikis/home
+# Effective Modern CMake: https://effectivecmake.com/
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

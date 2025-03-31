@@ -1,0 +1,166 @@
+##############################################################################
+# PS 命令速查表 (PS Command Cheatsheet)
+# 用于进程监控和管理 (Process Monitoring and Management)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PID:     进程 ID (Process ID)
+#   - PPID:    父进程 ID (Parent Process ID)
+#   - UID:     用户 ID (User ID)
+#   - USER:    用户名 (Username)
+#   - %CPU:    CPU 使用率 (CPU Usage Percentage)
+#   - %MEM:    内存使用率 (Memory Usage Percentage)
+#   - VSZ:     虚拟内存大小 (Virtual Memory Size)
+#   - RSS:     常驻内存大小 (Resident Set Size)
+#   - TTY:     控制终端 (Controlling TTY)
+#   - STAT:    进程状态码 (Process State Code)
+#   - START:   进程启动时间 (Process Start Time)
+#   - TIME:    CPU 占用时间 (CPU Time)
+#   - COMMAND: 启动命令 (Command)
+#   - PGID:    进程组 ID (Process Group ID)
+#   - SID:     会话 ID (Session ID)
+#   - NICE:    Nice 值 (优先级) (Nice Value, Priority)
+#   - PRI:     优先级 (Priority)
+#   - CMD:     命令 (简写) (Command - Short)
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+ps                                          # 显示当前用户的进程 (默认输出)
+ps aux                                        # 显示所有用户的详细进程信息 (BSD 风格)
+ps -ef                                        # 显示所有用户的详细进程信息 (System V 风格)
+ps -l                                         # 长格式输出，显示更多信息
+
+# 提示:
+#   - `aux` 和 `-ef` 常用组合，信息更全面
+#   - 风格选择：`aux` 更易读，`-ef` 更标准
+
+##############################################################################
+# 用户和进程选择 (User and Process Selection)
+##############################################################################
+
+ps -u USERNAME                              # 显示指定用户的进程
+ps -U UID                                  # 显示指定 UID 的进程
+ps -p PID                                  # 显示指定 PID 的进程
+ps -P PPID                                 # 显示指定 PPID 的进程
+ps -g GROUPNAME                             # 显示指定用户组的进程
+ps -G GID                                   # 显示指定 GID 的进程
+ps -t tty                                   # 显示指定终端的进程
+ps -C COMMAND                               # 显示指定命令名的进程
+
+# 组合使用:
+#   ps -u USER -C COMMAND                   # 显示指定用户运行的指定命令进程
+#   ps -p PID1,PID2,PID3                     # 显示多个指定 PID 的进程
+
+##############################################################################
+# 输出格式控制 (Output Formatting)
+##############################################################################
+
+ps -o option1,option2,option3 ...           # 自定义输出列 (逗号分隔)
+ps --format option1,option2,option3 ...      # 自定义输出列 (GNU 风格)
+
+# 常用输出选项:
+#   pid,ppid,uid,user,gid,group,%cpu,%mem,vsz,rss,tty,stat,start,time,command,args,nice,pri,pgid,sid
+
+# 预定义格式:
+#   ps -f                                   # 完整格式 (Full format)
+#   ps -s                                   # 信号格式 (Signal format)
+#   ps -v                                   # 虚拟内存格式 (Virtual memory format)
+#   ps -x                                   # 显示没有控制终端的进程
+
+# 例子:
+#   ps -o pid,user,%cpu,%mem,command         # 自定义显示 PID, USER, CPU%, MEM%, COMMAND
+#   ps -o pid=ProcessID,user=Username,command=Command  # 自定义列标题
+
+##############################################################################
+# 进程状态码 (Process State Codes - STAT 列)
+##############################################################################
+
+# D    不可中断睡眠 (Uninterruptible sleep, usually IO)
+# R    正在运行或可运行 (Running or runnable)
+# S    可中断睡眠 (Interruptible sleep, waiting for an event to complete)
+# T    已停止 (Stopped, either by a job control signal or because it is being traced)
+# Z    僵尸进程 (Zombie process, terminated but not reaped by its parent)
+# <    高优先级 (High-priority, nice value < 0)
+# N    低优先级 (Low-priority, nice value > 0)
+# L    已锁定内存页 (Has pages locked into memory - for real-time and custom IO)
+# s    会话领导者 (Session leader)
+# l    多线程进程 (Multi-threaded process, using CLONE_THREAD, like NPTL pthreads)
+# +    前台进程组 (In the foreground process group)
+
+# 提示:
+#   - 结合 `grep` 和 `awk` 可以方便地过滤和分析进程状态
+#   - 例如: `ps aux | grep ' D '`  查找不可中断睡眠的进程
+
+##############################################################################
+# 树状视图 (Process Tree)
+##############################################################################
+
+ps axjf                                       # 树状视图 (BSD 风格)
+ps -efH                                       # 树状视图 (System V 风格)
+pstree                                        # 更清晰的树状视图 (需要单独安装)
+
+# 提示:
+#   - `pstree` 命令需要单独安装 (例如: `sudo apt install pstree`)
+#   - 树状视图更直观地展示进程父子关系
+
+##############################################################################
+# 实时监控 (Real-time Monitoring - 结合 `watch`)
+##############################################################################
+
+watch -n 1 'ps aux --sort=-%cpu | head -n 10'  # 每秒更新 CPU 占用前 10 的进程
+watch -n 5 'ps aux --sort=-%mem | head -n 10'  # 每 5 秒更新内存占用前 10 的进程
+
+# 排序选项 (--sort):
+#   +%cpu    CPU 使用率升序
+#   -%cpu    CPU 使用率降序
+#   +%mem    内存使用率升序
+#   -%mem    内存使用率降序
+#   +start   启动时间升序
+#   -start   启动时间降序
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 查找占用 CPU 或内存最高的进程:
+#   ps aux --sort=-%cpu | head                  # CPU 占用最高的进程 (默认输出前 10 行)
+#   ps aux --sort=-%mem | head                  # 内存占用最高的进程
+
+# 查找特定用户运行的进程并按 CPU 排序:
+#   ps -u username aux --sort=-%cpu
+
+# 查找指定命令的进程并显示 PID 和 COMMAND:
+#   ps -C command -o pid,command
+
+# 结合 `grep` 过滤输出:
+#   ps aux | grep process_name                 # 查找包含 "process_name" 的进程
+#   ps aux | grep -v grep                      # 排除 grep 进程自身
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 显示当前用户 CPU 占用率最高的 5 个进程:
+#   ps aux --sort=-%cpu | head -n 5
+
+# 显示 PID 为 1234 的进程的详细信息:
+#   ps -p 1234 -l
+
+# 显示用户 'www-data' 运行的所有进程的 PID 和 COMMAND:
+#   ps -u www-data -o pid,command
+
+# 实时监控 CPU 占用最高的进程 (每秒更新):
+#   watch -n 1 'ps aux --sort=-%cpu | head -n 1'
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://man7.org/linux/man-pages/man1/ps.1.html
+# https://www.computerhope.com/unix/ups.htm
+# https://www.redhat.com/sysadmin/linux-process-management-ps-command
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

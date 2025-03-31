@@ -1,0 +1,93 @@
+##############################################################################
+# ping 命令速查表 (ping Command Cheatsheet)
+# 用于测试网络连接和延迟
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - HOST:  目标主机名或 IP 地址 (Hostname or IP Address, 例如: google.com, 192.168.1.1)
+#   - COUNT: 发送数据包的数量 (Number of packets to send, 例如: 5)
+#   - INTERVAL: 发送数据包的间隔秒数 (Interval in seconds between packets, 例如: 0.5)
+#   - SIZE:  数据包大小 (Packet size in bytes, 例如: 64)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+ping HOST                                     # ping 目标主机 (持续发送)
+ping HOST -c COUNT                             # ping 目标主机 (发送指定数量数据包后停止)
+ping HOST -i INTERVAL                          # 设置 ping 间隔 (秒)
+ping HOST -s SIZE                              # 设置 ping 数据包大小 (字节)
+ping HOST -t TTL                               # 设置 TTL (Time To Live) 生存时间
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+ping -c COUNT HOST                             # 发送指定数量的数据包后停止
+ping -i INTERVAL HOST                          # 设置发送数据包的时间间隔 (秒)
+ping -s SIZE HOST                              # 设置发送数据包的大小 (字节)
+ping -W TIMEOUT HOST                           # 设置等待响应超时时间 (秒)
+ping -w DEADLINE HOST                          # 设置整个 ping 命令的超时时间 (秒)
+ping -q HOST                                    # 静默模式 (不显示每包信息，只显示汇总)
+ping -v HOST                                    # 详细模式 (显示更多信息)
+ping -f HOST                                    # 洪水 ping (快速发送大量数据包, 慎用!)
+ping -n HOST                                    # 数字地址 (不进行主机名解析)
+ping -a HOST                                    # 响铃模式 (收到响应时响铃)
+ping -M do HOST                                 # 禁止 IP 分片 (用于 MTU 测试)
+ping -S SRC_IP HOST                            # 设置源 IP 地址 (多网卡环境)
+ping -I IFACE HOST                             # 指定发送网络接口
+
+##############################################################################
+# IPv4 和 IPv6 (IPv4 & IPv6)
+##############################################################################
+
+ping -4 HOST                                   # 强制使用 IPv4
+ping -6 HOST                                   # 强制使用 IPv6
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 测试网络连接是否畅通:
+#   ping google.com
+#   ping 192.168.1.1
+
+# 测试网络延迟 (RTT - Round Trip Time):
+#   ping -c 10 google.com
+
+# 测试 MTU (最大传输单元) 大小 (配合 -M do 禁止分片):
+#   ping -s 1472 -M do google.com           # 常见 MTU 测试 (1500 - 28 = 1472)
+#   ping -s 1400 -M do google.com           # 逐步减小 SIZE 直到 ping 通
+
+# 快速 ping 多个地址 (结合 `xargs` 或 `parallel`):
+#   seq 1 10 | xargs -I{} ping -c 1 192.168.1.{}
+#   parallel ping -c 1 ::: 192.168.1.{1..10}
+
+# 使用 `fping` 进行更高效的批量 ping (如果已安装 fping):
+#   fping -c 3 google.com baidu.com 192.168.1.1
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# ping google.com 5 次，显示详细信息:
+#   ping -c 5 -v google.com
+
+# ping 本地网关，每 0.5 秒发送一次:
+#   ping -i 0.5 192.168.1.1
+
+# ping 指定 IP 地址，数据包大小为 100 字节:
+#   ping -s 100 8.8.8.8
+
+# ping 指定网络接口发送 (假设接口名为 eth0):
+#   ping -I eth0 google.com
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://man7.org/linux/man-pages/man8/ping.8.html
+# https://en.wikipedia.org/wiki/Ping_(networking_utility)
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

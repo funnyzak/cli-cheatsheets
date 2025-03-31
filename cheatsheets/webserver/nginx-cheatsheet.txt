@@ -1,0 +1,111 @@
+##############################################################################
+# Nginx 命令速查表 (Nginx Command Cheatsheet)
+# 简洁、实用、快速查找 Nginx 常用命令
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+##############################################################################
+# 基本控制 (Basic Control)
+##############################################################################
+
+nginx                                       # 启动 Nginx (默认配置)
+nginx -c <path/to/nginx.conf>                # 启动 Nginx (指定配置文件)
+nginx -t                                      # 测试配置是否正确 (不启动)
+nginx -T                                      # 测试配置并显示完整配置 (不启动)
+nginx -s stop                                 # 立即停止 Nginx
+nginx -s quit                                 # 平滑停止 Nginx (处理完当前连接)
+nginx -s reload                               # 重载配置并平滑重启
+nginx -s reopen                               # 重新打开日志文件 (用于日志切割)
+
+# 提示:
+#   - 常用信号: stop, quit, reload, reopen
+#   - 使用 -c 指定配置文件路径，默认查找 /usr/local/nginx/conf/nginx.conf, /etc/nginx/nginx.conf, or /usr/local/etc/nginx/nginx.conf
+
+##############################################################################
+# 版本和信息 (Version & Information)
+##############################################################################
+
+nginx -v                                      # 显示 Nginx 版本号
+nginx -V                                      # 显示 Nginx 版本号、编译信息和配置参数
+
+##############################################################################
+# 信号控制 (Signal Control - 进阶)
+##############################################################################
+
+# 可以使用 kill 命令向 Nginx 主进程发送信号 (需要先找到主进程 PID)
+
+# 查找 Nginx 主进程 PID (通常在 nginx.pid 文件中或使用 ps 命令)
+#   ps -ef | grep nginx | grep master
+#   cat /usr/local/nginx/logs/nginx.pid  # 默认 PID 文件路径
+
+# 发送信号示例 (假设主进程 PID 为 1234):
+#   kill -s SIGTERM 1234                     # 等同于 nginx -s stop (立即停止)
+#   kill -s SIGQUIT 1234                     # 等同于 nginx -s quit (平滑停止)
+#   kill -s SIGHUP 1234                      # 等同于 nginx -s reload (重载配置)
+#   kill -s SIGUSR1 1234                     # 平滑重启工作进程 (用于升级)
+#   kill -s SIGUSR2 1234                     # 平滑升级可执行文件 (复杂, 需配合后续操作)
+#   kill -s SIGWINCH 1234                    # 平滑停止工作进程 (用于在线升级回滚)
+#   kill -s SIGPIPE 1234                     # 忽略 SIGPIPE 信号 (防止客户端断开导致错误)
+#   kill -s SIGUSR1 1234                     # 重新打开日志文件 (等同于 nginx -s reopen)
+
+# 提示:
+#   - 信号控制更底层, 适用于自动化脚本或特殊场景
+#   - 常用信号: SIGTERM (stop), SIGQUIT (quit), SIGHUP (reload), SIGUSR1 (reopen)
+
+##############################################################################
+# 配置测试 (Configuration Test)
+##############################################################################
+
+nginx -t -c <path/to/nginx.conf>              # 测试指定配置文件
+nginx -T -c <path/to/nginx.conf>              # 测试指定配置文件并显示完整配置
+
+# 提示:
+#   - 强烈建议每次修改配置后先进行测试 (`nginx -t`)
+#   - `-t` 只测试语法, `-T` 测试语法并显示完整配置, 更详细
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 检查配置文件路径:
+#   nginx -V 2>&1 | grep "prefix"           # 查找配置前缀路径 (可能包含 conf 目录)
+
+# 查看默认监听端口 (配置文件中查找 listen 指令):
+#   grep "listen" <nginx.conf>
+
+# 使用 systemctl 管理 Nginx (如果使用 systemd):
+#   sudo systemctl start nginx
+#   sudo systemctl stop nginx
+#   sudo systemctl restart nginx
+#   sudo systemctl reload nginx
+#   sudo systemctl status nginx
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 启动 Nginx 并测试配置:
+#   nginx
+#   nginx -t
+
+# 重载配置并平滑重启:
+#   nginx -s reload
+
+# 停止 Nginx:
+#   nginx -s stop
+
+# 检查 Nginx 版本:
+#   nginx -v
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Nginx 官方文档:
+#   https://nginx.org/en/docs/
+#   https://nginx.org/en/docs/control.html (控制命令)
+
+# Linux 命令大全 - Nginx:
+#   https://man.linuxde.net/nginx
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

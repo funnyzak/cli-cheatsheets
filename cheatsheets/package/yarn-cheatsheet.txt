@@ -1,0 +1,135 @@
+##############################################################################
+# Yarn 命令速查表 (Yarn Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PACKAGE:   软件包名 (Package name, 例如: react, lodash)
+#   - VERSION:   版本号或版本范围 (Version or Version Range, 例如: 1.2.3, ^2.0.0, latest)
+#   - SCRIPT_NAME:  package.json 中定义的脚本名 (Script name in package.json, 例如: start, build, test)
+#   - WORKSPACE_NAME: 工作区名称 (Workspace name, 用于 monorepo)
+
+##############################################################################
+# 常用命令 (Common Commands)
+##############################################################################
+
+yarn install                             # 安装项目依赖 (根据 yarn.lock 或 package.json)
+yarn install --frozen-lockfile            # 强制使用 yarn.lock 安装，不更新
+yarn install --production                 # 只安装生产环境依赖 (dependencies)
+yarn install --no-optional                 # 不安装可选依赖 (optionalDependencies)
+
+yarn add PACKAGE [VERSION]                # 添加新的依赖包 (默认添加到 dependencies)
+yarn add PACKAGE -D                       # 添加为开发依赖 (devDependencies)
+yarn add PACKAGE -P                       # 添加为生产依赖 (dependencies)
+yarn add PACKAGE -O                       # 添加为可选依赖 (optionalDependencies)
+yarn add PACKAGE --peer                    # 添加为 peerDependencies
+yarn add @SCOPE/PACKAGE                   # 添加指定 Scope 的包
+yarn add ./path/to/package.tgz            # 从本地 tarball 安装
+yarn add <git-repo-url>                   # 从 Git 仓库安装
+
+yarn remove PACKAGE                        # 移除依赖包
+yarn upgrade [PACKAGE [VERSION]]          # 更新依赖包 (到指定版本或最新)
+yarn upgrade-interactive [PACKAGE]        # 交互式选择要更新的依赖
+
+yarn run SCRIPT_NAME                      # 运行 package.json 中定义的脚本
+yarn start                               # 运行 "start" 脚本 (常用: 启动开发服务器)
+yarn build                               # 运行 "build" 脚本 (常用: 构建生产版本)
+yarn test                                # 运行 "test" 脚本 (常用: 执行测试)
+
+yarn init [-y]                           # 初始化一个新的 package.json 文件 (-y: 默认配置)
+yarn create <app-name> [template]         # 使用模板创建新项目 (例如: yarn create react-app my-app)
+
+yarn why PACKAGE                           # 解释为什么某个包被安装 (依赖分析)
+yarn info PACKAGE [field]                 # 显示包的信息 (版本, 依赖等)
+yarn list [--depth=0]                     # 列出已安装的依赖包 (默认深度为 0)
+yarn licenses licenses                    # 列出项目依赖的许可证信息
+
+yarn cache clean                           # 清理 yarn 缓存
+yarn config list                         # 列出 yarn 配置
+yarn config get KEY                        # 获取指定配置项的值
+yarn config set KEY VALUE                  # 设置配置项的值
+
+yarn help [command]                        # 显示帮助信息 (或指定命令的帮助)
+yarn --version                             # 显示 yarn 版本
+
+##############################################################################
+# 工作区 (Workspaces - Monorepo 管理)
+##############################################################################
+
+yarn workspaces focus [--production] [workspace-pattern] # 专注于指定工作区 (安装其依赖)
+yarn workspaces run SCRIPT_NAME [-p,--parallel] [workspace-pattern] # 在工作区中运行脚本
+yarn workspaces list [-v]                  # 列出所有工作区 (verbose 模式显示路径)
+
+# 提示:
+#   - 工作区配置在 package.json 的 "workspaces" 字段中定义。
+#   - workspace-pattern 可以使用 glob 模式匹配工作区目录。
+#   - `--parallel` 选项允许并行运行工作区脚本，提升效率。
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+-D, --dev                                #  保存到 devDependencies (开发依赖)
+-P, --production                         #  保存到 dependencies (生产依赖)
+-O, --optional                           #  保存到 optionalDependencies (可选依赖)
+--peer                                   #  保存到 peerDependencies (同等依赖)
+-W, --workspace <workspace-name>           #  指定工作区 (workspace)
+-p, --parallel                             #  并行执行 (workspaces run)
+--frozen-lockfile                        #  强制使用 lockfile，不更新
+--no-lockfile                            #  不生成或使用 lockfile
+--offline                                #  离线模式 (使用本地缓存)
+--verbose                                #  更详细的输出
+--silent                                 #  静默模式 (只显示错误)
+--json                                   #  JSON 格式输出 (方便脚本处理)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 yarn.lock 保证团队成员依赖版本一致性
+#   - 提交 yarn.lock 到代码仓库
+#   - 始终使用 `yarn install` 安装依赖
+
+# 使用 yarn workspaces 管理大型项目 (Monorepo)
+#   - 提高代码复用率和开发效率
+#   - 统一依赖管理
+
+# 利用 yarn cache 提升安装速度
+#   - 首次安装后，再次安装速度更快 (使用本地缓存)
+#   - `yarn cache clean` 清理缓存空间
+
+# 使用 `yarn why <package>` 分析依赖关系，解决依赖冲突
+
+# 使用 `yarn upgrade-interactive` 交互式升级依赖，更安全可控
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 初始化一个新的 React 项目 (使用 create-react-app 模板)
+#   yarn create react-app my-react-app
+
+# 添加 lodash 到项目依赖
+#   yarn add lodash
+
+# 添加 axios 到开发依赖
+#   yarn add axios -D
+
+# 运行项目本地开发服务器 (通常在 package.json 中配置了 "start" 脚本)
+#   yarn start
+
+# 构建生产版本 (通常在 package.json 中配置了 "build" 脚本)
+#   yarn build
+
+# 清理 yarn 缓存
+#   yarn cache clean
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Yarn 官方文档: https://yarnpkg.com/
+# Yarn CLI 文档: https://yarnpkg.com/cli
+# Yarn Workspaces 文档: https://yarnpkg.com/features/workspaces
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

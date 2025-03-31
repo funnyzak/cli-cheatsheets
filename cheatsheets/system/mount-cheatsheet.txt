@@ -1,0 +1,158 @@
+##############################################################################
+# mount 命令速查表 (mount Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - DEVICE:  存储设备路径 (Device path, 例如: /dev/sda1, /dev/cdrom, //server/share)
+#   - DIR:     挂载点目录 (Mount point directory, 例如: /mnt/data, /media/cdrom)
+#   - TYPE:    文件系统类型 (Filesystem type, 例如: ext4, ntfs, vfat, iso9660)
+#   - OPTIONS: 挂载选项 (Mount options, 例如: ro, rw, noexec, uid=1000)
+
+##############################################################################
+# 基本挂载/卸载 (Basic Mount/Unmount)
+##############################################################################
+
+mount DEVICE DIR                             # 挂载 DEVICE 到 DIR (尝试自动检测文件系统类型)
+mount -t TYPE DEVICE DIR                      # 指定文件系统类型挂载
+mount -o OPTIONS DEVICE DIR                    # 指定挂载选项
+mount -o loop IMAGE_FILE DIR                 # 挂载 ISO 镜像文件等
+mount -a                                    # 挂载 /etc/fstab 中定义的所有文件系统
+umount DIR                                    # 卸载挂载点 DIR
+umount DEVICE                                 # 卸载设备 DEVICE (如果 DIR 不可用)
+
+# 提示:
+#   - 挂载前请确保挂载点目录 DIR 存在
+#   - 使用 `lsblk`, `blkid` 命令查看设备信息
+#   - 使用 `df -h` 命令查看已挂载的文件系统
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+# 通用选项 (General Options):
+#   - -t TYPE:  指定文件系统类型 (例如: ext4, ntfs, vfat, iso9660, tmpfs, cifs, nfs)
+#   - -o OPTIONS: 指定挂载选项 (逗号分隔)
+#   - -r, ro:   以只读方式挂载 (Read-only)
+#   - -w, rw:   以读写方式挂载 (Read-write, 默认)
+#   - -n:       不更新 /etc/mtab (用于 remount 或只读挂载)
+#   - -v:       显示详细信息 (Verbose)
+
+# 常用挂载选项 (-o OPTIONS):
+#   - loop:      挂载镜像文件 (例如 ISO, img)
+#   - ro:        只读 (Read-only)
+#   - rw:        读写 (Read-write)
+#   - noexec:    禁止执行文件 (No execute)
+#   - nosuid:    禁用 setuid/setgid 位 (No setuid/setgid)
+#   - nodev:     禁用设备文件 (No device files)
+#   - sync:      同步 I/O (Synchronous I/O)
+#   - async:     异步 I/O (Asynchronous I/O, 默认)
+#   - remount:   重新挂载已挂载的文件系统 (常用于修改挂载选项)
+#   - user, users: 允许普通用户挂载 (需要在 /etc/fstab 中配置)
+#   - nouser:    只允许 root 用户挂载 (默认)
+#   - uid=UID, gid=GID:  设置文件所有者/组 (例如 vfat, ntfs)
+#   - umask=MASK, dmask=MASK, fmask=MASK: 设置权限掩码 (例如 vfat)
+#   - codepage=CP, iocharset=CS:  字符集设置 (例如 vfat, ntfs)
+#   - acl:       启用 ACL 支持 (例如 ext4)
+#   - user_xattr: 启用用户扩展属性 (例如 ext4)
+#   - data=ordered/journaled/writeback: ext4 数据写入模式
+
+# 文件系统类型 (Filesystem Types, -t TYPE):
+#   - ext4:      Linux 常用日志文件系统
+#   - ntfs:      Windows NTFS 文件系统
+#   - vfat:      FAT32 文件系统 (U盘, SD卡常用)
+#   - iso9660:   光盘镜像文件系统 (CD-ROM, DVD-ROM)
+#   - tmpfs:     内存文件系统 (临时文件存储)
+#   - proc:      进程信息文件系统 (通常挂载到 /proc)
+#   - sysfs:     系统信息文件系统 (通常挂载到 /sys)
+#   - cifs, smbfs:  Windows 网络共享 (SMB/CIFS)
+#   - nfs:       网络文件系统 (NFS)
+#   - bind:      绑定挂载 (将一个目录挂载到另一个目录)
+
+##############################################################################
+# 特殊挂载 (Special Mounts)
+##############################################################################
+
+mount --bind OLDDIR NEWDIR                     # 绑定挂载目录 (OLDDIR 映射到 NEWDIR)
+mount -t tmpfs -o size=1G tmpfs /mnt/tmpfs    # 挂载 1GB 内存文件系统
+mount -t proc proc /proc                      # 挂载 proc 文件系统 (通常系统已挂载)
+mount -t sysfs sysfs /sys                      # 挂载 sysfs 文件系统 (通常系统已挂载)
+
+##############################################################################
+# 重新挂载 (Remount)
+##############################################################################
+
+mount -o remount,rw DEVICE DIR                 # 重新挂载为读写
+mount -o remount,ro DEVICE DIR                 # 重新挂载为只读
+mount -o remount,OPTIONS DEVICE DIR            # 重新挂载并修改选项
+
+# 提示:
+#   - 重新挂载常用于修改已挂载文件系统的选项，例如从只读改为读写。
+
+##############################################################################
+# 卸载选项 (Umount Options)
+##############################################################################
+
+umount -l DIR                                  # 懒卸载 (Lazy umount, 断开连接后后台卸载)
+umount -f DIR                                  # 强制卸载 (Force umount, 即使文件系统正在使用)
+
+# 警告:
+#   - 强制卸载 (-f) 可能导致数据丢失或文件系统损坏，谨慎使用。
+#   - 懒卸载 (-l) 在网络文件系统卸载时可能很有用。
+
+##############################################################################
+# /etc/fstab 和开机自动挂载 (/etc/fstab and Automatic Mount)
+##############################################################################
+
+# /etc/fstab 文件用于定义开机自动挂载的文件系统。
+# 格式: DEVICE  DIR  TYPE  OPTIONS  DUMP  PASS
+# 例如: /dev/sda1  /mnt/data  ext4  defaults  0  2
+
+# 使用 `mount -a` 命令挂载 /etc/fstab 中定义的所有文件系统。
+
+# 注意:
+#   - 修改 /etc/fstab 前请备份，错误配置可能导致系统启动失败。
+#   - 使用 `man fstab` 查看 fstab 文件格式和选项说明。
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 `lsblk -f` 或 `blkid` 命令查看设备 UUID 或 LABEL，在 /etc/fstab 中推荐使用 UUID/LABEL 替代设备路径 (例如 /dev/sda1)，提高系统稳定性。
+# 例如:  `lsblk -f /dev/sda1` 或 `blkid /dev/sda1`
+
+# 使用 `findmnt` 命令查找已挂载的文件系统及其挂载选项。
+# 例如: `findmnt /mnt/data` 或 `findmnt DEVICE`
+
+# 挂载网络共享 (CIFS/SMB, NFS) 需要提前安装相应的客户端工具 (例如 cifs-utils, nfs-common)。
+
+# 确保在卸载文件系统前，所有正在访问该文件系统的进程都已停止，避免数据丢失或损坏。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 挂载 U 盘 (假设设备为 /dev/sdb1, 挂载到 /mnt/usb):
+#   sudo mount /dev/sdb1 /mnt/usb
+
+# 挂载 ISO 镜像文件到 /mnt/iso:
+#   sudo mount -o loop ubuntu.iso /mnt/iso
+
+# 挂载 Windows NTFS 分区 (假设设备为 /dev/sda2, 挂载到 /mnt/windows):
+#   sudo mount -t ntfs-3g /dev/sda2 /mnt/windows
+
+# 挂载网络共享 (假设 Windows 共享路径为 //192.168.1.100/share, 挂载到 /mnt/share, 用户名 user, 密码 password):
+#   sudo mount.cifs //192.168.1.100/share /mnt/share -o user=user,password=password
+
+# 卸载 /mnt/usb:
+#   sudo umount /mnt/usb
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://man7.org/linux/man-pages/man8/mount.8.html
+# https://man7.org/linux/man-pages/man5/fstab.5.html
+# https://www.redhat.com/sysadmin/linux-mount-command
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

@@ -1,0 +1,202 @@
+##############################################################################
+# systemctl 速查表 (systemctl Cheatsheet)
+# 用于管理 systemd 系统和服务
+# Systemd system and service manager
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - UNIT:     systemd 单元名称 (Unit name, 例如: nginx.service, cron.timer, multi-user.target)
+#               通常是服务 (*.service), 目标 (*.target), 快照 (*.snapshot) 等
+#   - SERVICE:  服务单元名称 (Service unit name, 例如: nginx, apache2, sshd) (不带 .service 后缀)
+#   - TARGET:   目标单元名称 (Target unit name, 例如: multi-user, graphical, reboot) (不带 .target 后缀)
+#   - SNAPSHOT: 快照单元名称 (Snapshot unit name, 例如: clean-state) (不带 .snapshot 后缀)
+#   - PROPERTY: 单元属性 (Unit property, 例如: LoadState, ActiveState, SubState, MainPID)
+
+##############################################################################
+# 单元管理 - 通用 (Unit Management - General)
+##############################################################################
+
+systemctl list-units                         # 列出所有已加载的单元 (List all loaded units)
+systemctl list-units --all                   # 列出所有单元 (包括未加载的) (List all units, including inactive)
+systemctl list-units --type=TYPE             # 按类型列出单元 (例如: service, target, socket) (List units by type)
+systemctl list-units --state=STATE           # 按状态列出单元 (例如: active, inactive, failed) (List units by state)
+systemctl list-units --failed                # 列出失败的单元 (List failed units)
+systemctl is-active UNIT                     # 检查单元是否激活 (Check if unit is active)
+systemctl is-enabled UNIT                    # 检查单元是否开机自启 (Check if unit is enabled at boot)
+systemctl is-failed UNIT                     # 检查单元是否失败 (Check if unit is failed)
+systemctl cat UNIT                           # 显示单元配置文件 (Show unit configuration file)
+systemctl show UNIT                          # 显示单元详细属性 (Show unit properties)
+systemctl show -p PROPERTY UNIT              # 显示指定单元属性 (Show specific unit property)
+systemctl describe UNIT                      # 显示单元描述信息 (Show unit description and documentation)
+systemctl status UNIT                        # 显示单元状态 (详细信息和日志) (Show unit status, details and logs)
+systemctl --user list-units                  # 列出用户会话单元 (List user session units)
+systemctl --system list-units                # 列出系统单元 (List system units, default)
+
+# 提示:
+#   - 使用 -a, --all 显示所有单元，包括 inactive
+#   - 使用 -t, --type=TYPE 过滤单元类型
+#   - 使用 -s, --state=STATE 过滤单元状态
+#   - 使用 --user 管理用户会话单元，默认管理系统单元
+
+##############################################################################
+# 单元管理 - 启动/停止/重启 (Unit Management - Start/Stop/Restart)
+##############################################################################
+
+systemctl start UNIT                         # 启动单元 (Start unit)
+systemctl stop UNIT                          # 停止单元 (Stop unit)
+systemctl restart UNIT                       # 重启单元 (Restart unit)
+systemctl reload UNIT                        # 重新加载单元配置 (Reload unit configuration)
+systemctl try-restart UNIT                   # 尝试重启单元 (仅在运行时重启) (Try to restart unit if running)
+systemctl reload-or-restart UNIT            # 重新加载或重启单元 (Reload or restart unit)
+systemctl kill UNIT                          # 发送信号到单元进程 (Send signal to unit process)
+systemctl kill -s SIGNAL UNIT               # 发送指定信号 (例如: SIGKILL, SIGTERM) (Send specific signal)
+systemctl isolate TARGET                     # 隔离到指定目标 (停止其他单元) (Isolate to target, stop other units)
+
+# 提示:
+#   - 使用 --now 选项可以立即生效，例如: systemctl enable --now UNIT
+#   - 使用 --force 强制操作，例如: systemctl reload --force UNIT
+
+##############################################################################
+# 单元管理 - 启用/禁用 (Unit Management - Enable/Disable)
+##############################################################################
+
+systemctl enable UNIT                        # 设置单元开机自启 (Enable unit at boot)
+systemctl disable UNIT                       # 禁用单元开机自启 (Disable unit at boot)
+systemctl reenable UNIT                      # 重新启用单元 (先禁用再启用) (Re-enable unit, disable then enable)
+systemctl mask UNIT                          # 彻底禁用单元 (阻止手动和自动启动) (Mask unit, prevent start manually or automatically)
+systemctl unmask UNIT                        # 取消彻底禁用 (Unmask unit)
+systemctl preset UNIT                        # 恢复单元到预设的启用/禁用状态 (Reset unit to preset enabled/disabled state)
+
+# 提示:
+#   - 启用单元会在系统启动时自动启动
+#   - 禁用单元阻止系统启动时自动启动，但可以手动启动
+#   - mask 彻底禁用，即使手动启动也会被阻止
+
+##############################################################################
+# 服务管理 (Service Management - Specific commands for services)
+##############################################################################
+
+systemctl start SERVICE.service              # 启动服务 (Start service)
+systemctl stop SERVICE.service               # 停止服务 (Stop service)
+systemctl restart SERVICE.service            # 重启服务 (Restart service)
+systemctl reload SERVICE.service             # 重新加载服务配置 (Reload service configuration)
+systemctl status SERVICE.service             # 查看服务状态 (View service status)
+systemctl enable SERVICE.service             # 设置服务开机自启 (Enable service at boot)
+systemctl disable SERVICE.service            # 禁用服务开机自启 (Disable service at boot)
+
+# 快捷方式 (Shortcuts, omitting .service extension):
+systemctl start SERVICE                      # 等同于 systemctl start SERVICE.service
+systemctl stop SERVICE                       # 等同于 systemctl stop SERVICE.service
+systemctl restart SERVICE                    # 等同于 systemctl restart SERVICE.service
+systemctl status SERVICE                     # 等同于 systemctl status SERVICE.service
+systemctl enable SERVICE                     # 等同于 systemctl enable SERVICE.service
+systemctl disable SERVICE                    # 等同于 systemctl disable SERVICE.service
+
+##############################################################################
+# 目标管理 (Target Management)
+##############################################################################
+
+systemctl list-units --type=target           # 列出所有目标 (List all targets)
+systemctl get-default                        # 获取默认目标 (Get default target)
+systemctl set-default TARGET.target          # 设置默认目标 (Set default target)
+systemctl isolate TARGET.target              # 切换到指定目标 (Switch to target, stop other units)
+
+# 常用目标 (Common Targets):
+#   - multi-user.target:  多用户命令行环境 (Multi-user command line)
+#   - graphical.target:   图形界面环境 (Graphical interface)
+#   - rescue.target:      救援模式 (Rescue mode)
+#   - emergency.target:   紧急模式 (Emergency mode)
+#   - reboot.target:      重启系统 (Reboot system)
+#   - poweroff.target:    关闭系统 (Power off system)
+
+##############################################################################
+# 快照管理 (Snapshot Management)
+##############################################################################
+
+systemctl snapshot SNAPSHOT.snapshot         # 创建快照 (Create snapshot)
+systemctl snapshot                           # 创建带时间戳的快照 (Create snapshot with timestamp)
+systemctl list-units --type=snapshot        # 列出所有快照 (List all snapshots)
+systemctl revert SNAPSHOT.snapshot          # 回滚到快照 (Revert to snapshot)
+systemctl delete SNAPSHOT.snapshot          # 删除快照 (Delete snapshot)
+
+# 用途 (Usage):
+#   - 在进行系统更改前创建快照，以便回滚
+#   - 例如: 安装软件前创建快照，安装失败或不满意可以回滚
+
+##############################################################################
+# 系统管理 - 电源操作 (System Management - Power Actions)
+##############################################################################
+
+systemctl reboot                             # 重启系统 (Reboot system)
+systemctl poweroff                           # 关闭系统 (Power off system)
+systemctl halt                               # 停止系统，但不关机 (Halt system, but not power off)
+systemctl suspend                            # 挂起系统到内存 (Suspend system to RAM)
+systemctl hibernate                          # 休眠系统到硬盘 (Hibernate system to disk)
+systemctl hybrid-sleep                       # 混合睡眠 (挂起+休眠) (Hybrid sleep, suspend + hibernate)
+
+##############################################################################
+# 日志查看 (Journalctl Integration - For service logs)
+##############################################################################
+
+systemctl status UNIT                        # 显示单元状态，包含日志 (Show unit status, including logs)
+journalctl -u UNIT                           # 查看单元日志 (View unit logs)
+journalctl -u UNIT -f                        # 实时查看单元日志 (Follow unit logs in real-time)
+journalctl -u UNIT --since "yesterday"       # 查看昨天起的日志 (View logs since yesterday)
+journalctl -u UNIT --until "today"           # 查看到今天的日志 (View logs until today)
+journalctl -u UNIT --boot                     # 查看本次启动的日志 (View logs from current boot)
+journalctl -u UNIT --no-pager                # 不分页显示日志 (Disable pager for logs)
+
+# 提示:
+#   - journalctl 是 systemd 的日志管理工具，systemctl status 命令也集成了日志查看功能
+#   - 更多 journalctl 用法请参考 journalctl 速查表
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 Tab 补全:
+#   systemctl st<Tab>  会自动补全为 systemctl status
+#   systemctl res<Tab>  会自动补全为 systemctl restart
+#   systemctl nginx<Tab> 会自动补全服务名 (如果存在)
+
+# 批量操作:
+#   systemctl stop nginx apache2 mysql  # 同时停止多个服务
+
+# 使用 --no-block 非阻塞操作:
+#   systemctl start --no-block UNIT    # 后台启动单元，不等待完成
+
+# 使用 --user 管理用户会话服务:
+#   systemctl --user start my-user-service.service
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 启动 nginx 服务并查看状态:
+#   systemctl start nginx
+#   systemctl status nginx
+
+# 设置 sshd 开机自启:
+#   systemctl enable sshd
+
+# 查看所有失败的服务:
+#   systemctl list-units --failed
+
+# 切换到救援模式:
+#   systemctl isolate rescue.target
+
+# 创建快照并在操作后回滚:
+#   systemctl snapshot pre-update
+#   # ... 进行系统更新或配置更改 ...
+#   systemctl revert pre-update
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units
+# https://www.linode.com/docs/guides/introduction-to-systemctl/
+# https://www.freedesktop.org/software/systemd/man/systemctl.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

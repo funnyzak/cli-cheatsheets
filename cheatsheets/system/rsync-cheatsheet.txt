@@ -1,0 +1,122 @@
+##############################################################################
+# rsync 速查表 (rsync Cheatsheet)
+# 快速同步和备份工具
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - SRC:  源路径 (Source path, 例如: /path/to/source, user@host:/path)
+#   - DEST: 目标路径 (Destination path, 例如: /path/to/destination, user@host:/path)
+#   - USER@HOST: 远程服务器 (Remote server, 例如: user@example.com)
+#   - FILE: 文件名 (Filename, 例如: file.txt)
+#   - DIR:  目录名 (Directory name, 例如: directory)
+
+##############################################################################
+# 基本同步 (Basic Synchronization)
+##############################################################################
+
+rsync SRC DEST                                # 本地同步 (本地到本地)
+rsync SRC USER@HOST:DEST                       # 推送同步 (本地到远程)
+rsync USER@HOST:SRC DEST                       # 拉取同步 (远程到本地)
+
+# 提示:
+#   - SRC 和 DEST 可以是本地路径或远程路径 (USER@HOST:PATH)
+#   - 默认 rsync 会跳过已存在且目标端更新的文件
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+rsync -v SRC DEST                             # 显示详细输出 (Verbose)
+rsync -n SRC DEST                             # 模拟运行 (Dry-run, 不执行实际操作)
+rsync -a SRC DEST                             # 归档模式 (Archive mode, 常用, 包含 -rlptgoD)
+    # -r, --recursive                         # 递归目录 (Recursive)
+    # -l, --links                             # 保留软链接 (Symlinks as symlinks)
+    # -p, --perms                             # 保留权限 (Preserve permissions)
+    # -t, --times                             # 保留修改时间 (Preserve modification times)
+    # -g, --group                             # 保留组信息 (Preserve group)
+    # -o, --owner                             # 保留所有者 (Preserve owner, super-user only)
+    # -D                                      # 等同于 --devices --specials --human-readable
+rsync -z SRC DEST                             # 压缩传输 (Compress data)
+rsync -P SRC DEST                             # 显示进度 (Progress, 包含 --progress --partial)
+    # --progress                              # 显示传输进度
+    # --partial                               # 保留部分传输的文件，以便断点续传
+rsync -e 'ssh -p PORT' SRC DEST                 # 指定 SSH 端口 (Specify SSH port)
+rsync --delete SRC DEST                        # 删除目标端多余文件 (Delete extraneous files in dest)
+rsync --exclude='PATTERN' SRC DEST            # 排除文件/目录 (Exclude files/directories)
+rsync --include='PATTERN' SRC DEST            # 包含文件/目录 (Include files/directories)
+rsync --bwlimit=RATE SRC DEST                  # 限制带宽 (Limit bandwidth, K/s, M/s, G/s)
+
+# 提示:
+#   - 多个选项可以组合使用，例如: `rsync -avz SRC DEST`
+#   - 使用 `--exclude` 和 `--include` 可以灵活控制同步内容，支持通配符
+
+##############################################################################
+# 高级选项 (Advanced Options)
+##############################################################################
+
+rsync --dry-run --itemize-changes -av SRC DEST # 查看详细变更列表 (Itemize changes)
+rsync --checksum SRC DEST                      # 基于校验和而非时间戳判断文件是否改变 (Checksum instead of timestamp)
+rsync --ignore-existing SRC DEST               # 忽略目标端已存在的文件 (Don't update dest files that exist)
+rsync --remove-source-files SRC DEST          # 同步后删除源文件 (Remove-source-files after sync, 移动文件)
+rsync --backup --backup-dir=DIR SRC DEST      # 备份旧文件到指定目录 (Backup with backup directory)
+rsync --suffix=SUFFIX SRC DEST                # 备份文件添加后缀 (Backup suffix, 默认 ~)
+rsync --link-dest=DIR SRC DEST                # 硬链接到 DIR 中未改变的文件 (Hard-link to DIR when files are unchanged)
+rsync --copy-dest=DIR SRC DEST                # 拷贝到 DIR 中未改变的文件 (Copy to DIR when files are unchanged)
+rsync --existing SRC DEST                      # 仅更新目标端已存在的文件 (Only update existing files)
+rsync --new-only SRC DEST                      # 仅同步源端新增的文件 (Only send new files)
+rsync --max-size=SIZE SRC DEST                # 忽略大于 SIZE 的文件 (Skip files larger than SIZE)
+rsync --min-size=SIZE SRC DEST                # 忽略小于 SIZE 的文件 (Skip files smaller than SIZE)
+rsync --files-from=FILE SRC DEST              # 从文件中读取同步列表 (Read list of files to transfer from FILE)
+rsync --filter='RULE' SRC DEST                # 使用更复杂的过滤规则 (Filter files using RULE)
+
+# 提示:
+#   - `--itemize-changes` 可以详细了解 rsync 的操作 (+, -, *, <, > 等)
+#   - `--filter` 功能强大，可以实现更精细的同步控制，参考 `man rsync` FILTER RULES
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 同步目录时，源路径末尾的 `/` 影响同步行为:
+#   rsync -av SRC/ DEST      # 同步 SRC 目录下的内容到 DEST
+#   rsync -av SRC DEST       # 同步 SRC 目录本身到 DEST/SRC
+
+# 使用 `--progress` 可以实时查看同步进度，对于大文件或网络传输很有用
+
+# 结合 `cron` 定时备份:
+#   0 2 * * * rsync -avz /data/ USER@HOST:/backup/data/  # 每天凌晨 2 点备份
+
+# 使用 `--bwlimit` 限制带宽，避免 rsync 占用过多网络资源
+
+# 利用 `--link-dest` 或 `--copy-dest` 实现增量备份，节省空间和时间
+
+# 远程服务器配置 SSH 免密码登录，简化 rsync 命令 (使用 SSH keys)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 本地同步目录:
+#   rsync -av /home/user/documents/ /mnt/backup/documents/
+
+# 推送到远程服务器 (SSH 默认端口):
+#   rsync -avz /var/www/html/ user@example.com:/home/user/backup/website/
+
+# 从远程服务器拉取数据 (指定 SSH 端口):
+#   rsync -avz -e 'ssh -p 2222' user@example.com:/home/user/data/ /local/data/
+
+# 模拟同步并查看变更列表:
+#   rsync --dry-run --itemize-changes -av /home/user/pictures/ /media/external/pictures/
+
+# 排除 .git 目录和 *.log 文件:
+#   rsync -av --exclude='.git/' --exclude='*.log' /project/SRC/ DEST/
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# rsync 官方文档: https://rsync.samba.org/documentation.html
+# rsync 教程和示例: https://www.digitalocean.com/community/tutorials/how-to-use-rsync-to-sync-local-and-remote-directories-on-a-vps
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

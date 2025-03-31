@@ -1,0 +1,138 @@
+##############################################################################
+# Poetry 速查表 (Poetry Cheatsheet)
+# Python 依赖管理和打包工具
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PACKAGE:     Python 包名 (Package name, 例如: requests, numpy)
+#   - VERSION:     版本号或版本约束 (Version or version constraint, 例如: 1.2.3, ^1.0, *)
+#   - ENV_NAME:    虚拟环境名称 (Environment name, 例如: myenv, py38)
+#   - PATH:        文件或目录路径 (File or directory path, 例如: src/mypackage, .)
+#   - SCRIPT_NAME: 脚本名称 (Script name defined in pyproject.toml, 例如: lint, test)
+
+##############################################################################
+# 项目管理 (Project Management)
+##############################################################################
+
+poetry new PROJECT_NAME                      # 创建新项目 (Create a new project)
+poetry init                                  # 初始化现有项目 (Initialize in existing project)
+poetry show                                  # 显示项目信息 (Show project details)
+poetry show PACKAGE                          # 显示指定包信息 (Show package details)
+poetry show -v                               # 显示详细信息 (Verbose output)
+poetry show --tree                            # 以树状结构显示依赖 (Show dependency tree)
+poetry config --list                         # 列出 Poetry 配置 (List Poetry configuration)
+poetry config repositories.NAME URL          # 添加自定义仓库 (Add custom repository)
+poetry config virtualenvs.in-project true     # 项目内创建虚拟环境 (Create venv in project)
+
+##############################################################################
+# 依赖管理 (Dependency Management)
+##############################################################################
+
+poetry add PACKAGE                           # 添加依赖 (Add dependency)
+poetry add PACKAGE VERSION                     # 添加指定版本依赖 (Add dependency with version)
+poetry add PACKAGE --dev                       # 添加开发依赖 (Add dev dependency)
+poetry add PACKAGE --group GROUP_NAME         # 添加到指定分组依赖 (Add to dependency group)
+poetry remove PACKAGE                          # 移除依赖 (Remove dependency)
+poetry remove PACKAGE --dev                    # 移除开发依赖 (Remove dev dependency)
+poetry update                                # 更新所有依赖 (Update all dependencies)
+poetry update PACKAGE                          # 更新指定依赖 (Update specific dependency)
+poetry lock                                  # 生成或更新 lock 文件 (Generate/update lock file)
+poetry install                               # 安装项目依赖 (Install project dependencies)
+poetry install --no-dev                        # 安装生产环境依赖 (Install production dependencies)
+poetry install --sync                         # 同步 lock 文件到环境 (Sync lock file to environment)
+poetry install --with GROUP_NAME               # 安装指定分组的依赖 (Install dependencies of a group)
+poetry install --without GROUP_NAME            # 安装时排除指定分组 (Install without a group)
+poetry export -f requirements.txt --output requirements.txt # 导出为 requirements.txt (Export to requirements.txt)
+
+# 提示:
+#   - 使用版本约束 (e.g., ^1.0, ~=2.0) 管理依赖版本范围
+#   - `poetry.lock` 文件确保环境一致性，应提交到版本控制
+
+##############################################################################
+# 环境管理 (Environment Management)
+##############################################################################
+
+poetry env info                              # 显示当前环境信息 (Show current environment info)
+poetry env list                              # 列出所有虚拟环境 (List all virtual environments)
+poetry env use python VERSION                # 切换或创建指定 Python 版本虚拟环境 (Use/create venv with Python version)
+poetry env use PATH                           # 使用指定路径的 Python 虚拟环境 (Use venv at specified path)
+poetry env remove ENV_NAME                      # 移除指定虚拟环境 (Remove virtual environment)
+poetry env remove python VERSION                # 移除指定 Python 版本的虚拟环境 (Remove venv by Python version)
+
+# 提示:
+#   - Poetry 默认管理虚拟环境，无需手动激活
+#   - 使用 `poetry env info -p` 获取虚拟环境路径
+
+##############################################################################
+# 脚本 & 执行 (Scripting & Execution)
+##############################################################################
+
+poetry run SCRIPT_NAME                        # 运行 pyproject.toml 中定义的脚本 (Run script defined in pyproject.toml)
+poetry run python SCRIPT.py                   # 运行 Python 脚本 (Run Python script)
+poetry run python -m MODULE                   # 运行 Python 模块 (Run Python module)
+poetry shell                                 # 进入项目虚拟环境的 shell (Enter project's virtual environment shell)
+exit                                         # 退出虚拟环境 shell (Exit virtual environment shell)
+
+# 提示:
+#   - `poetry run` 在虚拟环境上下文中执行命令
+#   - `poetry shell` 提供交互式虚拟环境
+
+##############################################################################
+# 打包 & 发布 (Packaging & Publishing)
+##############################################################################
+
+poetry build                                 # 构建 wheel 和 sdist 包 (Build wheel and sdist packages)
+poetry build -f wheel                        # 只构建 wheel 包 (Build only wheel package)
+poetry build -f sdist                        # 只构建 sdist 包 (Build only sdist package)
+poetry publish                               # 发布包到 PyPI (Publish package to PyPI)
+poetry publish --repository REPOSITORY_NAME    # 发布到指定仓库 (Publish to specific repository)
+poetry publish --dry-run                       # 模拟发布 (Dry run publish)
+
+# 提示:
+#   - 发布前确保 `pyproject.toml` 配置正确
+#   - 使用 twine 等工具手动发布也是可选方案
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 查看帮助信息:
+#   poetry --help                             # 显示 Poetry 帮助
+#   poetry COMMAND --help                     # 显示指定命令帮助
+
+# 清理缓存:
+#   poetry cache clear --all poetry          # 清理 Poetry 缓存
+
+# 指定 Python 版本:
+#   poetry env use python3.9                   # 使用 Python 3.9
+#   poetry env use /usr/bin/python3.8         # 使用指定路径的 Python
+
+# 使用 Poetry 国内镜像加速 (for Chinese users):
+#   poetry config repositories.pypi \
+#       'https://mirrors.aliyun.com/pypi/simple/'
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 创建新项目并添加 requests 依赖:
+#   poetry new my-project
+#   cd my-project
+#   poetry add requests
+
+# 运行测试脚本 (假设 pyproject.toml 中定义了 tests 脚本):
+#   poetry run tests
+
+# 构建并发布项目到 PyPI:
+#   poetry build
+#   poetry publish
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Poetry 官方文档: https://python-poetry.org/docs/
+# Poetry GitHub 仓库: https://github.com/python-poetry/poetry
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

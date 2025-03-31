@@ -1,0 +1,228 @@
+##############################################################################
+# SED 命令速查表 (SED Command Cheatsheet)
+# Stream EDitor - 文本流编辑器
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - FILE:       输入文件路径 (Input file path)
+#   - LINE_NUMBER: 行号 (Line number, 例如: 1, 10, $)
+#   - PATTERN:    匹配模式 (Regular expression pattern)
+#   - REPLACEMENT: 替换文本 (Replacement text)
+#   - COMMAND:    sed 命令 (sed command, 例如: p, d, s, etc.)
+#   - OPTIONS:    sed 选项 (sed options, 例如: -i, -n, -r, etc.)
+
+##############################################################################
+# 基本语法 (Basic Syntax)
+##############################################################################
+
+sed 'COMMAND' FILE                             # 对文件 FILE 执行 COMMAND
+sed 'COMMAND' < FILE                           # 从标准输入读取数据执行 COMMAND
+sed -e 'COMMAND1' -e 'COMMAND2' FILE         # 执行多个 COMMAND
+sed -f SCRIPT_FILE FILE                        # 从脚本文件 SCRIPT_FILE 读取命令
+
+# 提示:
+#   - 命令 COMMAND 通常是 '地址范围命令' 格式
+#   - 地址范围可以是行号、正则表达式或两者结合
+#   - 如果省略 FILE，则从标准输入读取
+
+##############################################################################
+# 地址范围 (Address Ranges)
+##############################################################################
+
+# 行号地址:
+LINE_NUMBER                                    # 指定行号 (例如: 1, 10, $)
+LINE_NUMBER1,LINE_NUMBER2                      # 指定行范围 (例如: 1,5  5,$)
+
+# 正则表达式地址:
+/PATTERN/                                      # 匹配 PATTERN 的行
+\cPATTERN\c                                    # 使用 \c 作为分隔符，支持任意字符 (c 可以是任何字符)
+/PATTERN1/,/PATTERN2/                         # 从匹配 PATTERN1 的行开始到匹配 PATTERN2 的行结束
+
+# 混合地址:
+LINE_NUMBER,/PATTERN/                         # 从指定行号到匹配 PATTERN 的行
+/PATTERN/,LINE_NUMBER                         # 从匹配 PATTERN 的行到指定行号
+
+# 地址修饰符:
+LINE_NUMBER~STEP                               # 从 LINE_NUMBER 开始，每隔 STEP 行 (GNU sed 扩展)
+FIRST~STEP                                      # 从 FIRST 行开始，每隔 STEP 行 (GNU sed 扩展)
+ADDRESS!                                        # 对不匹配地址的行执行命令
+
+# 提示:
+#   - `$` 表示最后一行
+#   - `.` 表示当前行号 (在某些命令中)
+#   - 地址范围可以为空，表示所有行
+
+##############################################################################
+# 常用命令 (Common Commands)
+##############################################################################
+
+# 替换 (Substitute, s)
+s/PATTERN/REPLACEMENT/                         # 替换每行第一个匹配项
+s/PATTERN/REPLACEMENT/g                        # 替换所有匹配项 (global)
+s/PATTERN/REPLACEMENT/FLAGS                    # 带标志的替换 (FLAGS: g, i, w FILE, p, ...)
+   # FLAGS:
+   #   g: 全局替换 (global)
+   #   i: 忽略大小写 (ignore case)
+   #   w FILE: 将替换的行写入 FILE
+   #   p: 打印替换的行 (print)
+   #   数字: 替换第 N 个匹配项 (例如: s///2  替换第二个匹配项)
+
+# 删除 (Delete, d)
+d                                              # 删除匹配行
+
+# 打印 (Print, p)
+p                                              # 打印匹配行 (常与 -n 选项结合使用)
+=                                              # 打印行号 (print line number)
+l                                              # 打印不可见字符 (list unprintable characters)
+
+# 插入/追加 (Insert/Append, i/a/c)
+i\                                             # 在匹配行之前插入文本 (insert)
+TEXT                                           #   插入的文本，多行文本使用 \n 分隔
+a\                                             # 在匹配行之后追加文本 (append)
+TEXT                                           #   追加的文本，多行文本使用 \n 分隔
+c\                                             # 替换匹配行为文本 (change)
+TEXT                                           #   替换的文本，多行文本使用 \n 分隔
+
+# 读取/写入文件 (Read/Write file, r/w)
+r FILE                                         # 读取 FILE 内容追加到匹配行之后 (read)
+w FILE                                         # 将匹配行写入 FILE (write)
+
+# 转换 (Transform, y)
+y/SOURCE_CHARS/DEST_CHARS/                    # 将 SOURCE_CHARS 转换为 DEST_CHARS (character-by-character)
+
+# 下一行 (Next, n/N)
+n                                              # 读取下一行，并应用命令 (next line)
+N                                              # 读取下一行追加到模式空间 (Next line, append to pattern space)
+
+# 退出 (Quit, q/Q)
+q [EXIT_CODE]                                  # 退出 sed (quit)
+Q [EXIT_CODE]                                  # 静默退出 sed (quit silently)
+
+# 分支与控制流 (Branch and Control Flow, b/t/T/:label)
+b [LABEL]                                      # 无条件跳转到 LABEL (branch)
+t [LABEL]                                      # 如果上次替换成功，则跳转到 LABEL (test)
+T [LABEL]                                      # 如果上次替换失败，则跳转到 LABEL (Test)
+:LABEL                                         # 定义标签 (label)
+
+# 保持空间 (Hold Space, h/H/g/G/x)
+h                                              # 模式空间内容复制到保持空间 (hold)
+H                                              # 模式空间内容追加到保持空间 (Hold, append)
+g                                              # 保持空间内容复制到模式空间 (get)
+G                                              # 保持空间内容追加到模式空间 (Get, append)
+x                                              # 交换模式空间和保持空间内容 (exchange)
+
+# 多行命令 (Multiline Commands, D/P)
+D                                              # 删除模式空间中第一个换行符之前的内容 (Delete first line of pattern space)
+P                                              # 打印模式空间中第一个换行符之前的内容 (Print first line of pattern space)
+
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+-i[SUFFIX]                                     # 直接修改文件 (in-place edit)，可选备份后缀 SUFFIX
+-n                                             # 取消默认输出 (suppress default output), 配合 p 命令使用
+-e 'COMMAND'                                   # 指定执行的命令 (execute command)
+-f SCRIPT_FILE                                # 从脚本文件读取命令 (script file)
+-r 或 -E                                       # 使用扩展正则表达式 (extended regular expressions)
+-s                                             # 将多个文件视为独立的，而不是一个长流 (treat files as separate)
+--version                                      # 显示版本信息 (show version)
+--help                                         # 显示帮助信息 (show help)
+
+# 提示:
+#   - 强烈建议在修改文件前备份，或者使用 -i 选项时添加备份后缀
+#   - 使用 -n 选项和 p 命令可以实现 grep 的效果
+#   - GNU sed 支持更多扩展选项，请参考 `man sed`
+
+##############################################################################
+# 正则表达式 (Regular Expressions - BRE Basic Regular Expressions)
+##############################################################################
+
+# 基本元字符:
+.         # 匹配任意单个字符 (except newline in some versions)
+*         # 匹配前一个字符零次或多次
+^         # 匹配行首
+$         # 匹配行尾
+[]        # 字符集，匹配方括号内的任意字符 (e.g., [abc], [a-z], [^abc])
+[^]       # 反义字符集，匹配不在方括号内的任意字符
+\         # 转义字符，取消元字符的特殊含义 (e.g., \., \*, \\, \[, \])
+
+# 分组和引用:
+\(...\)    # 分组 (grouping)
+\1, \2, ...# 反向引用，引用分组匹配的内容 (backreferences)
+
+# BRE vs ERE (Basic vs Extended Regular Expressions):
+#   - 默认 sed 使用 BRE (Basic Regular Expressions)
+#   - 使用 -r 或 -E 选项启用 ERE (Extended Regular Expressions)
+#   - ERE 中元字符 ?, +, {}, |, () 不需要转义
+#   - ERE 更加强大和易用，但 BRE 在某些情况下更高效
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用变量:
+VAR="world"
+sed "s/hello/${VAR}/g" FILE                 # 使用双引号 "" 可以展开变量
+
+# 多行处理:
+sed '/PATTERN1/,/PATTERN2/ COMMAND' FILE     # 对 PATTERN1 和 PATTERN2 之间的行执行命令
+sed ':a; N; $!ba; s/PATTERN/REPLACEMENT/g' FILE  # 处理多行模式 (例如替换跨行文本)
+
+# 注释:
+# sed 脚本中使用 # 作为注释，但需要在脚本文件的第一行，或者使用 -f 选项
+
+# 分隔符:
+sed 's/old/new/g' FILE                      # 默认使用 / 作为分隔符
+sed 's:old:new:g' FILE                      # 可以使用 : 作为分隔符
+sed 's@old@new@g' FILE                      # 可以使用 @ 作为分隔符
+sed 's#old#new#g' FILE                      # 可以使用 # 作为分隔符
+#  - 当 PATTERN 或 REPLACEMENT 包含 / 时，使用其他分隔符可以避免转义
+
+# 结合 find 和 xargs:
+find . -name "*.txt" -print0 | xargs -0 sed -i 's/old_text/new_text/g' # 批量替换多个文件中的文本
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 替换文件 file.txt 中每行第一个 "apple" 为 "orange":
+sed 's/apple/orange/' file.txt
+
+# 2. 全局替换文件 file.txt 中所有 "apple" 为 "orange" 并保存到 new_file.txt:
+sed 's/apple/orange/g' file.txt > new_file.txt
+
+# 3. 直接修改文件 file.txt，全局替换所有 "apple" 为 "orange"，并备份为 file.txt.bak:
+sed -i.bak 's/apple/orange/g' file.txt
+
+# 4. 删除文件 file.txt 中的空行:
+sed '/^$/d' file.txt
+
+# 5. 在文件 file.txt 的第 5 行后追加 "This is a new line":
+sed '5a\This is a new line' file.txt
+
+# 6. 打印文件 file.txt 中包含 "error" 的行 (类似 grep):
+sed -n '/error/p' file.txt
+
+# 7. 替换以 "start" 开头的行，将 "start" 替换为 "BEGIN":
+sed 's/^start/BEGIN/' file.txt
+
+# 8. 删除文件 file.txt 中以 "#" 开头的注释行:
+sed '/^#/d' file.txt
+
+# 9. 使用扩展正则表达式，匹配 "color" 或 "colour" 并替换为 "colour":
+sed -r 's/colo(u)?r/colour/g' file.txt
+
+# 10. 将文件 file.txt 中所有 "hello world" 替换为 "HELLO WORLD" (忽略大小写):
+sed 's/hello world/HELLO WORLD/gi' file.txt
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# GNU Sed 官方文档: https://www.gnu.org/software/sed/manual/sed.html
+# Sed - An Introduction and Tutorial by Bruce Barnett: https://www.grymoire.com/Unix/Sed.html
+# sed(1) - Linux man page: https://man7.org/linux/man-pages/man1/sed.1.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

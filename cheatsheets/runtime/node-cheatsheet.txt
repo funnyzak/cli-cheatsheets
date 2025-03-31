@@ -1,0 +1,137 @@
+##############################################################################
+# Node.js 命令速查表 (Node.js Command Cheatsheet)
+# 快速参考 Node.js 运行时常用命令和选项
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - FILE:      JavaScript 文件路径 (例如: app.js, server.js)
+#   - MODULE:    Node.js 模块名 (例如: fs, http, path)
+#   - SCRIPT:    JavaScript 代码片段 (例如: 'console.log("Hello")')
+#   - OPTIONS:   Node.js 运行时选项 (例如: --inspect, --version)
+#   - ENV_VAR:   环境变量名 (例如: NODE_ENV, PORT)
+
+##############################################################################
+# 基本命令 (Basic Commands)
+##############################################################################
+
+node FILE                                     # 运行 JavaScript 文件
+node -e SCRIPT                                 # 执行单行 JavaScript 代码
+node -p SCRIPT                                 # 执行并打印 JavaScript 代码结果
+node                                          # 进入 Node.js REPL (交互式环境)
+node --version 或 node -v                      # 显示 Node.js 版本
+node --help 或 node -h                         # 显示 Node.js 帮助信息
+
+##############################################################################
+# REPL (交互式环境) 命令 (REPL Commands)
+##############################################################################
+
+# 在 REPL 中:
+.help                                        # 显示 REPL 帮助
+.exit 或 Ctrl+C (两次)                         # 退出 REPL
+.break                                       # 中断当前操作
+.clear                                       # 清空 REPL 上下文变量
+.save FILE                                   # 保存 REPL 会话到文件
+.load FILE                                   # 加载文件到 REPL 会话
+
+# 特殊变量 (REPL 特有):
+_                                           # 上一次命令的返回值
+.editor                                      # 进入编辑器模式 (多行输入)
+
+##############################################################################
+# 模块加载 (Module Loading)
+##############################################################################
+
+require('MODULE')                             # 加载 CommonJS 模块
+import('MODULE') (experimental ESM)             # 加载 ECMAScript 模块 (需要 --experimental-modules 或 package.json "type": "module")
+
+# 模块查找路径 (Module Resolution):
+#   - 当前目录的 node_modules
+#   - 父级目录的 node_modules (逐级向上)
+#   - 全局安装的 node_modules (取决于 NODE_PATH 环境变量)
+
+##############################################################################
+# 运行时选项 (Runtime Options)
+##############################################################################
+
+# 调试 (Debugging):
+node --inspect[=HOST:PORT] FILE                # 启用 Inspector 调试器 (默认端口 9229)
+node --inspect-brk[=HOST:PORT] FILE            # 启动时暂停在第一行 (断点)
+node --inspect-port=[HOST:PORT] FILE           # 指定 Inspector 端口
+node --debug-brk[=PORT] FILE (legacy)           # (旧版) 启动时暂停调试器
+node debug FILE (legacy)                      # (旧版) 启动调试器
+
+# 性能 (Performance):
+node --perf-basic-prof FILE                   # 启用基本性能分析器 (生成 perf.log)
+node --cpu-prof FILE                          # 启用 CPU 分析器 (生成 cpuprofile.json)
+node --heap-prof FILE                         # 启用堆内存分析器 (生成 heapprofile.json)
+
+# 模块系统 (Modules):
+node --experimental-modules FILE (ESM)        # 启用实验性 ESM 支持 (显式指定)
+node --no-warnings FILE                       # 禁止显示启动警告 (例如 ESM 警告)
+
+# 其他常用选项 (Other useful options):
+node --check FILE                              # 检查语法错误但不执行代码
+node --print-bytecode FILE                     # 打印字节码 (V8 内部)
+node --v8-options                              # 列出 V8 引擎选项
+node --trace-deprecation                      # 显示弃用警告的详细堆栈信息
+node --throw-deprecation                      # 将弃用警告视为错误
+
+##############################################################################
+# 环境变量 (Environment Variables)
+##############################################################################
+
+NODE_ENV=production node FILE                  # 设置 Node.js 环境 (常用 "development", "production")
+PORT=3000 node server.js                      # 设置端口号 (应用常用 PORT 环境变量)
+NODE_PATH=/path/to/modules node FILE            # 指定模块搜索路径 (不推荐，优先使用 node_modules)
+
+# .env 文件:
+#  可以使用 `dotenv` 等 npm 包加载 .env 文件中的环境变量 (非 Node.js 内置特性)
+#  例如: `require('dotenv').config();`
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 shebang (#!) 使 JavaScript 文件可执行:
+#  #!/usr/bin/env node
+#  (在文件头部添加 shebang, 并使用 `chmod +x FILE` 添加执行权限)
+
+#  利用 `console.log()` 进行调试输出
+#  使用 `process.argv` 获取命令行参数
+#  使用 `process.env` 访问环境变量
+#  使用 `process.exit(code)` 退出程序 (指定退出码)
+
+#  npm scripts: 在 package.json 中定义 "scripts" 字段，简化常用命令
+#  例如: "start": "node server.js", "dev": "nodemon server.js"
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 运行一个简单的 HTTP 服务器 (server.js):
+#   ```javascript
+#   const http = require('http');
+#   const server = http.createServer((req, res) => {
+#     res.writeHead(200, { 'Content-Type': 'text/plain' });
+#     res.end('Hello, Node.js!\n');
+#   });
+#   server.listen(3000, () => {
+#     console.log('Server running at http://localhost:3000/');
+#   });
+#   ```
+#   运行: `node server.js`
+
+# 使用 Inspector 调试:
+#   `node --inspect server.js`
+#   (打开 Chrome 或 Edge 浏览器，访问 chrome://inspect 或 edge://inspect)
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Node.js 官方文档: https://nodejs.org/api/
+# Node.js 命令手册: https://nodejs.org/dist/latest-vXX.x.x/docs/api/cli.html (替换 vXX.x.x 为你的 Node.js 版本)
+# Node.js REPL 文档: https://nodejs.org/api/repl.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

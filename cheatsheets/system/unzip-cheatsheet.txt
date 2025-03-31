@@ -1,0 +1,148 @@
+##############################################################################
+# UNZIP 命令速查表 (UNZIP Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - ARCHIVE: ZIP 压缩包文件 (ZIP archive file, 例如: archive.zip)
+#   - DEST_DIR:  目标目录 (Destination directory, 例如: /path/to/extract)
+#   - FILE_PATTERN: 文件名模式 (Filename pattern, 例如: *.txt, image?.jpg)
+
+##############################################################################
+# 基本操作 (Basic Operations)
+##############################################################################
+
+unzip ARCHIVE                               # 解压 ARCHIVE 到当前目录
+                                            #   - 默认解压所有文件到当前目录
+
+unzip ARCHIVE -d DEST_DIR                   # 解压 ARCHIVE 到指定目录 DEST_DIR
+                                            #   - 使用 -d 指定解压的目标目录
+
+unzip -l ARCHIVE                             # 列出 ARCHIVE 内容 (不解压)
+                                            #   - 显示压缩包内文件列表，不进行实际解压
+
+unzip -v ARCHIVE                             # 显示详细信息 (包括压缩比等)
+                                            #   - 提供更详细的压缩包信息，如版本、压缩方法等
+
+unzip -t ARCHIVE                             # 测试 ARCHIVE 完整性 (不解压)
+                                            #   - 检查压缩包是否损坏，不进行实际解压
+
+
+##############################################################################
+# 文件选择和过滤 (File Selection and Filtering)
+##############################################################################
+
+unzip ARCHIVE FILE_PATTERN                  # 解压匹配 FILE_PATTERN 的文件
+                                            #   - 只解压文件名匹配指定模式的文件
+
+unzip ARCHIVE -x FILE_PATTERN                # 排除匹配 FILE_PATTERN 的文件
+                                            #   - 解压除文件名匹配模式之外的所有文件
+
+unzip ARCHIVE file1 file2 file3 ...         # 解压指定的文件列表
+                                            #   - 可以指定多个文件名，空格分隔
+
+##############################################################################
+# 覆盖和更新 (Overwrite and Update)
+##############################################################################
+
+unzip -o ARCHIVE                            # 覆盖已存在的文件 (Overwrite)
+                                            #   - 默认情况下，会询问是否覆盖，-o 直接覆盖
+
+unzip -n ARCHIVE                            # 不覆盖已存在的文件 (Never overwrite)
+                                            #   - 跳过已存在的文件，不进行覆盖
+
+unzip -f ARCHIVE                            # 刷新已存在的文件 (Freshen)
+                                            #   - 仅解压压缩包中比磁盘上已存在文件更新的文件
+
+unzip -u ARCHIVE                            # 更新已存在的文件和创建新的 (Update)
+                                            #   - 解压压缩包中更新的文件和不存在的文件
+
+
+##############################################################################
+# 密码处理 (Password Handling)
+##############################################################################
+
+unzip -P PASSWORD ARCHIVE                   # 使用密码 PASSWORD 解压 (明文密码)
+                                            #   - 使用 -P 选项直接在命令行提供密码 (不安全)
+
+unzip -p ARCHIVE                            # 解压到标准输出 (管道处理)
+                                            #   - 将解压内容输出到标准输出，常用于管道处理，例如: `unzip -p archive.zip | grep keyword`
+
+
+##############################################################################
+# 字符编码 (Character Encoding)
+##############################################################################
+
+unzip -O CHARSET ARCHIVE                    # 指定输出字符编码 (Output CHARSET)
+                                            #   - 尝试使用指定的字符编码 CHARSET 解码文件名，例如: -O gbk, -O utf-8
+                                            #   - 常用于处理非 UTF-8 编码的 ZIP 文件名乱码问题
+
+
+##############################################################################
+# 其他常用选项 (Other Useful Options)
+##############################################################################
+
+unzip -j ARCHIVE                            # 忽略目录结构 (Junk paths)
+                                            #   - 解压所有文件到同一目录，忽略压缩包内的目录结构
+
+unzip -q ARCHIVE                            # 静默模式 (Quiet mode)
+                                            #   - 减少输出信息，只显示错误和警告
+
+unzip -qq ARCHIVE                           # 非常静默模式 (Very quiet mode)
+                                            #   - 几乎不输出任何信息，包括错误
+
+unzip -C ARCHIVE                            # 区分大小写 (Case-sensitive matching)
+                                            #   - 文件名匹配时区分大小写 (默认不区分)
+
+unzip -L ARCHIVE                            # 转换为小写 (Convert to lower case)
+                                            #   - 将解压出的文件名转换为小写
+
+unzip -a ARCHIVE                            # 自动转换文本文件编码 (Auto-convert text files)
+                                            #   - 根据系统环境自动转换文本文件编码 (不同系统行为可能不同)
+
+unzip -$ METHOD ARCHIVE                      # 指定解压方法 (Extraction method, 较少用)
+                                            #   - 例如: unzip -$ lzma archive.zip  (需要 unzip 支持)
+                                            #   - METHOD 可以是 lzma, bzip2 等 (取决于编译时支持)
+
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用通配符 *:
+#   unzip archive.zip "*.txt"                  # 解压所有 .txt 文件
+#   unzip archive.zip "image?.jpg"              # 解压 image?.jpg (例如 image1.jpg, imageA.jpg)
+
+# 管道和重定向:
+#   unzip -p archive.zip file.txt > output.txt  # 解压 file.txt 内容到 output.txt
+#   unzip -l archive.zip | grep "keyword"      # 列出文件并过滤包含 "keyword" 的行
+
+# 处理中文文件名乱码:
+#   unzip -O CP936 archive_gbk.zip             # 尝试使用 GBK (CP936) 编码解压
+#   unzip -O UTF-8 archive_utf8.zip            # 尝试使用 UTF-8 编码解压 (默认)
+#   # 根据实际情况尝试不同的字符编码，如 GBK, GB2312, BIG5, UTF-8 等
+
+# 批量解压多个 ZIP 文件:
+#   for zipfile in *.zip; do unzip "$zipfile" -d "${zipfile%.zip}"; done
+#   # 将当前目录下所有 .zip 文件解压到同名目录 (去除 .zip 后缀)
+
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 解压 archive.zip 到当前目录，并覆盖已存在的文件:
+#    unzip -o archive.zip
+
+# 2. 解压 password_protected.zip 到 /tmp/extracted，并使用密码 "secret":
+#    unzip -d /tmp/extracted -P secret password_protected.zip
+
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://linux.die.net/man/1/unzip
+# https://www.info-zip.org/UnZip.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

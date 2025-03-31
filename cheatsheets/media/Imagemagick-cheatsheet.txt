@@ -1,0 +1,204 @@
+##############################################################################
+# ImageMagick 速查表 (ImageMagick Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - INPUT:      输入图像文件 (Input image file, 例如: image.jpg, *.png)
+#   - OUTPUT:     输出图像文件 (Output image file, 例如: output.png, result.gif)
+#   - FORMAT:     图像格式 (Image format, 例如: jpg, png, gif, tiff)
+#   - GEOMETRY:   图像尺寸或区域 (Image size/region, 例如: 640x480, 50%)
+#   - OFFSET:     偏移量 (Offset, 例如: +10+20, -5-5)
+#   - COLOR:      颜色值 (Color value, 例如: red, blue, '#RRGGBB', 'rgba(r,g,b,a)')
+#   - TEXT:       文本字符串 (Text string, 例如: 'Hello World', "Copyright 2023")
+#   - FONT:       字体名称 (Font name, 例如: Arial, Times-Roman)
+#   - POINTSIZE:  字体大小 (Font point size, 例如: 12, 24)
+#   - DEGREE:     角度 (Degree, 例如: 90, 180, -45)
+#   - FILTER:     滤镜名称 (Filter name, 例如: Lanczos, Gaussian)
+
+##############################################################################
+# 常用命令 (Common Commands)
+##############################################################################
+
+# convert:  图像转换和处理 (Image conversion and manipulation)
+# mogrify:  批量图像处理 (Batch image processing - modifies original files!)
+# identify: 显示图像信息 (Display image information)
+# display:  显示图像 (Display image - requires X server)
+# montage:  创建图像蒙太奇 (Create image montage)
+# compare:  比较图像差异 (Compare image differences)
+
+##############################################################################
+# 图像格式转换 (Format Conversion)
+##############################################################################
+
+convert INPUT OUTPUT.FORMAT                      # 转换图像格式 (Convert image format)
+convert INPUT.FORMAT OUTPUT.FORMAT              # 显式指定输入输出格式
+convert INPUT -set format FORMAT info:          # 获取图像格式 (Get image format)
+mogrify -format FORMAT *.INPUT_EXT              # 批量转换格式 (Batch convert format)
+
+# 提示:
+#   - 常见 FORMAT: jpg, png, gif, tiff, bmp, webp, pdf, ps, eps, svg, ...
+#   - 使用 +profile "*"  移除所有配置文件 (Remove all profiles)
+#   - 使用 -quality VALUE 设置 JPEG/WebP 质量 (Set JPEG/WebP quality, 0-100)
+
+##############################################################################
+# 图像尺寸调整和裁剪 (Resizing and Cropping)
+##############################################################################
+
+convert INPUT -resize GEOMETRY OUTPUT            # 调整尺寸 (Resize image)
+convert INPUT -resize 640x480 OUTPUT             # 固定尺寸 (Fixed size)
+convert INPUT -resize 50% OUTPUT                # 百分比缩放 (Percentage scale)
+convert INPUT -resize 640x480\> OUTPUT           # 宽度或高度不超过 (Fit within size)
+convert INPUT -resize 640x480^ -gravity center -extent 640x480 OUTPUT  # 裁剪填充 (Crop-fill, center gravity)
+convert INPUT -crop GEOMETRY+OFFSET OUTPUT      # 裁剪区域 (Crop region)
+convert INPUT -crop 100x100+50+50 OUTPUT         # 裁剪 100x100 区域，偏移 (50,50)
+convert INPUT -scale GEOMETRY OUTPUT             # 缩放，保持宽高比 (Scale, keep aspect ratio)
+
+# 提示:
+#   - GEOMETRY 格式:  WIDTHxHEIGHT, WIDTHx, xHEIGHT, PERCENT%, WIDTHxHEIGHT\>, ...
+#   - 使用 ! 强制变形:  -resize 640x480! (Distort aspect ratio)
+#   - 使用 ^ 最小化尺寸: -resize 640x480^ (Minimum dimensions)
+#   - 使用 \> 只缩小:   -resize 640x480\> (Shrink only)
+#   - 使用 \< 只放大:   -resize 640x480\< (Enlarge only)
+
+##############################################################################
+# 图像增强 (Enhancement)
+##############################################################################
+
+convert INPUT -brightness-contrast BRIGHTNESSxCONTRAST OUTPUT  # 调整亮度/对比度 (-100 to +100)
+convert INPUT -modulate BRIGHTNESS,SATURATION,HUE OUTPUT     # 调整亮度/饱和度/色调 (percent)
+convert INPUT -gamma VALUE OUTPUT                       # 伽玛校正 (Gamma correction, VALUE > 0)
+convert INPUT -normalize OUTPUT                         # 归一化对比度 (Normalize contrast)
+convert INPUT -equalize OUTPUT                          # 直方图均衡化 (Histogram equalization)
+convert INPUT -contrast OUTPUT                          # 增强对比度 (Enhance contrast)
+convert INPUT -unsharp RADIUSxSIGMA+AMOUNT+THRESHOLD OUTPUT  # 锐化 (Unsharp mask)
+convert INPUT -sharpen RADIUSxSIGMA OUTPUT                # 锐化 (Sharpen)
+convert INPUT -blur RADIUSxSIGMA OUTPUT                   # 模糊 (Blur)
+
+# 提示:
+#   - 亮度/对比度: -brightness-contrast 0x0 (默认), -brightness-contrast 50x20
+#   - 锐化/模糊:   RADIUS 为像素半径，SIGMA 为高斯标准差 (Gaussian standard deviation)
+
+##############################################################################
+# 图像效果 (Effects)
+##############################################################################
+
+convert INPUT -border GEOMETRY -bordercolor COLOR OUTPUT  # 添加边框 (Add border)
+convert INPUT -frame GEOMETRY OUTPUT                   # 添加相框效果 (Add frame effect)
+convert INPUT -shadow GEOMETRY OUTPUT                  # 添加阴影 (Add shadow)
+convert INPUT -rounded-corners RADIUSxSIGMA OUTPUT     # 圆角 (Rounded corners)
+convert INPUT -negate OUTPUT                           # 反色 (Negate colors)
+convert INPUT -sepia-tone PERCENT OUTPUT                # 棕褐色调 (Sepia tone, 0-100%)
+convert INPUT -grayscale Rec709Luma OUTPUT             # 灰度化 (Grayscale)
+convert INPUT -transparent COLOR OUTPUT                 # 设置透明色 (Set transparent color)
+convert INPUT -trim OUTPUT                             # 裁剪透明边缘 (Trim transparent borders)
+
+# 提示:
+#   - -border GEOMETRY:  例如 -border 10x10 (上下左右各 10 像素边框)
+#   - -shadow GEOMETRY:  例如 -shadow 60x4+4+4 (偏移量 4x4，模糊半径 4，透明度 60%)
+
+##############################################################################
+# 图像旋转和翻转 (Rotation and Flipping)
+##############################################################################
+
+convert INPUT -rotate DEGREE OUTPUT                    # 旋转 (Rotate, 顺时针为正)
+convert INPUT -rotate 90 OUTPUT                       # 顺时针旋转 90 度
+convert INPUT -rotate -45 OUTPUT                      # 逆时针旋转 45 度
+convert INPUT -flip OUTPUT                             # 垂直翻转 (Flip vertically)
+convert INPUT -flop OUTPUT                             # 水平翻转 (Flip horizontally)
+convert INPUT -transpose OUTPUT                        # 转置 (Transpose - rotate 90 and flip)
+convert INPUT -transverse OUTPUT                       # 横向转置 (Transverse - rotate 270 and flip)
+
+##############################################################################
+# 图像合成 (Composite / Layering)
+##############################################################################
+
+composite -geometry +OFFSET INPUT_OVERLAY INPUT_BASE OUTPUT  # 合成图像 (Composite overlay onto base)
+composite -gravity center INPUT_OVERLAY INPUT_BASE OUTPUT   # 居中合成 (Center overlay)
+composite -blend PERCENT INPUT_OVERLAY INPUT_BASE OUTPUT    # 混合合成 (Blend overlay, 0-100%)
+composite -dissolve PERCENT INPUT_OVERLAY INPUT_BASE OUTPUT # 溶解合成 (Dissolve overlay, 0-100%)
+convert INPUT_BASE INPUT_OVERLAY -layers flatten OUTPUT     # 图层合并 (Flatten layers)
+
+# 提示:
+#   - -geometry +OFFSET:  指定覆盖图像的左上角相对于基准图像左上角的偏移量
+#   - -gravity CENTER/NORTH/EAST/SOUTH/WEST/NORTHEAST/...  指定对齐方式
+
+##############################################################################
+# 动画 GIF (Animated GIF)
+##############################################################################
+
+convert -delay DURATION -loop 0 *.INPUT OUTPUT.gif        # 创建 GIF 动画 (Create GIF animation)
+convert -delay 20 -loop 0 image*.png animation.gif       # 每帧延迟 20ms，无限循环
+convert INPUT.gif -coalesce OUTPUT.gif                   # GIF 优化 (Coalesce GIF frames for optimization)
+convert INPUT.gif -layers Optimize OUTPUT.gif             # GIF 图层优化 (Layer optimization)
+convert INPUT.gif -layers Dispose OUTPUT.gif              # GIF 帧处理方式 (Frame disposal methods)
+
+# 提示:
+#   - -delay DURATION:  帧延迟，单位通常是 1/100 秒 (hundredths of a second)
+#   - -loop 0:        无限循环，-loop N 循环 N 次
+
+##############################################################################
+# 图像蒙太奇和组合 (Montage and Combine)
+##############################################################################
+
+montage *.INPUT -tile NxM -geometry GEOMETRY+OFFSET OUTPUT.png  # 创建图像蒙太奇 (Create image montage)
+montage *.png -tile 3x2 -geometry 100x100+2+2 montage.png     # 3x2 网格，100x100 缩略图，2px 边距
+convert +append *.INPUT OUTPUT.png                          # 水平拼接图像 (Horizontal image append)
+convert -append *.INPUT OUTPUT.png                          # 垂直拼接图像 (Vertical image append)
+
+# 提示:
+#   - montage -tile NxM:  指定蒙太奇的行列数 (Number of tiles in rows and columns)
+#   - montage -geometry GEOMETRY+OFFSET:  指定每个缩略图的尺寸和边距
+
+##############################################################################
+# 图像信息 (Image Information)
+##############################################################################
+
+identify INPUT                                    # 显示基本信息 (Basic information)
+identify -verbose INPUT                            # 显示详细信息 (Verbose information)
+identify -format "%wx%h %f" INPUT                  # 自定义格式输出 (Custom format output, width x height filename)
+identify -format "%[EXIF:*]" INPUT                  # 显示 EXIF 信息 (Show EXIF data)
+identify -format "%[IPTC:*]" INPUT                  # 显示 IPTC 信息 (Show IPTC data)
+identify -format "%[profile:icc]" INPUT > profile.icc # 提取 ICC 配置文件 (Extract ICC profile)
+
+# 提示:
+#   - identify -format FORMAT:  使用 printf 风格的格式字符串控制输出
+#   - 可用格式化选项参考 ImageMagick 文档:  https://imagemagick.org/script/identify.php
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 批量处理：使用通配符 * 和 mogrify 命令
+#   mogrify -format jpg *.png                  # 将当前目录下所有 PNG 转为 JPG (覆盖原文件!)
+#   mogrify -resize 50% *.jpg                 # 批量缩小 JPG 尺寸 (覆盖原文件!)
+
+# 使用管道 (|) 组合命令
+#   convert logo: -rotate 45 png:- | display png:-  # 旋转 logo 并显示 (不保存文件)
+
+# 获取帮助：使用 -help 选项
+#   convert -help                               # 查看 convert 命令帮助
+#   convert -help resize                        # 查看 resize 操作帮助
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 将 PNG 图片转换为高质量 JPG 并压缩：
+#   convert input.png -quality 92 output.jpg
+
+# 创建缩略图：
+#   convert input.jpg -resize 200x200 thumbnail.jpg
+
+# 添加水印文字到图片右下角：
+#   convert input.jpg -gravity southeast -fill white -pointsize 20 -annotate +10+10 "水印文字" output.jpg
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# ImageMagick 官方文档: https://imagemagick.org/script/command-line-tools.php
+# ImageMagick 示例: https://imagemagick.org/Usage/
+# ImageMagick Stack Overflow: https://stackoverflow.com/questions/tagged/imagemagick
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

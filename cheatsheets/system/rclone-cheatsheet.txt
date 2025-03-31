@@ -1,0 +1,158 @@
+##############################################################################
+# rclone 速查表 (rclone Cheatsheet)
+# 实时文件同步工具 (Real-time file synchronization tool)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - REMOTE:       rclone 远程配置名称 (Remote configuration name, 例如: mydrive:, s3bucket:)
+#   - PATH:         远程路径 (Path on remote, 例如: documents/photos, backup.zip)
+#   - LOCAL_PATH:   本地路径 (Local path, 例如: ./myfolder, /home/user/downloads)
+#   - OPTIONS:      rclone 选项 (rclone options, 例如: --verbose, --dry-run)
+#   - FILTER:       文件过滤条件 (File filter, 例如: "*.txt", "important/")
+
+##############################################################################
+# 配置 (Configuration, rclone config)
+##############################################################################
+
+rclone config                                 # 交互式配置 rclone
+rclone config create REMOTE                    # 创建新的远程配置
+rclone config show REMOTE                      # 显示远程配置详情
+rclone config delete REMOTE                    # 删除远程配置
+rclone config file                             # 打开 rclone 配置文件 (rclone.conf)
+
+##############################################################################
+# 基本操作 (Basic Operations)
+##############################################################################
+
+rclone ls REMOTE:PATH                          # 列出远程目录内容 (List directory)
+rclone lsd REMOTE:PATH                         # 列出目录和对象 (List directories and objects)
+rclone lsl REMOTE:PATH                         # 列出目录和对象 (长列表格式)
+rclone size REMOTE:PATH                        # 显示远程路径总大小
+rclone df REMOTE:PATH                          # 显示远程存储空间使用情况 (Disk Free)
+rclone cleanup REMOTE:PATH                     # 清理远程存储空间 (部分云盘需要)
+rclone version                                # 显示 rclone 版本信息
+rclone help COMMAND                            # 查看命令帮助 (例如: rclone help copy)
+
+##############################################################################
+# 同步和传输 (Sync & Transfer, rclone sync, copy, move)
+##############################################################################
+
+rclone sync LOCAL_PATH REMOTE:PATH             # 同步本地到远程 (单向, 删除目标目录多余文件)
+rclone sync REMOTE:PATH LOCAL_PATH             # 同步远程到本地 (单向, 删除本地目录多余文件)
+rclone sync REMOTE1:PATH1 REMOTE2:PATH2         # 远程到远程同步 (单向, 删除目标目录多余文件)
+rclone copy LOCAL_PATH REMOTE:PATH             # 复制本地到远程 (单向, 保留目标目录多余文件)
+rclone copy REMOTE:PATH LOCAL_PATH             # 复制远程到本地 (单向, 保留本地目录多余文件)
+rclone copy REMOTE1:PATH1 REMOTE2:PATH2         # 远程到远程复制 (单向, 保留目标目录多余文件)
+rclone move LOCAL_PATH REMOTE:PATH             # 移动本地到远程 (单向, 删除本地源文件)
+rclone move REMOTE:PATH LOCAL_PATH             # 移动远程到本地 (单向, 删除远程源文件)
+rclone move REMOTE1:PATH1 REMOTE2:PATH2         # 远程到远程移动 (单向, 删除远程源文件)
+
+# 常用选项 (Common Options for sync/copy/move):
+#   - --dry-run             # 模拟运行，不实际执行操作
+#   - --verbose, -v         # 显示详细输出 (可多次使用增加详细程度 -vv, -vvv)
+#   - --progress            # 显示传输进度
+#   - --stats DURATION      # 每隔 DURATION 时间显示统计信息 (例如: --stats 5s)
+#   - --transfers N         # 并发传输文件数量 (默认: 4)
+#   - --checkers N          # 并发检查文件数量 (默认: 8)
+#   - --delete-during       # 同步时，在传输过程中删除目标目录多余文件 (默认: --delete-after)
+#   - --delete-after        # 同步时，在传输完成后删除目标目录多余文件 (默认)
+#   - --delete-before       # 同步时，在传输开始前删除目标目录多余文件
+#   - --compare-dest REMOTE2:PATH2  # 与 REMOTE2:PATH2 比较，只上传不同的文件 (用于备份)
+#   - --backup-dir REMOTE3:PATH3     # 将更新或删除的文件备份到 REMOTE3:PATH3 (用于备份)
+#   - --suffix SUFFIX       # 为备份文件添加后缀 (例如: --suffix .bak)
+
+##############################################################################
+# 文件和目录操作 (File & Directory Operations)
+##############################################################################
+
+rclone mkdir REMOTE:PATH                          # 创建远程目录
+rclone rmdir REMOTE:PATH                          # 删除远程空目录
+rclone delete REMOTE:PATH                         # 删除远程目录及其内容 (慎用!)
+rclone purge REMOTE:PATH                          # 彻底删除远程目录及其内容 (更慎用!!)
+rclone touch REMOTE:PATH/file.txt                 # 创建空文件 (或更新时间戳)
+rclone cat REMOTE:PATH/file.txt                   # 输出远程文件内容到终端
+rclone sha1sum REMOTE:PATH/file.txt               # 计算远程文件 SHA1 校验和
+rclone md5sum REMOTE:PATH/file.txt                # 计算远程文件 MD5 校验和
+rclone check REMOTE:PATH LOCAL_PATH               # 检查远程和本地文件一致性
+
+##############################################################################
+# 过滤 (Filtering, --include, --exclude, --filter)
+##############################################################################
+
+rclone copy LOCAL_PATH REMOTE:PATH --include "*.txt"  # 只包含 .txt 文件
+rclone copy LOCAL_PATH REMOTE:PATH --exclude "*.jpg"  # 排除 .jpg 文件
+rclone copy LOCAL_PATH REMOTE:PATH --include "important/*" --exclude "*" # 只包含 important 目录及其内容
+rclone copy LOCAL_PATH REMOTE:PATH --filter "规则文件.txt" # 使用过滤规则文件
+
+# 过滤规则文件 (规则文件.txt 示例):
+#   + *.txt                    # 包含所有 .txt 文件
+#   - *.jpg                    # 排除所有 .jpg 文件
+#   + important/              # 包含 important 目录
+#   - *                       # 排除所有其他文件和目录
+
+##############################################################################
+#挂载 (Mount, rclone mount)
+##############################################################################
+
+rclone mount REMOTE:PATH LOCAL_MOUNT_POINT       # 将远程挂载到本地目录 (需要 fuse)
+rclone serve webdav REMOTE:PATH --addr :8080     # WebDAV 服务 (通过 WebDAV 访问远程)
+rclone serve http REMOTE:PATH --addr :8080       # HTTP 服务 (通过 HTTP 访问远程)
+
+# 挂载选项 (Mount Options):
+#   --allow-other             # 允许其他用户访问挂载点
+#   --vfs-cache-mode full     # 启用完整 VFS 缓存 (提高性能，占用本地磁盘空间)
+#   --vfs-cache-mode writes   # 启用写入 VFS 缓存 (提高写入性能)
+#   --vfs-cache-mode minimal  # 启用最小 VFS 缓存 (只缓存元数据)
+#   --vfs-cache-mode off      # 关闭 VFS 缓存 (默认)
+#   --daemon                  # 后台运行挂载 (Linux/macOS)
+
+# 卸载挂载点 (Unmount):
+#   fusermount -u LOCAL_MOUNT_POINT  # 卸载 (Linux)
+#   umount LOCAL_MOUNT_POINT         # 卸载 (macOS)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 --dry-run 预览操作，避免误操作
+# 结合 screen 或 tmux 在后台运行长时间同步任务
+# 使用别名 (alias) 简化常用命令，例如:
+#   alias rclonesync='rclone sync --verbose --progress'
+#   alias rclonecopy='rclone copy --verbose --progress'
+
+# 使用环境变量简化远程路径:
+#   export RCLONE_CONFIG_MYDRIVE_TYPE=drive
+#   export RCLONE_CONFIG_MYDRIVE_CLIENT_ID="..."
+#   export RCLONE_CONFIG_MYDRIVE_CLIENT_SECRET="..."
+#   export RCLONE_CONFIG_MYDRIVE_TOKEN="..."
+#   rclone ls mydrive:documents  # 直接使用 mydrive: 而不需要完整 REMOTE:PATH
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 将本地 pictures 目录同步到 Google Drive 的 Backups/Pictures 目录 (单向同步，删除目标多余文件):
+#   rclone sync ~/pictures/ mydrive:Backups/Pictures/ --verbose --progress
+
+# 将 Google Drive 的 Documents 目录复制到本地 documents 目录 (单向复制，保留本地多余文件):
+#   rclone copy mydrive:Documents/ ~/documents/ --verbose --progress
+
+# 创建 Google Drive 远程配置 (交互式):
+#   rclone config create mydrive
+
+# 列出 Google Drive 根目录内容:
+#   rclone ls mydrive:
+
+# 下载 Google Drive 文件 backup.zip 到当前目录:
+#   rclone copy mydrive:backup.zip ./
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# 官方文档 (Official Documentation): https://rclone.org/
+# GitHub 仓库 (GitHub Repository): https://github.com/rclone/rclone
+# rclone 论坛 (rclone Forum): https://forum.rclone.org/
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

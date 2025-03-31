@@ -1,0 +1,70 @@
+##############################################################################
+# Uptime Command 速查表 (Uptime Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 简洁显示系统运行时长及负载 (Display system uptime and load average)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+uptime                                      # 显示系统运行时长, 用户数和负载
+                                            # (Show uptime, number of users, and load average)
+
+uptime -p                                   # 以 "pretty" 格式显示运行时长 (易读)
+                                            # (Show uptime in a "pretty" format, e.g., "up 1 week, 2 days, 3 hours, 4 minutes")
+
+uptime -s                                   # 显示系统启动时间 (since boot)
+                                            # (Show system boot time in the format "YYYY-MM-DD HH:MM:SS")
+
+uptime -h | --help                           # 显示帮助信息 (Help message)
+uptime -V | --version                        # 显示版本信息 (Version information)
+
+##############################################################################
+# 输出字段解释 (Output Field Explanation)
+##############################################################################
+
+# 输出通常包含以下字段 (Output usually contains the following fields):
+#  - 当前时间 (Current time)
+#  - 系统已运行时间 (system uptime)
+#  - 当前登录用户数 (number of users currently logged in)
+#  - 系统在过去 1, 5 和 15 分钟的平均负载 (system load averages for the past 1, 5, and 15 minutes)
+
+##############################################################################
+# 使用技巧 (Tips and Tricks)
+##############################################################################
+
+# 结合 watch 命令实时监控 uptime (Monitor uptime in real-time using watch):
+#   watch -n 1 uptime                        # 每秒刷新 uptime 信息 (Refresh uptime info every second)
+
+# 在脚本中使用 uptime 检查系统是否重启 (Use uptime in scripts to check if the system rebooted):
+#   if uptime -s | grep "$(date +%Y-%m-%d)" ; then
+#       echo "System booted today"
+#   else
+#       echo "System booted before today"
+#   fi
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 简单运行 uptime 命令:
+#   uptime
+#   #  10:30:00 up 1 day,  2:34,  2 users,  load average: 0.10, 0.05, 0.01
+
+# 使用 -p 选项获取易读的运行时长:
+#   uptime -p
+#   # up 1 day, 2 hours, 34 minutes
+
+# 获取系统启动时间:
+#   uptime -s
+#   # 2024-07-27 07:55:26
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://man7.org/linux/man-pages/man1/uptime.1.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

@@ -1,0 +1,131 @@
+##############################################################################
+# kill 命令速查表 (kill Command Cheatsheet)
+# 用于终止进程 (Terminate Processes)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PID:    进程 ID (Process ID)
+#   - SIGNAL: 信号名称或编号 (Signal name or number, 例如: SIGTERM, 15, SIGKILL, 9)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+kill PID                                        # 发送默认信号 TERM (15) 给进程
+kill -SIGNAL PID                                 # 发送指定信号给进程
+kill -l                                         # 列出所有信号名称和编号
+kill -l SIGNAL_NUMBER                            # 列出信号名称
+
+# 提示:
+#   - 默认信号是 TERM (15)，尝试优雅地终止进程。
+#   - 如果进程没有响应 TERM，可以使用 KILL (9) 强制终止。
+
+##############################################################################
+# 常用信号 (Common Signals)
+##############################################################################
+
+# 终止信号 (Termination Signals):
+#   - SIGTERM (15, TERM):  默认信号，请求进程优雅终止 (允许清理资源)
+#   - SIGKILL (9, KILL):   强制终止进程，立即结束，不进行清理 (慎用)
+#   - SIGHUP (1, HUP):     挂起信号，常用于重新加载配置文件 (例如: kill -HUP PID)
+#   - SIGINT (2, INT):     中断信号，通常由 Ctrl+C 触发
+#   - SIGQUIT (3, QUIT):   退出信号，通常由 Ctrl+\ 触发，并可能产生 core dump
+
+# 暂停/继续信号 (Stop/Continue Signals):
+#   - SIGSTOP (19, STOP):  暂停进程执行 (可以使用 SIGCONT 继续)
+#   - SIGCONT (18, CONT):  继续执行被暂停的进程
+
+# 用户自定义信号 (User-defined Signals):
+#   - SIGUSR1 (10, USR1)
+#   - SIGUSR2 (12, USR2)
+#   # 可用于进程间通信，具体用途由程序定义
+
+# 错误信号 (Error Signals):
+#   - SIGSEGV (11, SEGV):  段错误，非法内存访问
+#   - SIGBUS (7, BUS):     总线错误，内存对齐错误等
+
+# 忽略信号 (Ignoring Signals):
+#   - SIG_IGN:  在程序中可以设置忽略某些信号 (例如: `signal(SIGINT, SIG_IGN);`)
+
+# 提示:
+#   - 可以使用信号名称 (如 TERM, KILL) 或信号编号 (如 15, 9)。
+#   - 信号名称通常不带 SIG 前缀，但 kill 命令两种形式都接受 (例如: kill TERM PID 和 kill SIGTERM PID 效果相同)。
+
+##############################################################################
+# 批量终止 (Killing Multiple Processes)
+##############################################################################
+
+pkill PROCESS_NAME                           # 按进程名终止进程 (使用信号 TERM)
+pkill -SIGNAL PROCESS_NAME                    # 按进程名发送指定信号
+pkill -u USERNAME PROCESS_NAME                # 终止指定用户运行的进程
+pkill -f PROCESS_NAME                        # 模糊匹配进程名 (全路径匹配)
+pkill -t TTY                                  # 终止指定终端 (TTY) 上的进程
+
+killall PROCESS_NAME                         # 按进程名终止进程 (使用信号 TERM)
+killall -SIGNAL PROCESS_NAME                  # 按进程名发送指定信号
+killall -u USERNAME PROCESS_NAME              # 终止指定用户运行的进程
+killall -v PROCESS_NAME                      # 显示详细终止信息
+killall -e PROCESS_NAME                      # 精确匹配进程名
+
+# 提示:
+#   - `pkill` 和 `killall` 比 `kill` 更方便批量终止进程。
+#   - 注意进程名匹配的规则，避免误杀。
+#   - 使用 `-SIGNAL` 选项可以发送不同的信号。
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 查找进程 PID:
+#   - `ps aux | grep PROCESS_NAME`
+#   - `pgrep PROCESS_NAME`
+#   - `pidof PROCESS_NAME`
+
+# 强制终止无响应进程:
+#   - `kill -9 PID`  或  `kill -KILL PID` (非常规手段，尽量先尝试 TERM)
+
+# 终止属于特定用户的进程:
+#   - `pkill -u USERNAME` (小心使用，会终止用户所有进程)
+
+# 终止指定终端上的所有进程:
+#   - 先用 `who` 或 `w` 命令查看终端 (TTY)，然后 `pkill -t TTY`
+
+# 使用 `nohup` 忽略 HUP 信号，使程序在后台持续运行 (即使终端关闭):
+#   - `nohup command &`
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 终止 PID 为 12345 的进程 (发送 TERM 信号):
+#   kill 12345
+
+# 强制终止 PID 为 67890 的进程 (发送 KILL 信号):
+#   kill -9 67890
+
+# 重新加载 nginx 配置 (发送 HUP 信号):
+#   kill -HUP $(pidof nginx)
+
+# 终止所有名为 "my_app" 的进程 (发送 TERM 信号):
+#   pkill my_app
+
+# 强制终止所有名为 "java" 的进程 (发送 KILL 信号):
+#   pkill -9 java
+
+# 列出所有信号名称:
+#   kill -l
+
+# 列出信号编号为 2 的信号名称 (SIGINT):
+#   kill -l 2
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://man7.org/linux/man-pages/man1/kill.1.html
+# https://man7.org/linux/man-pages/man1/pkill.1.html
+# https://man7.org/linux/man-pages/man1/killall.1.html
+# https://www.computerhope.com/unix/ukill.htm
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

@@ -1,0 +1,181 @@
+##############################################################################
+# AWK 速查表 (AWK Cheatsheet)
+# 强大的文本处理工具 (Powerful Text Processing Tool)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - FILE:      输入文件名 (Input file name)
+#   - $0:        当前行 (Entire current line)
+#   - $1, $2...: 当前行的第1, 2...个字段 (Field 1, 2... of current line)
+#   - FS:        字段分隔符 (Field Separator, 默认空格或制表符)
+#   - OFS:       输出字段分隔符 (Output Field Separator, 默认空格)
+#   - RS:        记录分隔符 (Record Separator, 默认换行符)
+#   - ORS:       输出记录分隔符 (Output Record Separator, 默认换行符)
+#   - NR:        当前行号 (Number of current Record/Line)
+#   - NF:        当前行字段数 (Number of Fields in current Record/Line)
+#   - pattern:   匹配模式 (Pattern to match lines)
+#   - action:    执行动作 (Action to perform on matched lines, enclosed in {})
+#   - expression: 表达式 (Mathematical or string expression)
+
+##############################################################################
+# 基本语法和执行 (Basic Syntax and Execution)
+##############################################################################
+
+awk '{action}' FILE                           # 对每行执行 action (Execute action for each line)
+awk 'pattern {action}' FILE                    # 匹配 pattern 的行执行 action (Action for lines matching pattern)
+awk 'BEGIN {setup} {action} END {cleanup}' FILE # BEGIN 预处理, END 后处理 (Setup before, action for each line, cleanup after)
+awk -F':' '{print $1, $3}' /etc/passwd        # 使用 ':' 作为字段分隔符 (Use ':' as field separator)
+awk -v var=value '{print var, $1}' FILE        # 定义 awk 变量 (Define awk variable)
+awk -f script.awk FILE                         # 从脚本文件执行 awk (Execute awk from script file)
+
+# 提示:
+#   - action 必须用 {} 包围 (Action must be enclosed in {})
+#   - pattern 和 action 可以省略其一 (Either pattern or action can be omitted)
+#   - 默认 action 是 {print $0} (Default action is {print $0})
+
+##############################################################################
+# 模式 (Patterns)
+##############################################################################
+
+/正则表达式/ {action}                         # 正则表达式匹配 (Regular expression matching)
+$1 == "value" {action}                        # 字段等于特定值 (Field equals specific value)
+$2 > 10 {action}                             # 字段数值比较 (Field numerical comparison)
+NR == 10 {action}                            # 行号匹配 (Line number matching)
+NR >= 5 && NR <= 10 {action}                 # 行号范围匹配 (Line number range matching)
+/pattern1/, /pattern2/ {action}              # 范围模式匹配 (Range pattern matching)
+BEGIN {action}                               # BEGIN 块，在处理输入前执行 (Executed before input processing)
+END {action}                                 # END 块，在处理输入后执行 (Executed after input processing)
+
+# 提示:
+#   - 支持丰富的正则表达式 (Supports rich regular expressions)
+#   - 可以组合多个条件 (Conditions can be combined with &&, ||, !)
+
+##############################################################################
+# 动作 (Actions)
+##############################################################################
+
+print [items]                                 # 打印 items, 默认 $0 (Print items, default $0)
+printf "格式" [items]                         # 格式化打印 (Formatted print)
+{ action1; action2; ... }                     # 复合动作 (Multiple actions)
+变量 = 表达式                                 # 变量赋值 (Variable assignment)
+if (条件) { action } [else { action }]        # 条件语句 (Conditional statement)
+while (条件) { action }                       # while 循环 (While loop)
+for (初始; 条件; 步进) { action }             # for 循环 (For loop)
+for (item in 数组) { action }                 # for-in 循环 (For-in loop for arrays)
+next                                         # 跳过当前行，处理下一行 (Skip current line, process next line)
+exit [返回值]                                 # 退出 awk (Exit awk)
+
+# 提示:
+#   - 动作可以使用内置函数和自定义函数 (Actions can use built-in and user-defined functions)
+#   - 支持算术运算、字符串操作、数组等 (Supports arithmetic, string operations, arrays, etc.)
+
+##############################################################################
+# 内置变量 (Built-in Variables)
+##############################################################################
+
+FS=" "                                        # 字段分隔符 (Field Separator, 默认空格)
+OFS=" "                                       # 输出字段分隔符 (Output Field Separator, 默认空格)
+RS="\n"                                       # 记录分隔符 (Record Separator, 默认换行符)
+ORS="\n"                                      # 输出记录分隔符 (Output Record Separator, 默认换行符)
+NR                                           # 当前行号 (Number of current Record/Line)
+NF                                           # 当前行字段数 (Number of Fields in current Record/Line)
+FILENAME                                     # 当前输入文件名 (Current input file name)
+FNR                                          # 当前文件行号 (File Number of Record, 文件内行号)
+ARGV                                         # 命令行参数数组 (Command line arguments array)
+ARGC                                         # 命令行参数个数 (Command line arguments count)
+ENVIRON                                      # 环境变量数组 (Environment variables array)
+
+# 提示:
+#   - 可以在 BEGIN 块中修改 FS, OFS, RS, ORS 等 (Can modify FS, OFS, RS, ORS etc. in BEGIN block)
+#   - NR 和 NF 在处理每一行时自动更新 (NR and NF are automatically updated for each line)
+
+##############################################################################
+# 常用内置函数 (Common Built-in Functions)
+##############################################################################
+
+# 字符串函数 (String Functions)
+length(string)                               # 字符串长度 (Length of string)
+substr(string, start, length)                # 子字符串 (Substring)
+index(string, substring)                     # 子字符串索引 (Index of substring)
+split(string, array, separator)              # 分割字符串到数组 (Split string into array)
+tolower(string)                              # 转换为小写 (Convert to lowercase)
+toupper(string)                              # 转换为大写 (Convert to uppercase)
+sub(regexp, replacement, target)             # 替换第一个匹配 (Substitute first match)
+gsub(regexp, replacement, target)            # 全局替换 (Global substitution)
+
+# 数值函数 (Numeric Functions)
+int(x)                                       # 取整 (Integer part)
+sqrt(x)                                      # 平方根 (Square root)
+rand()                                       # 随机数 (Random number between 0 and 1)
+srand(seed)                                  # 设置随机数种子 (Set random number seed)
+sin(x), cos(x), exp(x), log(x)               # 数学函数 (Mathematical functions)
+
+# I/O 函数 (Input/Output Functions)
+getline [var]                                # 读取下一行到 var (Read next line into var)
+system(command)                              # 执行 shell 命令 (Execute shell command)
+close(filename)                              # 关闭文件 (Close file)
+print | "command"                            # 输出通过管道到命令 (Output piped to command)
+"command" | getline [var]                    # 命令输出通过管道输入到 getline (Command output piped to getline)
+
+# 提示:
+#   - 详细函数列表请参考 `man awk` 或 `gawk --help` (Refer to `man awk` or `gawk --help` for complete function list)
+
+##############################################################################
+# 数组 (Arrays)
+##############################################################################
+
+array[index] = value                         # 数组赋值 (Array assignment)
+delete array[index]                          # 删除数组元素 (Delete array element)
+index in array                               # 检查索引是否存在 (Check if index exists)
+for (i in array) { print i, array[i] }      # 遍历数组 (Iterate through array)
+split("str1,str2,str3", arr, ",")           # 使用 split 函数创建数组 (Create array using split)
+
+# 提示:
+#   - awk 数组是关联数组 (Awk arrays are associative arrays)
+#   - 数组索引可以是字符串或数字 (Array index can be string or number)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 -F 指定分隔符处理 CSV 文件:
+#   awk -F',' '{print $1, $2}' data.csv
+
+# 计算文件行数:
+#   awk 'END {print NR}' FILE
+
+# 计算某一列的总和:
+#   awk '{sum += $1} END {print sum}' FILE
+
+# 打印不重复的行 (去重):
+#   awk '!seen[$0]++' FILE
+
+# 过滤空行:
+#   awk 'NF > 0' FILE
+
+# BEGIN 块中设置多个变量:
+#   awk 'BEGIN {FS=":"; OFS="\t"; count=0} {print $1, $3; count++} END {print "Total lines:", count}' /etc/passwd
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 打印 /etc/passwd 文件中用户名和用户ID，以制表符分隔:
+#   awk -F':' '{print $1 "\t" $3}' /etc/passwd
+
+# 统计 access.log 中每个 IP 地址的访问次数:
+#   awk '{print $1}' access.log | sort | uniq -c | sort -nr
+
+# 从 CSV 文件中提取第二列和第三列，并计算第三列的总和:
+#   awk -F',' '{print $2, $3; sum += $3} END {print "Sum of column 3:", sum}' data.csv
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# GNU Awk 用户手册: https://www.gnu.org/software/gawk/manual/gawk.html
+# AWK 教程: https://www.tutorialspoint.com/awk/index.htm
+# 简明 AWK 教程: https://www.grymoire.com/Unix/Awk.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

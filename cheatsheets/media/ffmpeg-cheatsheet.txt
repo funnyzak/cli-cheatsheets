@@ -1,0 +1,194 @@
+##############################################################################
+# FFmpeg 速查表 (FFmpeg Cheatsheet)
+# 多媒体处理瑞士军刀 (Swiss Army Knife for Multimedia)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - INPUT:  输入文件路径 (Input file path)
+#   - OUTPUT: 输出文件路径 (Output file path)
+#   - FORMAT: 文件格式 (e.g., mp4, avi, mp3, gif)
+#   - CODEC:  编解码器 (e.g., libx264, libx265, libmp3lame, aac)
+#   - VCODEC: 视频编解码器 (Video codec)
+#   - ACODEC: 音频编解码器 (Audio codec)
+#   - VFILTER: 视频滤镜 (Video filter)
+#   - AFILTER: 音频滤镜 (Audio filter)
+#   - OPTIONS: FFmpeg 选项 (FFmpeg options)
+#   - TIME:   时间 (e.g., 00:01:30, 90s)
+#   - SIZE:   尺寸 (e.g., 1920x1080, 640x480, 720p)
+
+##############################################################################
+# 基本转换 & 常用选项 (Basic Conversion & Common Options)
+##############################################################################
+
+ffmpeg -i INPUT OUTPUT                              # 自动转换格式 (Auto format conversion)
+ffmpeg -i INPUT -c copy OUTPUT                      # 流复制 (Stream copy, 无重新编码)
+ffmpeg -i INPUT -vn OUTPUT                           # 提取音频 (Extract audio, -vn: no video)
+ffmpeg -i INPUT -an OUTPUT                           # 提取视频 (Extract video, -an: no audio)
+ffmpeg -i INPUT -c:v VCODEC -c:a ACODEC OUTPUT      # 指定视频/音频编解码器 (Specify codecs)
+ffmpeg -i INPUT -b:v BITRATE OUTPUT                 # 指定视频比特率 (e.g., 2M, 500k)
+ffmpeg -i INPUT -b:a BITRATE OUTPUT                 # 指定音频比特率 (e.g., 128k, 320k)
+ffmpeg -i INPUT -r FPS OUTPUT                       # 指定帧率 (Frame rate, for video)
+ffmpeg -i INPUT -ar FREQ OUTPUT                      # 指定音频采样率 (Audio sample rate, e.g., 44100)
+ffmpeg -i INPUT -ss TIME -to TIME OUTPUT             # 剪切片段 (Trim segment, -ss: start, -to: end)
+ffmpeg -i INPUT -t DURATION OUTPUT                  # 剪切时长 (Trim duration, -t: duration)
+ffmpeg -i INPUT -f FORMAT OUTPUT                     # 强制输出格式 (Force output format)
+ffmpeg -i INPUT -y OUTPUT                            # 覆盖输出文件 (Overwrite output file, -y: yes)
+ffmpeg -i INPUT -n OUTPUT                            # 不覆盖输出文件 (No overwrite, -n: no)
+ffmpeg -i INPUT -metadata TITLE="Title" -metadata ARTIST="Artist" OUTPUT # 添加元数据 (Add metadata)
+ffmpeg -i INPUT -map 0 OUTPUT                       # 保留所有流 (Keep all streams)
+ffmpeg -i INPUT -map 0:v -map 0:a OUTPUT           # 保留视频和音频流 (Keep video and audio streams)
+ffmpeg -i INPUT -map 0:v:0 -map 0:a:1 OUTPUT       # 选择特定流 (Select specific stream index)
+
+# 提示:
+#   - 使用 `-c copy` 进行流复制，速度快，但仅适用于格式兼容的情况。
+#   - 使用 `-c:v libx264` 和 `-c:a aac` 是常用的视频和音频编码组合。
+#   - 时间格式可以使用 `HH:MM:SS.milliseconds` 或秒数。
+#   - 比特率可以使用 `k` (千) 或 `M` (兆) 单位，例如 `500k`, `2M`。
+
+##############################################################################
+# 视频操作 (Video Operations)
+##############################################################################
+
+ffmpeg -i INPUT -vf scale=SIZE OUTPUT               # 缩放视频尺寸 (Scale video size, e.g., 1920x1080, hd720)
+ffmpeg -i INPUT -vf crop=w:h:x:y OUTPUT             # 裁剪视频 (Crop video, w:width, h:height, x:x-offset, y:y-offset)
+ffmpeg -i INPUT -vf pad=w:h:x:y:color OUTPUT        # 填充视频 (Pad video, 添加边框, color: e.g., black, white)
+ffmpeg -i INPUT -vf "transpose=1" OUTPUT           # 旋转 90 度 (Rotate 90 degrees clockwise, transpose=1)
+ffmpeg -i INPUT -vf "transpose=2" OUTPUT           # 旋转 90 度逆时针 (Rotate 90 degrees counter-clockwise, transpose=2)
+ffmpeg -i INPUT -vf "transpose=3" OUTPUT           # 旋转 180 度 (Rotate 180 degrees, transpose=3)
+ffmpeg -i INPUT -vf "hflip" OUTPUT                 # 水平翻转 (Horizontal flip)
+ffmpeg -i INPUT -vf "vflip" OUTPUT                 # 垂直翻转 (Vertical flip)
+ffmpeg -i INPUT -vf "fps=FPS" OUTPUT               # 修改帧率 (Change frame rate)
+ffmpeg -i INPUT -vf "setpts=PTS/SPEED*PTS" OUTPUT  # 加速/减速视频 (Speed up/slow down video, SPEED > 1: speed up, SPEED < 1: slow down)
+ffmpeg -i INPUT -vf "drawtext=text='水印文字':x=10:y=10:fontsize=24:fontcolor=white" OUTPUT # 添加水印文字 (Add text watermark)
+ffmpeg -i INPUT -i WATERMARK_IMAGE -filter_complex "overlay=10:10" OUTPUT # 添加水印图片 (Add image watermark)
+ffmpeg -i INPUT -vf "reverse" OUTPUT               # 视频倒放 (Reverse video)
+ffmpeg -loop 1 -i IMAGE -t DURATION -vf "scale=SIZE,fps=FPS" OUTPUT_GIF # 图片转 GIF (Image to GIF)
+
+# 提示:
+#   - 多个滤镜可以用逗号分隔，例如 `-vf "scale=640x480,fps=25"`
+#   - `transpose` 滤镜的值: 0=90CW, 1=90CCW, 2=180, 3=垂直翻转+90CW
+
+##############################################################################
+# 音频操作 (Audio Operations)
+##############################################################################
+
+ffmpeg -i INPUT -af volume=VOLUME OUTPUT            # 调整音量 (Adjust volume, e.g., 0.5: half, 2: double)
+ffmpeg -i INPUT -af "aresample=FREQ" OUTPUT         # 修改音频采样率 (Change audio sample rate)
+ffmpeg -i INPUT -af "atempo=SPEED" OUTPUT           # 加速/减速音频 (Speed up/slow down audio, similar to setpts for video)
+ffmpeg -i INPUT -af "pan=stereo|c0=0.9*c0+0.1*c1|c1=0.1*c0+0.9*c1" OUTPUT # 调整声道 (Adjust audio channels, e.g., stereo panning)
+ffmpeg -i INPUT -af "apad" -t DURATION OUTPUT       # 音频填充/延长 (Audio padding/extend to duration)
+ffmpeg -i INPUT -af "areverse" OUTPUT              # 音频倒放 (Reverse audio)
+
+# 提示:
+#   - 音频滤镜使用 `-af` 选项。
+#   - `atempo` 滤镜可以实现音频变速，但音调可能改变。
+
+##############################################################################
+# 格式特定选项 (Format Specific Options)
+##############################################################################
+
+# GIF 相关:
+ffmpeg -i INPUT -vf "fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" OUTPUT.gif # 高质量 GIF
+ffmpeg -i INPUT -gifflags +transdiff -y OUTPUT.gif  # 更小的 GIF (Smaller GIF with transparency optimization)
+
+# MP4 相关:
+ffmpeg -i INPUT -movflags faststart OUTPUT.mp4       # MP4 快速启动 (Fast start for web streaming)
+
+# HLS (HTTP Live Streaming) 相关:
+ffmpeg -i INPUT -hls_time 10 -hls_list_size 0 -hls_segment_filename "seg_%03d.ts" OUTPUT.m3u8 # 生成 HLS 视频流
+
+# 提示:
+#   - 不同的输出格式可能需要特定的选项以优化性能或兼容性。
+#   - 查阅 FFmpeg 文档以获取特定格式的详细选项。
+
+##############################################################################
+# 连接 & 分割 (Concatenation & Splitting)
+##############################################################################
+
+# 简单的连接 (Simple concatenation, 格式相同):
+ffmpeg -i "concat:input1.mp4|input2.mp4|input3.mp4" -c copy output.mp4
+
+# 使用 concat demuxer (格式不同或更复杂):
+# 1. 创建文件列表 (mylist.txt):
+#    file 'input1.mp4'
+#    file 'input2.avi'
+#    file 'input3.mov'
+# 2. 执行连接命令:
+#    ffmpeg -f concat -safe 0 -i mylist.txt -c copy output.mp4
+
+# 分割视频 (Split video into segments):
+ffmpeg -i INPUT -c copy -segment_time 10 -f segment -segment_format mp4 output_%03d.mp4 # 每 10 秒分割一个 MP4 文件
+
+# 提示:
+#   - 简单连接要求输入文件格式和编解码器相同。
+#   - 使用 concat demuxer 可以连接不同格式的文件，但可能需要重新编码。
+#   - 分割视频可以使用 `-segment_time` 和 `-segment_format` 选项。
+
+##############################################################################
+# 屏幕录制 & 摄像头捕获 (Screen Recording & Camera Capture)
+##############################################################################
+
+# 屏幕录制 (Screen recording, Linux x11grab):
+ffmpeg -f x11grab -video_size 1920x1080 -r 30 -i :0.0+0,0 output.mp4 # 录制整个屏幕
+ffmpeg -f x11grab -video_size 640x480 -i :0.0+100,100 output.mp4 # 录制屏幕区域 (x=100, y=100, size=640x480)
+
+# 摄像头捕获 (Camera capture, Linux v4l2):
+ffmpeg -f v4l2 -video_size 640x480 -i /dev/video0 output.mp4 # 捕获默认摄像头
+
+# 提示:
+#   - 屏幕录制和摄像头捕获的设备名和选项可能因系统而异。
+#   - 在 macOS 上使用 `avfoundation` 设备，Windows 上使用 `dshow` 设备。
+#   - 使用 `-list_devices true -f dshow -i dummy` (Windows) 或 `-list_devices true -f avfoundation -i dummy` (macOS) 列出可用设备。
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 `-progress -` 显示实时进度:
+ffmpeg -i INPUT OUTPUT -progress -
+
+# 使用 `-stats` 显示详细编码统计信息:
+ffmpeg -i INPUT OUTPUT -stats
+
+# 使用 `-loglevel` 控制输出日志级别 (减少冗余信息):
+ffmpeg -i INPUT OUTPUT -loglevel warning
+
+# 使用 `-help` 查看 FFmpeg 帮助信息:
+ffmpeg -help
+ffmpeg -help demuxers
+ffmpeg -help encoder=libx264
+ffmpeg -help filter=scale
+
+# 使用 `-encoders`, `-decoders`, `-muxers`, `-demuxers`, `-formats`, `-codecs`, `-filters` 列出可用组件:
+ffmpeg -encoders
+ffmpeg -filters
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 将 MP4 转换为 GIF，并调整大小:
+ffmpeg -i input.mp4 -vf "fps=10,scale=480:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" output.gif
+
+# 提取 MP4 视频的音频为 MP3:
+ffmpeg -i input.mp4 -vn -acodec libmp3lame output.mp3
+
+# 视频添加水印图片 (watermark.png):
+ffmpeg -i input.mp4 -i watermark.png -filter_complex "overlay=10:10" output_watermarked.mp4
+
+# 剪切视频前 30 秒并调整分辨率为 720p:
+ffmpeg -i input.mp4 -t 30 -vf scale=hd720 output_trimmed_720p.mp4
+
+# 将多个 JPG 图片合成为 MP4 视频 (帧率为 25fps):
+ffmpeg -framerate 25 -i image%03d.jpg -c:v libx264 -pix_fmt yuv420p output_video.mp4
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# FFmpeg 官方文档: https://ffmpeg.org/ffmpeg.html
+# FFmpeg Wiki: https://trac.ffmpeg.org/wiki
+# FFmpeg Filters Documentation: https://ffmpeg.org/ffmpeg-filters.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

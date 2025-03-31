@@ -1,0 +1,118 @@
+##############################################################################
+# Nano 文本编辑器速查表 (Nano Text Editor Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - ^: Ctrl 键 (Control key)
+#   - M-: Meta 键 (通常是 Alt 键或 Esc 键)
+#   - RET: 回车键 (Return/Enter key)
+
+##############################################################################
+# 文件操作 (File Operations)
+##############################################################################
+
+^O      Write Out         # 保存当前文件 (Save current file)
+^W      Where Is          # 查找文本 (Search for text)
+^R      Read File         # 插入文件内容到当前位置 (Insert file content)
+^X      Exit              # 退出 nano (如果文件已修改会提示保存) (Exit nano, prompts to save if modified)
+M-U     Undo              # 撤销上一步操作 (Undo last action)
+M-E     Redo              # 重做上一步撤销的操作 (Redo last undone action)
+
+##############################################################################
+# 编辑操作 (Editing Operations)
+##############################################################################
+
+^K      Cut Text          # 剪切当前行或选中文本 (Cut current line or selected text)
+^U      Uncut Text        # 粘贴剪切或复制的文本 (Paste cut or copied text)
+^J      Justify           # 调整段落格式 (Wrap lines in a paragraph)
+^T      To Spell          # 拼写检查 (Spell check)
+M-^     First Screen      # 移动到第一屏 (Go to first screen)
+M-v     Last Screen       # 移动到最后一屏 (Go to last screen)
+M-]     To Bracket        # 跳转到匹配的括号 (Jump to matching bracket)
+M-3     Comment/Uncomment # 注释/取消注释当前行或选中文本 (Comment/Uncomment line or selected text)
+M-D     Describe Function # 显示光标所在位置命令的描述 (Show description of command at cursor)
+
+##############################################################################
+# 光标移动 (Cursor Movement)
+##############################################################################
+
+^F      Forward Char      # 向前移动一个字符 (Move forward one character)
+^B      Backward Char     # 向后移动一个字符 (Move backward one character)
+^P      Previous Line     # 移动到上一行 (Move to previous line)
+^N      Next Line         # 移动到下一行 (Move to next line)
+^A      Beginning of Line # 移动到行首 (Move to beginning of line)
+^E      End of Line       # 移动到行尾 (Move to end of line)
+^_      Go to Line        # 跳转到指定行号 (Go to line number, prompts for number)
+M-\     Beginning of Buffer # 移动到文件开头 (Move to beginning of file)
+M-/     End of Buffer     # 移动到文件末尾 (Move to end of file)
+
+##############################################################################
+# 查找与替换 (Search and Replace)
+##############################################################################
+
+^W      Where Is          # 查找文本 (Search for text, same as "Find")
+M-W     Replace           # 替换文本 (Replace text, prompts for find and replace)
+M-A     Replace All       # 替换所有匹配的文本 (Replace all occurrences of text)
+
+##############################################################################
+# 其他功能 (Other Functions)
+##############################################################################
+
+^G      Get Help          # 获取帮助信息 (Display help information)
+^C      Cur Pos           # 显示当前光标位置 (Show current cursor position)
+M-G     Go to Line        # 跳转到指定行号 (Go to line number, alternative to ^_)
+M-X     Enable/Disable Help Lines # 切换帮助行显示 (Toggle help lines visibility)
+M-$     Go to Column      # 跳转到指定列号 (Go to column number)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 启用鼠标支持:
+#   nano 默认启用鼠标支持，可以在终端窗口中使用鼠标进行光标定位和选择。
+
+# 显示行号:
+#   使用 "-l" 或 "--linenumbers" 选项启动 nano 可以显示行号，例如: `nano -l 文件名`
+
+# 使用 .nanorc 配置文件:
+#   nano 的配置文件为 ~/.nanorc，可以在其中自定义快捷键、颜色方案等。
+#   例如，设置 always show cursor 位置: `set constantshow`
+
+# 快速注释/取消注释多行 (M-3):
+#   选中多行文本后，按 M-3 可以快速注释或取消注释选中的多行。
+
+# 使用剪贴板复制粘贴:
+#   在图形界面终端中，可以使用系统剪贴板进行复制 (Ctrl+Shift+C) 和粘贴 (Ctrl+Shift+V)。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 使用 nano 创建并编辑一个新文件:
+#   nano new_file.txt
+
+# 使用 nano 编辑一个已存在的文件:
+#   nano existing_file.txt
+
+# 使用 nano 打开文件并显示行号:
+#   nano -l another_file.txt
+
+# 在 nano 中查找关键词 "example":
+#   1. 按下 ^W (Where Is)
+#   2. 输入 "example" 并按 RET
+
+# 在 nano 中将 "old_text" 替换为 "new_text":
+#   1. 按下 M-W (Replace)
+#   2. 输入 "old_text" 并按 RET (Find what to replace)
+#   3. 输入 "new_text" 并按 RET (Replace with)
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# GNU nano 官方网站: https://www.nano-editor.org/
+# nano 官方文档: https://www.nano-editor.org/docs/
+# nano 快捷键列表 (英文): https://www.nano-editor.org/dist/latest/nano.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

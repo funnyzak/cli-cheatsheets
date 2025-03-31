@@ -1,0 +1,158 @@
+##############################################################################
+# APT 命令速查表 (APT Command Cheatsheet)
+# Debian/Ubuntu APT 包管理器常用命令速查
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PKG_NAME:   软件包名称 (Package Name, 例如: vim, nginx)
+#   - PKG_FILE:   软件包文件路径 (Package File Path, 例如: /tmp/package.deb)
+#   - VERSION:    软件包版本 (Package Version, 例如: 1.2.3, *)
+#   - REPO_URL:   软件源 URL (Repository URL)
+#   - KEY_URL:    软件源 GPG 密钥 URL (Repository GPG Key URL)
+
+##############################################################################
+# 软件包信息 (Package Information)
+##############################################################################
+
+apt show PKG_NAME                            # 显示软件包详细信息 (版本, 依赖等)
+apt policy [PKG_NAME]                        # 显示软件包策略 (源, 版本优先级)
+apt depends PKG_NAME                         # 显示软件包依赖关系
+apt rdepends PKG_NAME                        # 显示反向依赖 (哪些包依赖此包)
+aptitude show PKG_NAME                       # (aptitude) 更详细的软件包信息 (需安装 aptitude)
+apt-cache show PKG_NAME                      # (apt-cache) 显示软件包信息 (底层工具)
+apt-cache policy [PKG_NAME]                  # (apt-cache) 显示软件包策略 (底层工具)
+
+##############################################################################
+# 软件包搜索 (Package Searching)
+##############################################################################
+
+apt search KEYWORD                           # 搜索软件包 (按名称和描述)
+aptitude search KEYWORD                      # (aptitude) 更灵活的搜索 (支持表达式)
+apt-cache search KEYWORD                     # (apt-cache) 搜索软件包 (底层工具)
+
+##############################################################################
+# 软件包安装 (Package Installation)
+##############################################################################
+
+apt install PKG_NAME                         # 安装软件包 (最新版本)
+apt install PKG_NAME=VERSION                 # 安装指定版本软件包
+apt install ./PKG_FILE                       # 从本地文件安装 .deb 包
+apt reinstall PKG_NAME                       # 重新安装软件包
+apt --fix-broken install                   # 修复损坏的依赖关系并安装
+
+# 提示:
+#   - 使用通配符 * 安装多个包, 例如: `apt install nginx-*`
+#   - 使用 -f 选项尝试修复损坏的系统: `apt -f install`
+
+##############################################################################
+# 软件包升级 (Package Upgrading)
+##############################################################################
+
+apt update                                   # 更新软件包列表 (从软件源)
+apt upgrade                                  # 升级所有可升级软件包 (不删除旧包)
+apt full-upgrade                             # 全面升级 (可能删除旧包以解决依赖)
+apt dist-upgrade                             # (旧版本 Debian/Ubuntu) 全面升级
+apt upgrade PKG_NAME                         # 升级指定软件包
+apt --only-upgrade install PKG_NAME          # 仅升级指定软件包 (不安装新包)
+
+# 提示:
+#   - 升级前务必先执行 `apt update` 更新软件包列表
+#   - `full-upgrade` 比 `upgrade` 更彻底，但风险也稍高
+
+##############################################################################
+# 软件包卸载 (Package Removal)
+##############################################################################
+
+apt remove PKG_NAME                          # 卸载软件包 (保留配置文件)
+apt purge PKG_NAME                           # 彻底卸载软件包 (删除配置文件)
+apt autoremove                               # 自动移除不需要的依赖包 (卸载后)
+aptitude purge PKG_NAME                      # (aptitude) 彻底卸载 (更彻底)
+apt-get remove PKG_NAME                      # (apt-get) 卸载 (底层工具)
+apt-get purge PKG_NAME                       # (apt-get) 彻底卸载 (底层工具)
+apt-get autoremove                           # (apt-get) 自动移除依赖 (底层工具)
+
+# 提示:
+#   - `remove` 和 `purge` 的区别在于是否删除配置文件
+#   - `autoremove` 可以清理系统，释放空间
+
+##############################################################################
+# 软件源管理 (Repository Management)
+##############################################################################
+
+apt sources                                  # 显示配置的软件源列表
+apt edit-sources                             # 编辑软件源配置文件 (sources.list)
+apt-add-repository REPO_URL                  # 添加新的软件源 (例如 PPA)
+apt-key add KEY_FILE                         # 添加软件源 GPG 密钥 (已弃用，推荐 apt-key adv)
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys KEY  # 添加 GPG 密钥 (推荐方式)
+apt-key list                                 # 列出已添加的 GPG 密钥
+apt-key del KEY                              # 删除 GPG 密钥
+
+# 提示:
+#   - PPA (Personal Package Archive) 是个人软件包源
+#   - 添加软件源后需要执行 `apt update` 更新软件包列表
+
+##############################################################################
+# 清理缓存 (Cleaning Cache)
+##############################################################################
+
+apt clean                                    # 清理已下载的软件包文件 (释放空间)
+apt autoclean                                # 清理过时的已下载软件包 (部分清理)
+apt-get clean                                # (apt-get) 清理缓存 (底层工具)
+apt-get autoclean                            # (apt-get) 部分清理缓存 (底层工具)
+
+# 提示:
+#   - 定期清理缓存可以节省磁盘空间
+
+##############################################################################
+# 其他常用命令 (Other Useful Commands)
+##############################################################################
+
+apt list --upgradable                        # 列出可升级的软件包
+apt list --installed                         # 列出已安装的软件包
+apt list PKG_NAME                            # 检查软件包是否已安装及版本
+apt update --fix-missing                     # 修复更新时缺失的文件
+apt -h                                       # 显示 apt 命令帮助
+apt --version                                # 显示 apt 版本信息
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 `sudo` 执行需要 root 权限的 apt 命令:
+#   sudo apt update
+#   sudo apt install PKG_NAME
+
+# 结合 `grep` 过滤软件包列表:
+#   apt list --installed | grep nginx          # 列出已安装的包含 nginx 的软件包
+
+# 使用 `yes` 自动确认安装或卸载 (谨慎使用):
+#   yes | sudo apt install PKG_NAME          # 自动确认安装
+
+# 批量安装软件包:
+#   apt install pkg1 pkg2 pkg3 ...
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 更新软件包列表并升级系统:
+#   sudo apt update
+#   sudo apt full-upgrade
+
+# 安装指定版本的 nginx 和 php7.4:
+#   sudo apt install nginx=1.18.0-6ubuntu14 php7.4
+
+# 彻底卸载 docker 并清理相关依赖:
+#   sudo apt purge docker-ce docker-ce-cli containerd.io
+#   sudo apt autoremove
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Debian Wiki APT: https://wiki.debian.org/Apt
+# Ubuntu Manpage apt: https://manpages.ubuntu.com/manpages/focal/man8/apt.8.html
+# Linux 命令大全 apt: https://man.linuxde.net/apt
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

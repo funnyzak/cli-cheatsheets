@@ -1,0 +1,141 @@
+##############################################################################
+# wget 速查表 (wget Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - URL:  统一资源定位符 (Uniform Resource Locator, 例如: http://example.com/file.txt)
+#   - FILE: 本地文件名 (Local filename, 例如: document.pdf)
+#   - DIR:  本地目录路径 (Local directory path, 例如: /home/user/downloads)
+
+##############################################################################
+# 基本下载 (Basic Download)
+##############################################################################
+
+wget URL                                        # 下载 URL 指向的文件到当前目录
+wget URL -O FILE                                 # 下载 URL 文件并保存为指定 FILE 名
+wget URL -P DIR                                  # 下载 URL 文件到指定 DIR 目录
+wget -O DIR/FILE URL                             # 下载 URL 文件到指定 DIR 并保存为 FILE 名 (较少用)
+
+# 提示:
+#   - 默认情况下，wget 会尝试从 URL 中提取文件名保存。
+#   - 如果 URL 指向 HTML 页面，默认保存为 index.html 或 index.htm。
+
+##############################################################################
+# 下载选项 (Download Options)
+##############################################################################
+
+wget -b URL                                        # 后台下载 (Background download)，日志输出到 wget-log
+wget -q URL                                        # 静默模式 (Quiet mode)，不显示输出
+wget -c URL                                        # 断点续传 (Continue)，续传未完成的下载
+wget --limit-rate=200k URL                         # 限制下载速度为 200KB/s
+wget --tries=5 URL                                 # 尝试下载 5 次，失败后停止
+wget --timeout=10 URL                              # 设置连接超时时间为 10 秒
+wget --wait=5 URL                                  # 下载完成后等待 5 秒再尝试下一个文件 (用于批量下载)
+wget --referer=REFERER_URL URL                     # 发送 Referer (来源页)
+wget --user-agent="User-Agent-String" URL          # 设置 User-Agent 字符串 (模拟浏览器)
+wget --header="Header-Name: Header-Value" URL      # 添加自定义 HTTP Header
+
+# 提示:
+#   - 后台下载可以使用 `tail -f wget-log` 实时查看日志。
+#   - 断点续传适用于下载大文件或网络不稳定情况。
+
+##############################################################################
+# 认证 (Authentication)
+##############################################################################
+
+wget --http-user=USERNAME --http-password=PASSWORD URL  # HTTP Basic 认证
+wget --ask-password URL                               # 提示输入密码
+wget --no-check-certificate URL                       # 不检查服务器证书 (HTTPS) (不安全，慎用)
+wget --certificate=FILE --private-key=FILE URL        # 使用客户端证书和私钥进行认证 (HTTPS)
+
+##############################################################################
+# 递归下载 (Recursive Download / Website Mirroring)
+##############################################################################
+
+wget -r URL                                        # 递归下载网站 (默认深度 5)
+wget -r -l DEPTH URL                               # 递归下载网站，指定深度 DEPTH
+wget -r -np URL                                       # 递归下载，不追踪父目录链接 (No Parent)
+wget -r -nd URL                                       # 递归下载，所有文件保存到当前目录 (No Directories)
+wget -r -A "*.pdf,*.jpg" URL                        # 递归下载，只下载指定文件类型 (Accept)
+wget -r -R "*.html,*.cgi" URL                       # 递归下载，排除指定文件类型 (Reject)
+wget -m URL                                        # 镜像网站 (Mirror)，相当于 -r -N -l inf --no-remove-listing
+
+# 提示:
+#   - 递归下载网站时务必谨慎，避免下载过多内容或对服务器造成过大压力。
+#   - 使用 `-l DEPTH` 限制下载深度，`-np` 避免下载整个网站。
+#   - `-m` 镜像模式常用于备份网站。
+
+##############################################################################
+# 继续和恢复下载 (Continuing and Resuming Downloads)
+##############################################################################
+
+wget -c URL                                        # 断点续传，如果本地文件已存在，从上次停止的位置继续下载
+wget --continue URL                                  # 与 -c 相同，显式指定断点续传
+
+# 提示:
+#   - 断点续传依赖服务器支持 Range Header。
+
+##############################################################################
+# 代理 (Proxy)
+##############################################################################
+
+wget --proxy=on --proxy-user=USER --proxy-password=PASS URL  # 使用代理服务器 (需要设置环境变量或配置文件)
+wget --no-proxy=HOST1,HOST2,... URL                 # 不使用代理的主机列表
+
+# 提示:
+#   - 代理设置也可以通过环境变量 `http_proxy`, `https_proxy`, `ftp_proxy` 等配置。
+
+##############################################################################
+# 其他实用选项 (Other Useful Options)
+##############################################################################
+
+wget -i FILE                                        # 从 FILE 文件中读取 URL 列表批量下载
+wget --post-data="data" URL                         # 发送 POST 请求，数据为 "data"
+wget --post-file=FILE URL                          # 发送 POST 请求，数据从 FILE 文件读取
+wget --spider URL                                   # 蜘蛛模式，只检查链接是否有效，不下载内容
+wget --timestamping URL                             # 时间戳功能，只下载比本地文件新的文件 (-N 简写)
+wget --content-disposition URL                     # 使用 Content-Disposition 头部指定的文件名保存
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 后台下载并查看日志:
+#   nohup wget -b URL &
+#   tail -f wget-log
+
+# 批量下载 URL 列表:
+#   wget -i urls.txt
+
+# 模拟浏览器 User-Agent 下载:
+#   wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" URL
+
+# 下载整个网站到本地目录 (镜像):
+#   wget -m -k -K URL  # -k: 转换链接为本地链接, -K: 创建备份目录
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 下载文件并重命名:
+#   wget URL -O mydocument.pdf
+
+# 后台下载大文件，限制下载速度:
+#   nohup wget -b --limit-rate=500k URL &
+
+# 递归下载某个网站的图片:
+#   wget -r -A "*.jpg,*.jpeg,*.png,*.gif" -nd URL
+
+# 从 URL 列表文件下载:
+#   wget -i url_list.txt
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# GNU Wget 官方手册: https://www.gnu.org/software/wget/manual/wget.html
+# wget 常用命令速查: (可以在网上搜索 "wget cheatsheet" 找到更多资源)
+# `man wget` (本地查看 wget 帮助文档)
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

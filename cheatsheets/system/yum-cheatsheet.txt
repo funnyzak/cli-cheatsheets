@@ -1,0 +1,164 @@
+##############################################################################
+# YUM 命令速查表 (YUM Command Cheatsheet)
+# Yellowdog Updater, Modified
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PACKAGE_NAME: 软件包名称 (e.g., httpd, mysql-server)
+#   - GROUP_NAME:   软件包组名称 (e.g., "Web Server", "Development Tools")
+#   - REPO_NAME:    仓库名称或 ID (e.g., base, epel, updates)
+#   - VERSION:      软件包版本 (e.g., 1.2.3, 8.0)
+#   - ARCH:         软件包架构 (e.g., x86_64, noarch)
+
+##############################################################################
+# 软件包管理 (Package Management)
+##############################################################################
+
+yum install PACKAGE_NAME ...                  # 安装软件包
+yum install PACKAGE_NAME-VERSION ...          # 安装指定版本软件包
+yum reinstall PACKAGE_NAME ...                # 重新安装软件包
+yum update [PACKAGE_NAME] ...                 # 更新软件包 (所有或指定)
+yum upgrade [PACKAGE_NAME] ...                # 升级软件包 (所有或指定, 可能移除旧版本)
+yum downgrade PACKAGE_NAME-VERSION ...        # 降级软件包到指定版本
+yum remove PACKAGE_NAME ...                   # 移除软件包
+yum erase PACKAGE_NAME ...                    # 移除软件包 (与 remove 相同)
+yum list installed [PACKAGE_NAME ...]         # 列出已安装软件包 (所有或指定)
+yum list available [PACKAGE_NAME ...]         # 列出可用软件包 (所有或指定)
+yum list updates [PACKAGE_NAME ...]           # 列出可更新软件包 (所有或指定)
+yum list extras                               # 列出仓库中不存在的已安装软件包
+yum list obsoletes                            # 列出将被废弃的软件包
+
+# 提示:
+#   - 使用通配符 (*) 匹配多个软件包，例如: `yum install httpd*`
+#   - 使用 `yum list all` 列出所有软件包 (已安装和可用)
+
+##############################################################################
+# 软件包组管理 (Package Group Management)
+##############################################################################
+
+yum group list [GROUP_NAME ...]               # 列出软件包组 (所有或指定)
+yum group list hidden                         # 列出隐藏的软件包组
+yum group install GROUP_NAME ...              # 安装软件包组
+yum group remove GROUP_NAME ...               # 移除软件包组
+yum group info GROUP_NAME ...                 # 显示软件包组详细信息
+
+# 提示:
+#   - 软件包组名可以使用引号包裹，例如: `yum group install "Development Tools"`
+
+##############################################################################
+# 仓库管理 (Repository Management)
+##############################################################################
+
+yum repolist [all | enabled | disabled]        # 列出仓库 (所有/启用/禁用)
+yum repolist enabled                          # 列出已启用仓库
+yum repolist disabled                         # 列出已禁用仓库
+yum repoinfo REPO_NAME ...                     # 显示仓库信息
+yum --enablerepo=REPO_NAME install PACKAGE_NAME # 临时启用指定仓库安装
+yum --disablerepo=REPO_NAME install PACKAGE_NAME # 临时禁用指定仓库安装
+yum config-manager --add-repo REPO_URL        # 添加新的仓库 (通过 URL)
+yum-config-manager --enable REPO_NAME         # 启用仓库 (需要安装 yum-utils)
+yum-config-manager --disable REPO_NAME        # 禁用仓库 (需要安装 yum-utils)
+rm /etc/yum.repos.d/REPO_FILE.repo            # 删除仓库 (手动删除配置文件)
+
+# 提示:
+#   - `yum-config-manager` 来自 `yum-utils` 包，需先安装: `yum install yum-utils`
+
+##############################################################################
+# 系统更新 (System Updates)
+##############################################################################
+
+yum update                                    # 更新所有软件包
+yum upgrade                                   # 升级所有软件包 (可能移除旧版本)
+yum check-update                               # 检查是否有可用更新 (不执行更新)
+yum update --security                         # 仅更新安全相关的软件包
+yum update-minimal                            # 最小化更新，仅更新必要的软件包
+
+# 提示:
+#   - 定期执行 `yum update` 或 `yum upgrade` 保持系统安全和最新
+
+##############################################################################
+# 查找和信息 (Searching and Information)
+##############################################################################
+
+yum search KEYWORD ...                         # 搜索软件包 (名称/描述等)
+yum info PACKAGE_NAME ...                      # 显示软件包详细信息
+yum provides FILE_PATH ...                    # 查找提供指定文件的软件包
+yum whatprovides FILE_PATH ...                # 查找提供指定文件的软件包 (与 provides 相同)
+
+# 提示:
+#   - `yum search all KEYWORD` 可以搜索更广泛的范围
+
+##############################################################################
+# 清理和维护 (Cleaning and Maintenance)
+##############################################################################
+
+yum clean all                                 # 清理所有缓存 (headers, packages, metadata, dbcache)
+yum clean packages                            # 清理已下载的软件包缓存
+yum clean headers                             # 清理软件包头文件缓存
+yum clean metadata                            # 清理仓库元数据缓存
+yum clean dbcache                             # 清理数据库缓存
+yum makecache                                 # 创建仓库缓存 (加快后续操作)
+
+# 提示:
+#   - `yum clean all` 可以解决仓库或软件包问题，但会重新下载元数据
+
+##############################################################################
+# 事务历史 (Transaction History)
+##############################################################################
+
+yum history                                   # 显示事务历史记录
+yum history list                              # 显示事务历史记录列表
+yum history info [ID | last]                  # 显示指定事务详细信息
+yum history undo [ID | last]                  # 撤销指定事务
+yum history redo [ID | last]                  # 重做指定事务
+yum history rollback [DATE | TIME | ID | last] # 回滚到指定时间/事务
+
+# 提示:
+#   - 使用 `yum history` 可以查看和回滚之前的操作，方便错误恢复
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 `-y` 选项自动回答 "yes" (非交互式安装/更新):
+#   yum install -y PACKAGE_NAME
+#   yum update -y
+
+# 使用 `--downloadonly` 仅下载软件包，不安装:
+#   yum install --downloadonly --downloaddir=/tmp PACKAGE_NAME
+
+# 使用 `--setopt=tsflags=nodocs` 跳过安装文档 (节省空间):
+#   yum install --setopt=tsflags=nodocs PACKAGE_NAME
+
+# 使用 `--exclude=PACKAGE_NAME` 排除特定软件包:
+#   yum update --exclude=kernel*
+
+# 使用 `--enablerepo=*` 或 `--disablerepo=*`  启用/禁用所有仓库 (慎用):
+#   yum --enablerepo=* list available
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 安装 httpd 和 mariadb-server:
+#   yum install httpd mariadb-server
+
+# 更新系统所有软件包并自动回答 "yes":
+#   yum update -y
+
+# 查找提供 `/etc/httpd/conf/httpd.conf` 文件的软件包:
+#   yum provides /etc/httpd/conf/httpd.conf
+
+# 清理所有缓存并重新创建:
+#   yum clean all && yum makecache
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# YUM 官方文档: https://yum.baseurl.org/
+# Red Hat Enterprise Linux 部署指南 - 使用 Yum 管理软件包:
+# https://access.redhat.com/documentation/zh-cn/red_hat_enterprise_linux/8/html/performing_system_updates_with_yum/index
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

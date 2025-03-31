@@ -1,0 +1,197 @@
+##############################################################################
+# PostgreSQL 客户端 psql 速查表 (psql Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - DBNAME:    数据库名称 (Database name)
+#   - USERNAME:  PostgreSQL 用户名 (Username)
+#   - HOST:      主机名或 IP 地址 (Hostname or IP Address)
+#   - PORT:      端口号 (Port number, 默认 5432)
+#   - TABLE:     表名 (Table name)
+#   - COLUMN:    列名 (Column name)
+#   - FILE:      文件路径 (File path)
+#   - FORMAT:    数据格式 (e.g., csv, text)
+#   - CONDITION: WHERE 条件 (WHERE clause condition)
+#   - VALUE:     值 (Value)
+
+##############################################################################
+# 连接 (Connection)
+##############################################################################
+
+psql                                          # 连接到默认数据库 (当前用户名)
+psql DBNAME                                     # 连接到指定数据库 (当前用户名)
+psql -d DBNAME                                  # 连接到指定数据库 (同上)
+psql -U USERNAME DBNAME                         # 指定用户名和数据库
+psql -h HOST -p PORT -U USERNAME DBNAME         # 指定主机、端口、用户和数据库
+psql "host=HOST port=PORT dbname=DBNAME user=USERNAME password=PASSWORD" # 连接字符串
+
+# 提示:
+#   - 使用 -w 或 --no-password 跳过密码提示 (如果已配置免密登录)
+#   - 使用 -W 或 --password 强制密码提示
+#   - 使用 PGPASSWORD 环境变量设置密码 (不推荐，安全性较低)
+
+##############################################################################
+# 基本操作 & 元命令 (Basic Operations & Meta-commands)
+##############################################################################
+
+\h [COMMAND]                                  # 查看 SQL 命令帮助 (例如 \h SELECT)
+\? [commands]                                 # 查看 psql 元命令帮助 (例如 \? commands)
+\q                                            # 退出 psql
+\l 或 \list                                     # 列出所有数据库
+\c [DBNAME]                                   # 连接到新的数据库
+\dt [PATTERN]                                 # 列出表 (可选模式匹配)
+\dv [PATTERN]                                 # 列出视图
+\di [PATTERN]                                 # 列出索引
+\ds [PATTERN]                                 # 列出序列
+\df [PATTERN]                                 # 列出函数
+\du [PATTERN]                                 # 列出用户和角色
+\dp [PATTERN]                                 # 列出表、视图和序列的权限
+\e 或 \edit                                    # 编辑当前查询缓冲区
+\r 或 \reset                                   # 清空查询缓冲区
+\g [FILE] 或 \;                                # 执行查询 (并可选保存到文件)
+\i FILE                                       # 执行 SQL 脚本文件
+\o FILE                                       # 将查询输出重定向到文件
+\unset VARIABLE                                # 取消设置 psql 变量
+\set VARIABLE [VALUE]                           # 设置 psql 变量 (不带值则显示变量)
+\conninfo                                      # 显示当前连接信息
+\! COMMAND                                     # 执行 shell 命令
+
+# 提示:
+#   - 元命令以反斜杠 `\` 开头，不区分大小写
+#   - 使用 `;` 或 `\g` 执行 SQL 查询
+#   - 使用 `\echo MESSAGE` 输出消息
+
+##############################################################################
+# 查询与数据操作 (Querying & Data Manipulation)
+##############################################################################
+
+SELECT * FROM TABLE [WHERE CONDITION];          # 查询所有列
+SELECT COLUMN1, COLUMN2 FROM TABLE [WHERE CONDITION]; # 查询指定列
+SELECT COUNT(*) FROM TABLE;                     # 统计行数
+SELECT * FROM TABLE ORDER BY COLUMN [ASC|DESC];  # 排序
+SELECT * FROM TABLE LIMIT N;                    # 限制返回行数
+SELECT DISTINCT COLUMN FROM TABLE;             # 去重
+INSERT INTO TABLE (COLUMN1, COLUMN2) VALUES (VALUE1, VALUE2); # 插入数据
+UPDATE TABLE SET COLUMN = VALUE [WHERE CONDITION]; # 更新数据
+DELETE FROM TABLE [WHERE CONDITION];             # 删除数据
+
+# 提示:
+#   - SQL 命令结尾通常不需要分号 `;`，但建议添加以明确语句结束
+#   - 使用 `EXPLAIN [ANALYZE] QUERY` 分析查询执行计划
+
+##############################################################################
+# 表和数据库管理 (Table & Database Management)
+##############################################################################
+
+CREATE DATABASE DBNAME;                         # 创建数据库
+DROP DATABASE DBNAME;                           # 删除数据库 (小心操作!)
+CREATE TABLE TABLE (                             # 创建表
+    COLUMN1 DATATYPE [CONSTRAINTS],
+    COLUMN2 DATATYPE [CONSTRAINTS],
+    ...
+);
+DROP TABLE TABLE;                               # 删除表 (小心操作!)
+ALTER TABLE TABLE ADD COLUMN COLUMN DATATYPE;     # 添加列
+ALTER TABLE TABLE DROP COLUMN COLUMN;            # 删除列 (小心操作!)
+ALTER TABLE TABLE RENAME COLUMN COLUMN TO NEW_COLUMN; # 重命名列
+ALTER TABLE TABLE RENAME TO NEW_TABLE;           # 重命名表
+TRUNCATE TABLE TABLE;                            # 清空表数据 (快速删除所有行)
+
+# 提示:
+#   - 常见数据类型: INTEGER, TEXT, VARCHAR(N), DATE, TIMESTAMP, BOOLEAN, etc.
+#   - 常用约束: PRIMARY KEY, UNIQUE, NOT NULL, FOREIGN KEY, CHECK
+
+##############################################################################
+# 导入导出 (Import & Export)
+##############################################################################
+
+\copy TABLE FROM 'FILE' [FORMAT CSV|TEXT] [HEADER] [DELIMITER ',']; # 从文件导入数据到表
+\copy TABLE TO 'FILE' [FORMAT CSV|TEXT] [HEADER] [DELIMITER ','];   # 从表导出数据到文件
+
+# 或使用 SQL 命令 COPY (服务器端文件系统访问权限):
+# COPY TABLE FROM PROGRAM 'cat FILE' [FORMAT CSV|TEXT] [HEADER] [DELIMITER ',']; # 从程序导入
+# COPY TABLE TO PROGRAM 'cat > FILE' [FORMAT CSV|TEXT] [HEADER] [DELIMITER ',']; # 导出到程序
+
+# 提示:
+#   - `\copy` 是客户端命令，文件路径相对于客户端
+#   - `COPY` (SQL) 是服务器端命令，文件路径相对于服务器
+#   - 常用 FORMAT: CSV (Comma Separated Values), TEXT (Tab Separated Values)
+#   - HEADER 选项指定文件是否包含表头行
+#   - DELIMITER 指定字段分隔符
+
+##############################################################################
+# 高级功能 (Advanced Features)
+##############################################################################
+
+BEGIN;                                        # 开始事务
+COMMIT;                                       # 提交事务
+ROLLBACK;                                     # 回滚事务
+SAVEPOINT savepoint_name;                      # 设置保存点
+ROLLBACK TO SAVEPOINT savepoint_name;          # 回滚到保存点
+
+\set AUTOCOMMIT [on|off]                        # 设置自动提交模式 (默认 on)
+
+\starttrans                                    # 开始事务 (等同于 BEGIN)
+\com                                          # 提交事务 (等同于 COMMIT)
+\ro                                           # 回滚事务 (等同于 ROLLBACK)
+
+\watch [SECONDS] COMMAND                       # 定期执行命令并显示结果 (例如 \watch 1 SELECT NOW();)
+
+# 提示:
+#   - 事务用于保证数据一致性，一组操作要么全部成功，要么全部失败
+#   - 使用 `\set AUTOCOMMIT off` 关闭自动提交，手动控制事务
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 \? 或 \h 获取帮助:
+#   \? commands                                 # 查看所有元命令
+#   \h SELECT                                   # 查看 SELECT 命令的语法帮助
+
+# 使用 \e 编辑查询缓冲区:
+#   输入 \e 后，psql 会打开编辑器 (默认 $EDITOR 或 vi)，编辑完成后保存退出即可执行
+
+# 使用 \set 定义变量:
+#   \set myvar 'my_table'
+#   SELECT * FROM :myvar;                       # 使用 :variable 引用变量
+
+# 使用 -E 选项查看元命令背后的 SQL 查询:
+#   psql -E ...
+#   \dt                                         # 会显示 \dt 元命令实际执行的 SQL
+
+# 使用 -f 选项执行 SQL 脚本文件:
+#   psql -f my_script.sql DBNAME
+
+# 使用 history (通常是 Bash history) 查找之前执行的命令:
+#   Ctrl+R  或  向上箭头键
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 连接到名为 'mydatabase' 的数据库，用户名为 'myuser':
+#    psql -d mydatabase -U myuser
+
+# 2. 创建名为 'employees' 的表，包含 id, name, 和 department 列:
+#    CREATE TABLE employees (
+#        id SERIAL PRIMARY KEY,
+#        name VARCHAR(100) NOT NULL,
+#        department VARCHAR(50)
+#    );
+
+# 3. 从 CSV 文件 'employees.csv' 导入数据到 'employees' 表 (假设文件包含表头):
+#    \copy employees FROM 'employees.csv' FORMAT CSV HEADER;
+
+# 4. 导出 'employees' 表的所有数据到 CSV 文件 'employees_backup.csv':
+#    \copy employees TO 'employees_backup.csv' FORMAT CSV HEADER;
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# PostgreSQL 官方文档: https://www.postgresql.org/docs/current/app-psql.html
+# psql (PostgreSQL 客户端) 手册页: man psql
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

@@ -1,0 +1,127 @@
+##############################################################################
+# Python 命令行速查表 (Python Command-line Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - MODULE_NAME:  Python 模块名 (例如: venv, pip, http.server)
+#   - SCRIPT_FILE:  Python 脚本文件路径 (例如: my_script.py)
+#   - CODE_STRING:  Python 代码字符串 (例如: 'print("Hello")')
+#   - OPTIONS:      Python 解释器选项 (例如: -i, -m, -v)
+
+##############################################################################
+# 基本执行 (Basic Execution)
+##############################################################################
+
+python                                        # 进入交互式解释器 (Interactive Interpreter)
+python SCRIPT_FILE                            # 运行 Python 脚本文件
+python -c CODE_STRING                        # 执行单行 Python 代码
+python -m MODULE_NAME                         # 以脚本方式运行模块 (例如: venv, pip)
+
+# 提示:
+#   - 使用 `exit()` 或 `Ctrl+D` 退出交互式解释器
+#   - 脚本文件路径可以是相对或绝对路径
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+python -i                                     # 脚本执行后进入交互模式 (Inspect)
+python -v                                     # 详细模式 (Verbose), 显示模块导入信息
+python -W <ARG>                                # 控制警告信息 (Warning control)
+python -O                                     # 优化模式 (移除 assert 语句等)
+python -OO                                    # 更进一步优化模式 (移除文档字符串)
+python -u                                     # 无缓冲的 stdout 和 stderr
+python -B                                     # 不写入 .pyc 文件 (字节码文件)
+python -E                                     # 忽略环境变量 (如 PYTHON* 变量)
+python -s                                     # 不将 user site-packages 目录添加到 sys.path
+python -S                                     # 禁用 site 模块导入和 site-dependent 路径
+
+# 提示:
+#   - 多个选项可以组合使用，例如 `python -iv my_script.py`
+#   - 使用 `python --help` 或 `python -h` 查看所有选项
+
+##############################################################################
+# 模块和包管理 (Modules and Packages)
+##############################################################################
+
+python -m venv <VENV_DIR>                      # 创建虚拟环境 (Virtual Environment)
+python -m pip install <PACKAGE_NAME>           # 使用 pip 安装 Python 包
+python -m pip uninstall <PACKAGE_NAME>         # 卸载 Python 包
+python -m pip list                            # 列出已安装的 Python 包
+python -m pip freeze > requirements.txt       # 生成 requirements.txt 文件
+
+# 提示:
+#   - 虚拟环境目录 <VENV_DIR> 可以自定义
+#   - requirements.txt 文件用于记录项目依赖包
+
+##############################################################################
+# 调试和检查 (Debugging and Inspection)
+##############################################################################
+
+python -X dev                                 # 启用 Python 开发模式 (Development Mode)
+python -m pdb SCRIPT_FILE                      # 使用 pdb 调试器运行脚本
+python -m trace --count -C . SCRIPT_FILE      # 代码覆盖率分析 (trace module)
+
+# 提示:
+#   - pdb 调试器允许单步执行、断点等调试操作
+#   - `-X dev` 开发模式会启用额外的运行时检查
+
+##############################################################################
+# 版本和帮助 (Version and Help)
+##############################################################################
+
+python --version                              # 显示 Python 版本
+python -V                                     # 显示 Python 版本 (简写)
+python --help                                 # 显示 Python 命令行帮助信息
+python -h                                     # 显示 Python 命令行帮助信息 (简写)
+
+##############################################################################
+# 代码执行控制 (Code Execution Control)
+##############################################################################
+
+python -q                                     # 启动时不显示版本和版权信息 (Quiet)
+python -x                                     # 跳过源文件中第一行 (Shebang 行)
+python -I                                     # 隔离模式 (Isolated mode)
+python -P                                     # 将 PYTHONPATH 添加到模块搜索路径前 (Prepend)
+python -R                                     # 禁用哈希随机化 (Hash randomization)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 shebang 行 (#! /usr/bin/env python3) 使脚本可执行:
+#   chmod +x my_script.py
+#   ./my_script.py
+
+# 使用 `if __name__ == "__main__":` 组织脚本主程序代码:
+#   if __name__ == "__main__":
+#       # 脚本主程序代码
+
+# 结合 `python -m http.server` 快速启动 HTTP 服务器:
+#   python -m http.server [PORT]
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 运行脚本并检查变量 (脚本执行完进入交互模式):
+#   python -i my_script.py
+
+# 创建名为 "myenv" 的虚拟环境:
+#   python -m venv myenv
+
+# 安装 requests 包到当前虚拟环境:
+#   python -m pip install requests
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Python 官方文档 - 命令行与环境:
+#   https://docs.python.org/zh-cn/3/using/cmdline.html
+
+# Python 教程 (Runoob.com):
+#   https://www.runoob.com/python3/python3-command-line-arguments.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

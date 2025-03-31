@@ -1,0 +1,162 @@
+##############################################################################
+# Composer 速查表 (Composer Cheatsheet)
+# PHP 依赖管理工具 (PHP Dependency Manager)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PACKAGE:   PHP 包名 (Package name, 例如: monolog/monolog, symfony/console)
+#   - VERSION:   版本约束 (Version constraint, 例如: ^2.0, ~3.1, 4.2.*, dev-main)
+#   - SCRIPT:    Composer 脚本名 (Script name, 例如: post-install-cmd, test)
+#   - PATH:      路径 (File path or directory path, 例如: ./src, vendor/bin)
+
+##############################################################################
+# 基础命令 (Basic Commands)
+##############################################################################
+
+composer --version                               # 显示 Composer 版本
+composer help [COMMAND]                           # 显示帮助信息 (所有命令或指定命令)
+composer list                                    # 列出所有可用命令
+
+##############################################################################
+# 初始化 & 安装 (Initialization & Installation)
+##############################################################################
+
+composer init                                    # 初始化一个新的 composer.json 文件 (交互式)
+composer install                                 # 安装 composer.lock 中指定的依赖 (生产环境推荐)
+composer install --no-dev                         # 安装生产环境依赖 (忽略 require-dev)
+composer install --prefer-dist                    # 优先使用 dist 包 (更快，更稳定)
+composer install --prefer-source                  # 优先使用 source 包 (用于开发和贡献)
+composer install --dry-run                       # 模拟安装，不实际执行
+composer install --no-scripts                     # 跳过脚本执行
+composer install --no-plugins                     # 跳过插件执行
+
+composer update                                  # 更新依赖到 composer.json 中指定的最新版本
+composer update --lock                            # 仅更新 composer.lock 文件 (不更新依赖)
+composer update PACKAGE [PACKAGE ...]             # 更新指定包及其依赖
+composer update --with-dependencies PACKAGE [PACKAGE ...] # 同时更新指定包的依赖
+composer update --dry-run                        # 模拟更新，不实际执行
+composer update --no-scripts                      # 跳过脚本执行
+composer update --no-plugins                      # 跳过插件执行
+
+composer require PACKAGE [VERSION]                 # 添加新的依赖包到 composer.json 并安装
+composer require PACKAGE --dev [VERSION]             # 添加开发依赖 (require-dev)
+composer require PACKAGE --no-update              # 只更新 composer.json，不立即安装
+composer require PACKAGE --dry-run                # 模拟 require，不实际执行
+
+composer remove PACKAGE [PACKAGE ...]              # 移除指定的依赖包
+composer remove PACKAGE --dev [PACKAGE ...]          # 移除开发依赖 (require-dev)
+composer remove PACKAGE --no-update               # 只更新 composer.json，不立即移除
+composer remove --dry-run                         # 模拟 remove，不实际执行
+
+##############################################################################
+# 查看依赖 (Inspecting Dependencies)
+##############################################################################
+
+composer show                                     # 列出已安装的所有包
+composer show PACKAGE                              # 显示指定包的详细信息
+composer show -p PACKAGE                           # 显示指定包的提供者信息
+composer show --tree                               # 以树状结构显示依赖关系
+composer show --outdated                            # 显示已过期的包
+composer show --all                                # 显示所有包 (包括未安装的)
+composer show --direct                              # 仅显示直接依赖
+composer show --indirect                            # 仅显示间接依赖
+
+composer depends PACKAGE                            # 显示哪些包依赖于指定的包
+composer prohibits PACKAGE                          # 显示哪些包阻止安装指定的包
+
+##############################################################################
+# 脚本 (Scripts)
+##############################################################################
+
+composer run-script SCRIPT                          # 运行 composer.json 中定义的脚本
+composer run-script SCRIPT -- --argument           # 传递参数给脚本
+composer run-script -d PATH SCRIPT                 # 在指定目录下运行脚本
+
+# 常用的内置脚本事件 (Common built-in script events):
+#   - pre-install-cmd, post-install-cmd
+#   - pre-update-cmd, post-update-cmd
+#   - pre-autoload-dump, post-autoload-dump
+#   - pre-package-install, post-package-install
+#   - pre-package-update, post-package-update
+#   - pre-package-uninstall, post-package-uninstall
+#   - pre-status-cmd, post-status-cmd
+#   - ... (更多请参考 Composer 文档)
+
+##############################################################################
+# 自动加载 (Autoload)
+##############################################################################
+
+composer dump-autoload                              # 生成自动加载文件 (优化性能)
+composer dump-autoload --no-dev                      # 排除开发依赖
+composer dump-autoload -o                             # 优化自动加载 (classmap authoritative)
+composer dump-autoload --classmap-authoritative         # 仅 classmap 自动加载
+composer dump-autoload --apcu-autoloader               # 使用 APCu 缓存自动加载
+composer dump-autoload --no-scripts                    # 跳过脚本执行
+composer dump-autoload --no-plugins                    # 跳过插件执行
+
+##############################################################################
+# 打包 & 归档 (Package & Archive)
+##############################################################################
+
+composer archive PACKAGE [VERSION]                     # 打包指定包到 .zip 或 .tar.gz
+composer archive PACKAGE [VERSION] --format=tar        # 指定打包格式为 tar
+composer archive PACKAGE [VERSION] --dir=PATH          # 指定输出目录
+
+##############################################################################
+# 配置 (Configuration)
+##############################################################################
+
+composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/ # 全局配置 Packagist 镜像 (示例: 阿里云)
+composer config repo.packagist composer https://mirrors.aliyun.com/composer/   # 项目配置 Packagist 镜像
+composer config --unset repo.packagist                  # 移除 Packagist 镜像配置
+composer config --list                                 # 列出当前配置
+composer config --global --list                          # 列出全局配置
+composer config --editor                               # 使用编辑器打开 composer.json (交互式)
+
+##############################################################################
+# 诊断 & 清理 (Diagnostics & Cleanup)
+##############################################################################
+
+composer diagnose                                   # 诊断常见配置问题
+composer clear-cache                                # 清除 Composer 缓存
+composer self-update                                # 更新 Composer 自身到最新版本
+composer self-update --rollback                        # 回滚 Composer 到上一个版本
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 composer.lock 锁定依赖版本，保证团队开发环境一致性。
+# 生产环境使用 `composer install --no-dev --optimize-autoloader` 优化性能和减少体积。
+# 开发环境使用 `composer update` 更新依赖到最新兼容版本。
+# 经常使用 `composer show --outdated` 检查过期的依赖包。
+# 使用 Packagist 镜像加速依赖下载 (尤其在国内网络环境)。
+# 善用 Composer 脚本自动化构建、测试、部署流程。
+# 查看 Composer 文档获取更详细的命令和选项信息: https://getcomposer.org/doc/
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 创建一个新的 Symfony 项目:
+#   composer create-project symfony/skeleton my-project
+
+# 添加 Monolog 日志库到项目:
+#   composer require monolog/monolog
+
+# 更新所有依赖并优化自动加载:
+#   composer update && composer dump-autoload -o
+
+# 运行单元测试脚本 (假设 composer.json 中定义了 "test" 脚本):
+#   composer run-script test
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Composer 官方文档: https://getcomposer.org/doc/
+# Packagist (PHP 包仓库): https://packagist.org/
+# Composer 中国镜像: https://pkg.phpcomposer.com/
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

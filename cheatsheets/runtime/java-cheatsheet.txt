@@ -1,0 +1,126 @@
+##############################################################################
+# Java 命令速查表 (Java Command Cheatsheet)
+# 用于运行 Java 应用程序和相关操作
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - CLASS_NAME:  包含 main 方法的 Java 类名 (Fully qualified class name, 例如: com.example.MyApp)
+#   - JAR_FILE:    JAR 归档文件名 (Java Archive file, 例如: myapp.jar)
+#   - OPTIONS:     Java 虚拟机选项 (JVM options, 例如: -Xms512m, -Dproperty=value)
+#   - ARGUMENTS:   传递给 Java 应用程序的参数 (Application arguments, 例如: arg1 arg2)
+#   - CLASSPATH:   类路径 (Class path, 用于查找类和资源)
+#   - PATH:        文件或目录路径 (File or directory path)
+
+##############################################################################
+# 运行 Java 应用程序 (Running Java Applications)
+##############################################################################
+
+java CLASS_NAME [ARGUMENTS]                        # 运行指定类名的 Java 应用程序 (类文件需在 CLASSPATH 中)
+java -jar JAR_FILE [ARGUMENTS]                     # 运行 JAR 文件中的 Java 应用程序 (Main-Class 需在 JAR 清单中指定)
+java OPTIONS CLASS_NAME [ARGUMENTS]                 # 使用 JVM 选项运行应用程序
+java OPTIONS -jar JAR_FILE [ARGUMENTS]              # 使用 JVM 选项运行 JAR 文件应用程序
+
+# 常用选项:
+#   - -cp CLASSPATH, -classpath CLASSPATH: 指定类路径 (覆盖默认 CLASSPATH)
+#   - -Dproperty=value: 定义系统属性 (可在 Java 代码中通过 System.getProperty("property") 访问)
+#   - -Xms<size>: 初始 Java 堆大小 (例如: -Xms512m)
+#   - -Xmx<size>: 最大 Java 堆大小 (例如: -Xmx1g)
+#   - -verbose:gc: 启用垃圾回收日志 (用于性能调优)
+#   - -version: 打印 Java 版本信息并退出
+#   - -help, -?: 打印帮助信息并退出
+
+##############################################################################
+# 类路径管理 (Classpath Management)
+##############################################################################
+
+java -cp CLASSPATH CLASS_NAME                      # 使用指定的类路径运行应用程序 (覆盖默认)
+java -classpath CLASSPATH CLASS_NAME                 # 同上，-cp 和 -classpath 等效
+java -cp ".:lib/*" CLASS_NAME                       # 类路径包含当前目录 (.) 和 lib 目录下的所有 JAR 文件 (Linux/macOS)
+java -cp ".;lib/*" CLASS_NAME                       # 类路径包含当前目录 (.) 和 lib 目录下的所有 JAR 文件 (Windows)
+java -jar JAR_FILE                                  # JAR 文件自身已包含类路径信息 (通常不需要额外指定)
+
+# 提示:
+#   - 类路径分隔符: Linux/macOS 使用冒号 (:), Windows 使用分号 (;)
+#   - 类路径可以使用通配符 (*) 匹配多个 JAR 文件或目录
+#   - 环境变量 CLASSPATH 可以设置默认类路径 (但不推荐，显式指定更清晰)
+
+##############################################################################
+# JVM 选项 (JVM Options - 常用)
+##############################################################################
+
+java -Xms<size> -Xmx<size> CLASS_NAME             # 设置初始和最大堆大小 (例如: -Xms256m -Xmx1024m)
+java -XX:+UseG1GC CLASS_NAME                        # 启用 G1 垃圾收集器 (现代垃圾回收器)
+java -XX:+UseConcMarkSweepGC CLASS_NAME              # 启用 CMS 垃圾收集器 (老年代垃圾回收器，JDK 9 废弃)
+java -XX:+PrintGCDetails -XX:+PrintGCTimeStamps CLASS_NAME # 打印详细 GC 日志和时间戳 (性能分析)
+java -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=./heapdump.hprof CLASS_NAME # OOM 时生成堆转储文件 (排查内存泄漏)
+java -DpropertyName=propertyValue CLASS_NAME        # 设置系统属性 (应用程序可读取)
+
+# 提示:
+#   - JVM 选项非常多，具体选项请参考 Java 虚拟机文档
+#   - 使用 `-XX:+<option>` 启用布尔型选项, `-XX:-<option>` 禁用
+#   - 使用 `-XX=<option>=<value>` 设置值类型选项
+
+##############################################################################
+# 调试和监控 (Debugging and Monitoring - 简要)
+##############################################################################
+
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 CLASS_NAME # 启用远程 JDWP 调试 (端口 5005)
+java -Dcom.sun.management.jmxremote \
+     -Dcom.sun.management.jmxremote.port=1099 \
+     -Dcom.sun.management.jmxremote.rmi.port=1099 \
+     -Dcom.sun.management.jmxremote.local.only=false \
+     -Dcom.sun.management.jmxremote.authenticate=false \
+     -Dcom.sun.management.jmxremote.ssl=false \
+     CLASS_NAME                                     # 启用 JMX 监控 (不安全配置，生产环境慎用)
+
+# 提示:
+#   - JDWP 和 JMX 用于远程调试和监控 Java 应用程序
+#   - 调试和监控选项通常在开发和测试环境中使用，生产环境需谨慎配置安全性
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 查看 Java 版本:
+#   java -version
+
+# 运行 JAR 文件，并传递参数:
+#   java -jar myapp.jar arg1 arg2
+
+# 设置类路径并运行指定类:
+#   java -cp "lib/*:." com.example.MainClass
+
+# 使用系统属性配置应用程序:
+#   java -Dlog.level=DEBUG com.example.MyApp
+
+# 监控 GC 日志 (输出到标准错误):
+#   java -verbose:gc com.example.MyApp 2> gc.log  # 重定向到文件
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 编译并运行 HelloWorld.java (假设已设置 JAVA_HOME 和 PATH):
+#   javac HelloWorld.java
+#   java HelloWorld
+
+# 运行 JAR 文件 myapp.jar:
+#   java -jar myapp.jar
+
+# 运行 JAR 文件，并设置最大堆内存为 2GB:
+#   java -Xmx2g -jar myapp.jar
+
+# 运行 JAR 文件，并指定额外的类路径 (例如包含 JDBC 驱动):
+#   java -cp ".:jdbc-driver.jar" -jar myapp.jar
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Oracle Java SE Documentation:
+#   https://docs.oracle.com/en/java/javase/
+# Java 命令官方文档 (java launcher):
+#   https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

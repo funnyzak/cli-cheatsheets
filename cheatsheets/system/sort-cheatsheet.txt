@@ -1,0 +1,124 @@
+##############################################################################
+# sort 命令速查表 (sort Command Cheatsheet)
+# 文本排序工具 - 用于对文本文件或标准输入的内容进行排序
+# Sort text files or standard input
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - FILE:  输入文件路径 (Input file path)
+#   - KEYDEF: 排序键定义 (Key definition, 格式: field[.char][options][,field[.char][options]])
+#             例如: 1,2  # 从第一字段到第二字段
+#             例如: 2.3,2.5 # 第二字段的第三字符到第五字符
+#   - SEP:   字段分隔符 (Field separator character)
+#   - OUTPUT_FILE: 输出文件路径 (Output file path)
+
+##############################################################################
+# 基本排序 (Basic Sorting)
+##############################################################################
+
+sort [FILE]                                 # 对 FILE 内容排序并输出 (默认按字典序升序)
+sort < FILE                                 # 从标准输入读取内容排序
+sort -o OUTPUT_FILE [FILE]                   # 排序结果输出到 OUTPUT_FILE
+sort file1 file2 file3                       # 合并排序多个文件
+
+# 提示:
+#   - 默认排序结果输出到标准输出 (stdout)
+#   - 可以使用管道 (|) 将其他命令的输出传递给 sort
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+sort -r [FILE]                               # 逆序/降序排序 (Reverse order)
+sort -n [FILE]                               # 按数值排序 (Numeric sort)
+sort -nr [FILE]                              # 按数值逆序排序 (Numeric reverse sort)
+sort -M [FILE]                               # 按月份排序 (Month sort, JAN < FEB < ...)
+sort -h [FILE]                               # 按人类可读数值排序 (Human-numeric sort, 1K < 1M < 1G)
+sort -V [FILE]                               # 按版本号排序 (Version sort, 1.02 < 1.10 < 2.0)
+sort -f [FILE]                               # 忽略大小写 (Fold case, case-insensitive)
+sort -u [FILE]                               # 唯一排序 (Unique sort, 去除重复行，默认相邻重复)
+sort -c [FILE]                               # 检查是否已排序 (Check if sorted, 不排序，仅检查)
+sort -m file1 file2 ...                      # 合并已排序文件 (Merge sorted files)
+
+##############################################################################
+# 字段和键排序 (Field and Key Sorting)
+##############################################################################
+
+sort -t SEP -k KEYDEF [FILE]                 # 指定字段分隔符和排序键
+sort -t ":" -k 1,1 /etc/passwd              # 以冒号分隔，按第一字段排序
+sort -t "," -k 2n,2 -k 1,1 file.csv         # CSV 文件，先按第二字段数值排序，再按第一字段排序
+sort -k 3                                   # 按第三字段排序 (默认空格分隔)
+sort -k 2.3,3.2                              # 从第二字段第三字符到第三字段第二字符排序
+sort -k 1b,1                                # 忽略第一字段前导空格排序 (b - ignore leading blanks)
+sort -k 1d,1                                # 字典序排序 (d - dictionary order, 仅考虑空格和字母数字)
+sort -k 1g,1                                # 通用数值排序 (g - general-numeric sort)
+
+# KEYDEF 选项 (Key Options within KEYDEF):
+#   - b   忽略前导空格 (ignore leading blanks)
+#   - d   字典序 (dictionary order)
+#   - f   忽略大小写 (fold case)
+#   - g   通用数值 (general-numeric)
+#   - h   人类可读数值 (human-numeric)
+#   - i   忽略不可打印字符 (ignore nonprinting characters)
+#   - M   月份 (month)
+#   - n   数值 (numeric)
+#   - r   逆序 (reverse)
+#   - V   版本号 (version)
+
+##############################################################################
+# 高级用法和技巧 (Advanced Usage and Tips)
+##############################################################################
+
+# 稳定排序 (-s, stable sort): 保持相等键值的原始顺序 (GNU sort 默认稳定排序)
+#   sort -s -k 2,2 -k 1,1 file              # 先按第二字段排序，相同第二字段的行保持原始顺序
+
+# 使用多个 -k 定义多级排序键 (primary key, secondary key, etc.)
+#   sort -k 2 -k 3n file                    # 先按第二字段排序，再按第三字段数值排序
+
+# 结合其他命令使用 (Use with other commands):
+#   cat file.txt | sort                      # 排序管道输入
+#   ls -l | sort -k 5n                       # 排序 ls -l 输出结果，按文件大小 (第五字段) 数值排序
+#   history | sort -r -n                     # 排序 history 命令输出，按命令 ID 逆序数值排序
+
+# 处理大型文件 (Handling large files):
+#   sort 可以高效处理大型文件，但注意临时空间 (通常 /tmp) 可能需要足够大
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 示例 1:  排序文件 numbers.txt (按数值排序)
+#   文件 numbers.txt 内容:
+#   10
+#   2
+#   100
+#   1
+#   命令: sort -n numbers.txt
+#   输出:
+#   1
+#   2
+#   10
+#   100
+
+# 示例 2: 排序 CSV 文件 data.csv (按第二列数值排序)
+#   文件 data.csv 内容:
+#   Name,Age,City
+#   Alice,30,New York
+#   Bob,25,London
+#   Charlie,35,Paris
+#   命令: sort -t "," -k 2n,2 data.csv
+#   输出:
+#   Name,Age,City
+#   Bob,25,London
+#   Alice,30,New York
+#   Charlie,35,Paris
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# GNU sort 官方文档: https://www.gnu.org/software/coreutils/manual/html_node/sort-invocation.html
+# sort 命令 man page: man sort
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

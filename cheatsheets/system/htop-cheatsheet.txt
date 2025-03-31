@@ -1,0 +1,110 @@
+##############################################################################
+# htop 速查表 (htop Cheatsheet)
+# 交互式进程查看器 (Interactive Process Viewer)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - 颜色编码:
+#     - CPU%:  不同颜色表示用户态、内核态、IO等待等 CPU 使用情况
+#     - MEM%:  不同颜色表示已用内存的类型 (buffers, cache 等)
+#   - 进程状态 (Process States):
+#     - R: 运行中 (Running)
+#     - S: 睡眠中 (Sleeping)
+#     - D: 不可中断睡眠 (Uninterruptible sleep, 通常等待 I/O)
+#     - Z: 僵尸进程 (Zombie)
+#     - T: 停止 (Stopped)
+#   - 其他:
+#     - PID:   进程 ID (Process ID)
+#     - USER:  进程所有者 (User)
+#     - PRI/NI: 优先级/Nice 值 (Priority/Nice value)
+#     - VIRT:  虚拟内存 (Virtual memory)
+#     - RES:   常驻内存 (Resident memory)
+#     - SHR:   共享内存 (Shared memory)
+#     - CPU%:  CPU 使用率 (CPU Usage percentage)
+#     - MEM%:  内存使用率 (Memory Usage percentage)
+#     - TIME+: 进程运行时间 (累计 CPU 时间) (CPU Time, accumulated)
+#     - COMMAND: 进程命令 (Command)
+
+##############################################################################
+# 基本操作 (Basic Operations)
+##############################################################################
+
+# 导航 (Navigation):
+  方向键 (↑↓←→) / PgUp / PgDn / Home / End    # 上下左右滚动, 翻页, 首页/末页
+  空格键                                      # 标记/取消标记进程 (用于批量操作)
+  u                                           # 显示指定用户的进程 (Filter by user)
+  /                                           # 进程名/PID 搜索 (Filter processes by name/PID)
+  F3 / F4                                     #  (同 / 和 u 快捷键) 进程名/用户过滤
+
+# 排序 (Sorting):
+  F6 或 S                                     # 选择排序字段 (Select sort column)
+    #  常用排序字段: CPU%, MEM%, TIME+, PID, USER
+  <  /  >                                      # 向左/向右 切换排序字段 (Change sort column)
+  反向排序 (Reverse sort):  再次按 F6 选择相同字段可反向排序
+
+# 进程管理 (Process Management):
+  F9 或 k                                     # 杀死进程 (Kill process)
+  r                                           # 调整进程优先级 (Renice process)
+  l                                           # 显示进程打开的文件 (lsof, requires lsof)
+  s                                           # 跟踪进程的系统调用 (strace, requires strace)
+  a                                           # 设置进程 CPU 亲和性 (Processor affinity)
+  t                                           # 树状视图/列表视图 切换 (Tree view / List view toggle)
+
+# 显示/配置 (Display & Configuration):
+  F1 或 h                                     # 帮助 (Help)
+  F2 或 Setup                                 # 设置菜单 (Setup menu)
+    #  可配置:  列 (Columns),  显示选项 (Display Options),  颜色 (Colors),  度量单位 (Meters)
+  c                                           # 切换显示命令全路径/basename (Toggle command path)
+  H                                           # 显示/隐藏 用户线程 (Hide/Show user threads)
+
+# 其他 (Other):
+  q                                           # 退出 htop (Quit htop)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 自定义列 (Customize Columns):
+#   - 在 Setup 菜单 (F2) -> Columns 中，可以添加/删除/排序显示的列
+#   - 常用的列包括: PID, USER, CPU%, MEM%, TIME+, COMMAND, STATE, NICE, PRI, VIRT, RES, SHR 等
+
+# 树状视图 (Tree View):
+#   - 按下 `t` 键可以切换到树状视图，方便查看进程的父子关系
+#   - 再次按下 `t` 键返回列表视图
+
+# 进程过滤 (Process Filtering):
+#   - 使用 `u` 键可以快速过滤显示特定用户的进程
+#   - 使用 `/` 键可以搜索进程名或 PID，支持模糊匹配
+
+# 标记进程 (Tagging Processes):
+#   - 使用空格键标记进程后，可以对标记的进程进行批量操作 (例如批量杀死)
+
+# 了解颜色编码 (Understand Color Coding):
+#   - 熟悉 CPU% 和 MEM% 的颜色编码可以快速了解系统资源瓶颈
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 启动 htop 并按 CPU 使用率降序排列:
+#   htop
+#   # 启动后按 F6 选择 "CPU%" 并回车
+
+# 杀死 PID 为 12345 的进程:
+#   htop
+#   # 找到 PID 为 12345 的进程，选中后按 k 键，然后输入信号 (默认 15 或 9) 并回车
+
+# 查看当前用户的进程:
+#   htop
+#   # 启动后按 u 键，选择当前用户名并回车
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# htop 官方网站: https://htop.dev/
+# htop GitHub 仓库: https://github.com/htop-dev/htop
+# htop 帮助文档 (在 htop 中按 F1 或 h 查看)
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :

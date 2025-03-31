@@ -1,0 +1,131 @@
+##############################################################################
+# chmod 命令速查表 (chmod Command Cheatsheet)
+# 文件权限修改 (Change File Mode Bits)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - u:  User (文件所有者)
+#   - g:  Group (文件所属组)
+#   - o:  Others (其他用户)
+#   - a:  All (所有用户，u, g, o 的总和)
+#   - r:  Read (读取权限)
+#   - w:  Write (写入权限)
+#   - x:  Execute (执行权限)
+#   - s:  Setuid 或 Setgid 位
+#   - t:  Sticky 位
+#   - +:  添加权限
+#   - -:  移除权限
+#   - =:  设置指定权限，清除未指定权限
+#   - 数字模式 (Numeric Mode): 使用八进制数字表示权限 (例如: 777, 644, 755)
+
+##############################################################################
+# 符号模式 (Symbolic Mode)
+##############################################################################
+
+chmod u+r FILE                             # 给文件所有者添加读权限
+chmod u-w FILE                             # 移除文件所有者的写权限
+chmod g+w FILE                             # 给文件所属组添加写权限
+chmod o-r FILE                             # 移除其他用户的读权限
+chmod a+x FILE                             # 给所有用户添加执行权限
+chmod u=rwx FILE                           # 设置文件所有者为读写执行权限，清除其他权限
+chmod go=rx FILE                          # 设置组和其他用户为读和执行权限，清除写权限
+chmod ug=rw,o=r FILE                      # 组合设置不同用户组的权限 (逗号分隔)
+chmod u+s FILE                             # 设置 Setuid 位 (运行文件时以文件所有者身份)
+chmod g+s FILE                             # 设置 Setgid 位 (目录：新文件继承目录组；文件：运行文件时以文件所属组身份)
+chmod o+t DIR                              # 设置 Sticky 位 (目录：只有所有者、目录所有者、root 可以删除或重命名目录中的文件)
+chmod a-s FILE                             # 移除 Setuid 和 Setgid 位
+chmod a-t DIR                              # 移除 Sticky 位
+
+# 提示:
+#   - 可以同时操作多个文件或目录，例如: `chmod u+r file1 file2 dir1`
+#   - 使用 `-R` 或 `--recursive` 选项递归修改目录及其内容权限 (谨慎使用)
+#   - 使用 `--preserve-root` 选项防止在根目录递归操作 (默认启用)
+#   - 使用 `--reference=RFILE FILE`  参考 RFILE 的权限设置 FILE
+
+##############################################################################
+# 数字模式 (Numeric Mode)
+##############################################################################
+
+# 权限值:
+#   - r (读) = 4
+#   - w (写) = 2
+#   - x (执行) = 1
+#   - - (无权限) = 0
+
+# 用户组顺序: 所有者 (u) - 所属组 (g) - 其他用户 (o)
+# 例如: 755  ->  u=rwx, g=rx, o=rx
+
+chmod 777 FILE                             # 所有用户读写执行权限 (u=rwx, g=rwx, o=rwx)
+chmod 644 FILE                             # 所有者读写，组和其他用户只读 (u=rw, g=r, o=r)
+chmod 755 FILE                             # 所有者读写执行，组和其他用户读执行 (u=rwx, g=rx, o=rx)
+chmod 700 FILE                             # 仅所有者读写执行 (u=rwx, g=---, o=---)
+chmod 600 FILE                             # 仅所有者读写 (u=rw, g=---, o=---)
+
+# 特殊权限位 (数字模式前缀):
+#   - Setuid (4)
+#   - Setgid (2)
+#   - Sticky Bit (1)
+
+# 例如: 4755 -> Setuid + rwxr-xr-x
+
+chmod 4755 FILE                            # 设置 Setuid 位 + 755 权限
+chmod 2755 DIR                             # 设置 Setgid 位 + 755 权限 (目录)
+chmod 1777 DIR                             # 设置 Sticky 位 + 777 权限 (共享目录，如 /tmp)
+chmod 0755 FILE                            # 清除特殊权限位 + 755 权限 (等同于 chmod 755)
+
+##############################################################################
+# 递归操作 (Recursive Operation)
+##############################################################################
+
+chmod -R u+rwx DIR                           # 递归给目录及其内容添加所有者读写执行权限 (谨慎使用)
+chmod --recursive g-w DIR                   # 递归移除目录及其内容组用户的写权限
+chmod -R 755 DIR                             # 递归设置目录及其内容权限为 755 (目录可执行)
+chmod -R 644 DIR                             # 递归设置目录及其内容权限为 644 (目录不可执行，文件常用)
+find DIR -type d -exec chmod 755 {} \;      # 查找目录并设置目录权限为 755 (更精细控制)
+find DIR -type f -exec chmod 644 {} \;      # 查找文件并设置文件权限为 644 (更精细控制)
+
+# 提示:
+#   - 递归操作影响范围广，请务必谨慎，尤其在根目录或重要目录。
+#   - `find -exec chmod` 结合使用可以实现更灵活的权限控制。
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 结合 find 命令批量修改权限:
+#   find . -name "*.sh" -exec chmod +x {} \;    # 给当前目录及子目录所有 .sh 文件添加执行权限
+#   find /var/www -type d -exec chmod 750 {} \; # 设置 /var/www 下所有目录权限为 750
+#   find /var/www -type f -exec chmod 640 {} \; # 设置 /var/www 下所有文件权限为 640
+
+# 使用 `--reference` 复用权限:
+#   chmod --reference=file1 file2               # 将 file2 的权限设置为与 file1 相同
+
+# 查看文件权限 (ls -l 或 stat):
+#   ls -l FILE                                  # 长列表格式显示文件权限 (符号表示)
+#   stat -c "%a %A %n" FILE                     # 显示文件权限 (数字和符号表示)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 使脚本可执行:
+#   chmod +x my_script.sh
+
+# 设置网站目录权限 (常见 Web 服务器配置):
+#   chmod -R 755 /var/www/html                 # 目录和可执行文件
+#   chmod -R 644 /var/www/html/static          # 静态文件 (图片, CSS, JS)
+#   chmod 777 /var/www/html/upload              # 上传目录 (需谨慎，通常不推荐 777)
+
+# 保护敏感配置文件 (仅所有者可读写):
+#   chmod 600 config.ini
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://man7.org/linux/man-pages/man1/chmod.1.html
+# https://www.gnu.org/software/coreutils/manual/html_node/chmod-invocation.html
+# https://www.computerhope.com/unix/uchmod.htm
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :
