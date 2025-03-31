@@ -17,7 +17,7 @@
 - **简单易用:** 脚本简洁明了，操作简单直观。
 - **多系统支持:** 兼容 Linux 和 macOS 系统。
 
-![交互式命令行界面](https://github.com/user-attachments/assets/af4ede39-5b74-4aa0-9c17-f58260c24448)
+![交互式命令行界面](https://github.com/user-attachments/assets/d067604d-c99c-43c3-837d-cc9b1a5b827b)
 
 
 ## 🚀 使用方法
@@ -66,64 +66,14 @@ cs
 ```
 
 **完整版本：** 此方式包含交互式菜单。
-<details>
-<summary>点击展开完整版本别名配置</summary>
 
 在 `~/.zshrc` 中添加以下代码：
 ```bash
 alias cs='() {
-  echo -e "Command cheatsheet tool.\nUsage:\n cs [command] - View specific command usage\n cs -l - List all supported commands"
-  local remote_url_prefix="https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/${REPO_BRANCH:-main}/"
-  local remote_url_prefix_cn="https://raw.gitcode.com/funnyzak/cli-cheatsheets/raw/${REPO_BRANCH:-main}/"
-  local cheatsheet_remote_url=""
-  local tmpfile=""
-  if curl -s --connect-timeout 2 "$remote_url_prefix_cn" >/dev/null 2>&1; then
-    cheatsheet_remote_url="${remote_url_prefix_cn}cheatsheet.sh"
-  else
-    cheatsheet_remote_url="${remote_url_prefix}cheatsheet.sh"
-  fi
-  if [ $# -eq 0 ]; then
-    tmpfile=$(mktemp)
-    if ! curl -sSL "$cheatsheet_remote_url" -o "$tmpfile"; then
-      echo >&2 "错误：无法下载 cheatsheet 脚本"
-      return 1
-    fi
-    chmod +x "$tmpfile"
-    if ! "$tmpfile"; then
-      echo >&2 "错误：执行 cheatsheet 脚本失败"
-      rm -f "$tmpfile"
-      return 1
-    fi
-
-    # Clean up temporary file
-    rm -f "$tmpfile"
-  else
-    if ! curl -sSL "$cheatsheet_remote_url" | bash -s -- "$@"; then
-      echo >&2 "错误：执行 cheatsheet 脚本失败"
-      return 1
-    fi
-  fi
-}' # Shell command cheatsheet tool
+  local tmpfile=$(mktemp)
+  curl -sSL "Https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/${REPO_BRANCH:-main}/cheatsheet.sh" -o "$tmpfile" && chmod +x "$tmpfile" && "$tmpfile" "$@" && rm -f "$tmpfile"
+}'
 ```
-
-使用短地址，简化版本：
-
-```bash
-alias cs='() {
-  echo -e "Command cheatsheet tool.\nUsage:\n cs [command] - View specific command usage\n cs -l - List all supported commands"
-  if [ $# -eq 0 ]; then
-    curl -sSL https://cs.yycc.dev && 
-    
-  else
-    if ! curl -sSL "$remote_url_prefix" | bash -s -- "$@"; then
-      echo >&2 "Error: Failed to execute command \"$*\" with cheatsheet script"
-      return 1
-    fi
-  fi
-}' # Shell command cheatsheet tool
-```
-</details>
-
 配置完成后，然后执行 `source ~/.bashrc` 或 `source ~/.zshrc` 使配置生效。
 
 #### Fish
