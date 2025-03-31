@@ -1,0 +1,65 @@
+name: Deploy to GitHub Pages
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+      - dev
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+      # - '.github/**'
+      - '.gitignore'
+      - '.git/**'
+      - 'cheatsheets/**'
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create dist directory
+        run: |
+          mkdir -p dist
+          echo "Created dist directory"
+          cp README.md dist/
+          echo "Copied README.md to dist directory"
+          cp get-cheatsheet.sh dist/index.html
+
+      - name: Update publish_dir
+        run: echo "Updated publish directory to ./dist"
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          cname: cs.yycc.dev
+          publish_branch: gh-pages
+          enable_jekyll: true
+          keep_files: false
+          force_orphan: true
+          commit_message: ${{ github.event.head_commit.message }}
+
+      - name: Send Apprise Notification
+        run: |
+          curl -X POST \
+          -F "tag=p" \
+          -F "body=🚀 ${{ github.event.repository.name }} Pages 部署成功 #github
+
+          分支: ${{ github.ref }}"
+
+          📎 相关链接
+          • [仓库地址](https://github.com/${{ github.repository }})" \
+          "${{ secrets.APPRISE_HTTP_URL }}"

@@ -27,44 +27,46 @@
 
 **简化版本：**
 
-不支持交互式。
-
 ```bash
-alias cs='curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh | bash -s --'
+alias cs='() { curl -s https://cs.yycc.dev | bash -s -- "$@" }'
 ```
 
-**完整版本：** 支持交互式和中国区镜像。
+使用如下命令查看速查表：
+
+```bash
+# 显示GIT速查表
+cs git
+# 显示所有支持的命令速查表
+cs
+```
+
+**完整版本：** 支持交互式和自动中国区镜像。
 <details>
 <summary>点击展开完整版本别名配置</summary>
+
+原始版本：
 
 ```bash
 alias cs='() {
   echo -e "Command cheatsheet tool.\nUsage:\n cs [command] - View specific command usage\n cs -l - List all supported commands"
-
-  # Initialize variables with local
   local remote_url_prefix="https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/${REPO_BRANCH:-main}/"
   local remote_url_prefix_cn="https://raw.gitcode.com/funnyzak/cli-cheatsheets/raw/${REPO_BRANCH:-main}/"
   local cheatsheet_remote_url=""
   local tmpfile=""
-
-  # Test connection to CN server with timeout to determine best URL
   if curl -s --connect-timeout 2 "$remote_url_prefix_cn" >/dev/null 2>&1; then
     cheatsheet_remote_url="${remote_url_prefix_cn}cheatsheet.sh"
   else
     cheatsheet_remote_url="${remote_url_prefix}cheatsheet.sh"
   fi
-
-  # Handle different execution modes based on arguments
   if [ $# -eq 0 ]; then
     tmpfile=$(mktemp)
     if ! curl -sSL "$cheatsheet_remote_url" -o "$tmpfile"; then
-      echo >&2 "Error: Failed to download cheatsheet script from $cheatsheet_remote_url"
+      echo >&2 "错误：无法下载 cheatsheet 脚本"
       return 1
     fi
-
     chmod +x "$tmpfile"
     if ! "$tmpfile"; then
-      echo >&2 "Error: Failed to execute cheatsheet script"
+      echo >&2 "错误：执行 cheatsheet 脚本失败"
       rm -f "$tmpfile"
       return 1
     fi
@@ -73,6 +75,23 @@ alias cs='() {
     rm -f "$tmpfile"
   else
     if ! curl -sSL "$cheatsheet_remote_url" | bash -s -- "$@"; then
+      echo >&2 "错误：执行 cheatsheet 脚本失败"
+      return 1
+    fi
+  fi
+}' # Shell command cheatsheet tool
+```
+
+使用短地址，简化版本：
+
+```bash
+alias cs='() {
+  echo -e "Command cheatsheet tool.\nUsage:\n cs [command] - View specific command usage\n cs -l - List all supported commands"
+  if [ $# -eq 0 ]; then
+    curl -sSL https://cs.yycc.dev && 
+    
+  else
+    if ! curl -sSL "$remote_url_prefix" | bash -s -- "$@"; then
       echo >&2 "Error: Failed to execute command \"$*\" with cheatsheet script"
       return 1
     fi
@@ -110,19 +129,19 @@ cs # 交互式菜单
 * **交互式菜单:**
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh | bash
+curl -s https://cs.yycc.dev | bash
 ```
 
 * **查看指定命令的速查表:**
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh | bash -s -- git
+curl -s https://cs.yycc.dev | bash -s -- git
 ```
 
 * **列出所有支持的命令:**
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh | bash -s -- -l
+curl -s https://cs.yycc.dev | bash -s -- -l
 ```
 ### 3. 本地使用
 
