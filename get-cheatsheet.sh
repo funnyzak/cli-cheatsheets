@@ -23,7 +23,7 @@ SCRIPT_NAME="cheatsheet.sh"
 REPO_OWNER="funnyzak"
 REPO_NAME="cli-cheatsheets"
 
-DEFAULT_URL="https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/$REPO_BRANCH"
+DEFAULT_URL="https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/refs/heads/$REPO_BRANCH"
 CN_URL="https://raw.gitcode.com/$REPO_OWNER/$REPO_NAME/raw/$REPO_BRANCH"
 
 _get=""

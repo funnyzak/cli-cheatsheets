@@ -1,6 +1,8 @@
 # Command-Line Cheatsheets (cli-cheatsheets)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Stars](https://img.shields.io/github/stars/funnyzak/cli-cheatsheets?style=flat)](https://github.com/funnyzak/cli-cheatsheets/stargazers)
+[![GitHub Last Commit](https://img.shields.io/github/last-commit/funnyzak/cli-cheatsheets?style=flat)](https://github.com/funnyzak/cli-cheatsheets/commits/main)
 
 **快速访问命令行工具速查表，提高你的工作效率！**
 
@@ -108,7 +110,7 @@ alias cs='() {
 
 ```fish
 function cs
-  curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh | bash -s -- $argv
+  curl -sSL https://cs.yycc.dev | bash -s -- $argv
 end
 ```
 
