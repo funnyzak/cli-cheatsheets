@@ -6,15 +6,15 @@
 
 提供一个集中化的命令行工具速查表仓库，通过简单的 Shell 脚本 `cheatsheet.sh`，你可以快速查询和查看各种常用命令的速查表，无论是本地执行还是远程调用都非常方便。
 
-## 特性
+## 📋 特性
 
-* **丰富的速查表:**  涵盖 Android, Build Tools, Database, Media, Network, Package Managers, Runtime, System, Tools, Web Servers 等多个类别，持续更新和扩充。
-* **快速查询:**  通过简单的命令即可查看指定工具的速查表。
-* **本地和远程执行:**  既可以在本地下载脚本使用，也可以通过 `curl` 命令远程执行。
-* **别名支持:**  方便配置 Bash/Zsh/Fish 别名，实现更快速的调用。
-* **简单易用:**  脚本简洁明了，操作简单直观。
+- **丰富的速查表:** 涵盖 Android, Build Tools, Database, Media, Network, Package Managers, Runtime, System, Tools, Web Servers 等多个类别，持续更新和扩充。
+- **快速查询:** 通过简单的命令即可查看指定工具的速查表。
+- **本地和远程执行:** 既可以在本地下载脚本使用，也可以通过 `curl` 命令远程执行。
+- **别名支持:** 方便配置 Bash/Zsh/Fish 别名，实现更快速的调用。
+- **简单易用:** 脚本简洁明了，操作简单直观。
 
-## 使用方法
+## 🚀 使用方法
 
 ### 1. 配置别名 (Bash/Zsh/Fish)
 
@@ -133,7 +133,7 @@ cli-cheatsheets/
 └── LICENSE                 # 开源许可证
 ```
 
-### 速查表类别
+## 速查表类别
 
 * **[Android](#android)**: Android 开发和设备管理命令
 * **[Build Tools](#build-tools)**: 构建自动化工具
@@ -148,13 +148,13 @@ cli-cheatsheets/
 
 ---
 
-## Android
+### Android
 
 (`cheatsheets/android/`) Android 开发和设备管理命令
 
 * `adb-cheatsheet.txt`: Android Debug Bridge (ADB) 命令，用于设备管理、应用安装和调试
 
-## Build Tools
+### Build Tools
 
 (`cheatsheets/build/`) 构建自动化工具
 
@@ -162,7 +162,7 @@ cli-cheatsheets/
 * `gradle-cheatsheet.txt`: Gradle 构建自动化工具命令
 * `mvn-cheatsheet.txt`: Apache Maven 项目管理和构建自动化工具命令
 
-## Database
+### Database
 
 (`cheatsheets/database/`) 数据库管理工具
 
@@ -171,14 +171,14 @@ cli-cheatsheets/
 * `psql-cheatsheet.txt`: PostgreSQL 数据库命令
 * `redis-cli-cheatsheet.txt`: Redis 命令行界面命令
 
-## Media
+### Media
 
 (`cheatsheets/media/`) 媒体处理工具
 
 * `Imagemagick-cheatsheet.txt`: ImageMagick 图像处理命令
 * `ffmpeg-cheatsheet.txt`: FFmpeg 多媒体框架命令，用于音频和视频处理
 
-## Network
+### Network
 
 (`cheatsheets/network/`) 网络工具
 
@@ -198,7 +198,7 @@ cli-cheatsheets/
 * `traceroute-cheatsheet.txt`: 网络路由跟踪命令
 * `wget-cheatsheet.txt`: 文件检索命令
 
-## Package Managers
+### Package Managers
 
 (`cheatsheets/package/`) 包管理器
 
@@ -216,7 +216,7 @@ cli-cheatsheets/
 * `uv-cheatsheet.txt`: Python 包安装器和解析器命令
 * `yarn-cheatsheet.txt`: 另一种 Node.js 包管理器命令
 
-## Runtime
+### Runtime
 
 (`cheatsheets/runtime/`) 编程语言运行时环境
 
@@ -225,7 +225,7 @@ cli-cheatsheets/
 * `node-cheatsheet.txt`: Node.js 运行时命令
 * `python-cheatsheet.txt`: Python 运行时命令
 
-## System
+### System
 
 (`cheatsheets/system/`) 系统工具
 
@@ -271,7 +271,7 @@ cli-cheatsheets/
 * `yum-cheatsheet.txt`: Yellowdog Updater Modified 包管理器命令
 * `zip-cheatsheet.txt`: 归档创建命令
 
-## Tools
+### Tools
 
 (`cheatsheets/tools/`) 通用开发工具
 
@@ -280,7 +280,7 @@ cli-cheatsheets/
 * `jq-cheatsheet.txt`: JSON 处理器命令
 * `yq-cheatsheet.txt`: YAML 处理器命令
 
-## Web Servers
+### Web Servers
 
 (`cheatsheets/webserver/`) Web 服务器配置和管理工具
 
@@ -290,7 +290,7 @@ cli-cheatsheets/
 
 ---
 
-### 5. 如何贡献
+## 贡献
 
 欢迎大家为本项目贡献速查表、改进脚本或提出建议！
 
