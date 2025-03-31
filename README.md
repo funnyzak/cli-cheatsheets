@@ -1,44 +1,136 @@
 # Command-Line Cheatsheets (cli-cheatsheets)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Stars](https://img.shields.io/github/stars/funnyzak/cli-cheatsheets?style=flat)](https://github.com/funnyzak/cli-cheatsheets/stargazers)
+[![GitHub Last Commit](https://img.shields.io/github/last-commit/funnyzak/cli-cheatsheets?style=flat)](https://github.com/funnyzak/cli-cheatsheets/commits/main)
 
 **快速访问命令行工具速查表，提高你的工作效率！**
 
 提供一个集中化的命令行工具速查表仓库，通过简单的 Shell 脚本 `cheatsheet.sh`，你可以快速查询和查看各种常用命令的速查表，无论是本地执行还是远程调用都非常方便。
 
-## 特性
+## 📋 特性
 
-* **丰富的速查表:**  涵盖 Android, Build Tools, Database, Media, Network, Package Managers, Runtime, System, Tools, Web Servers 等多个类别，持续更新和扩充。
-* **快速查询:**  通过简单的命令即可查看指定工具的速查表。
-* **本地和远程执行:**  既可以在本地下载脚本使用，也可以通过 `curl` 命令远程执行。
-* **别名支持:**  方便配置 Bash/Zsh/Fish 别名，实现更快速的调用。
-* **简单易用:**  脚本简洁明了，操作简单直观。
+- **丰富的速查表:** 涵盖 Android, Build Tools, Database, Media, Network, Package Managers, Runtime, System, Tools, Web Servers 等多个类别，持续更新和扩充。
+- **快速查询:** 通过简单的命令即可查看指定工具的速查表。
+- **本地和远程执行:** 既可以在本地下载脚本使用，也可以通过 `curl` 命令远程执行。
+- **别名支持:** 方便配置 Bash/Zsh/Fish 别名，实现更快速的调用。
+- **简单易用:** 脚本简洁明了，操作简单直观。
+- **多系统支持:** 兼容 Linux 和 macOS 系统。
 
-## 使用方法
+![交互式命令行界面](https://github.com/user-attachments/assets/af4ede39-5b74-4aa0-9c17-f58260c24448)
+
+
+## 🚀 使用方法
+
+1. **配置别名 (可选)**: 为了更快速地调用速查表，建议配置 Shell 别名。
+2. **远程使用**: 无需下载项目，直接通过 `curl` 命令远程执行脚本。
+3. **本地使用**: 下载项目后，赋予执行权限并运行脚本。
+
+直接使用 `curl` 命令远程执行脚本：
+
+```bash
+curl https://cs.yycc.dev | bash -s -- git
+```
+
+或者使用 `wget` 命令：
+
+```bash
+wget -qO- https://cs.yycc.dev | bash -s -- git
+```
+
+> 以上`URL`是一个短地址，实际指向的是 [`/get-cheatsheet.sh`](https://github.com/funnyzak/cli-cheatsheets/blob/main/get-cheatsheet.sh)，你可以在分支 [`gh-pages`](https://github.com/funnyzak/cli-cheatsheets/tree/gh-pages) 中找到它。
 
 ### 1. 配置别名 (Bash/Zsh/Fish)
 
 为了更快速地调用速查表，建议配置 Shell 别名。
 
-**Bash/Zsh:**
+#### Bash/Zsh
 
 将以下代码添加到你的 `~/.bashrc` 或 `~/.zshrc` 文件中：
 
+**简化版本：**
+
 ```bash
-alias cs='(){ 
-curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh | bash -s -- "$@" 
-}'
+alias cs='() { curl -s https://cs.yycc.dev | bash -s -- "$@" }'
 ```
 
-然后执行 `source ~/.bashrc` 或 `source ~/.zshrc` 使配置生效。
+使用如下命令查看速查表：
 
-**Fish:**
+```bash
+# 显示GIT速查表
+cs git
+# 显示所有支持的命令速查表
+cs
+```
+
+**完整版本：** 此方式包含交互式菜单。
+<details>
+<summary>点击展开完整版本别名配置</summary>
+
+在 `~/.zshrc` 中添加以下代码：
+```bash
+alias cs='() {
+  echo -e "Command cheatsheet tool.\nUsage:\n cs [command] - View specific command usage\n cs -l - List all supported commands"
+  local remote_url_prefix="https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/${REPO_BRANCH:-main}/"
+  local remote_url_prefix_cn="https://raw.gitcode.com/funnyzak/cli-cheatsheets/raw/${REPO_BRANCH:-main}/"
+  local cheatsheet_remote_url=""
+  local tmpfile=""
+  if curl -s --connect-timeout 2 "$remote_url_prefix_cn" >/dev/null 2>&1; then
+    cheatsheet_remote_url="${remote_url_prefix_cn}cheatsheet.sh"
+  else
+    cheatsheet_remote_url="${remote_url_prefix}cheatsheet.sh"
+  fi
+  if [ $# -eq 0 ]; then
+    tmpfile=$(mktemp)
+    if ! curl -sSL "$cheatsheet_remote_url" -o "$tmpfile"; then
+      echo >&2 "错误：无法下载 cheatsheet 脚本"
+      return 1
+    fi
+    chmod +x "$tmpfile"
+    if ! "$tmpfile"; then
+      echo >&2 "错误：执行 cheatsheet 脚本失败"
+      rm -f "$tmpfile"
+      return 1
+    fi
+
+    # Clean up temporary file
+    rm -f "$tmpfile"
+  else
+    if ! curl -sSL "$cheatsheet_remote_url" | bash -s -- "$@"; then
+      echo >&2 "错误：执行 cheatsheet 脚本失败"
+      return 1
+    fi
+  fi
+}' # Shell command cheatsheet tool
+```
+
+使用短地址，简化版本：
+
+```bash
+alias cs='() {
+  echo -e "Command cheatsheet tool.\nUsage:\n cs [command] - View specific command usage\n cs -l - List all supported commands"
+  if [ $# -eq 0 ]; then
+    curl -sSL https://cs.yycc.dev && 
+    
+  else
+    if ! curl -sSL "$remote_url_prefix" | bash -s -- "$@"; then
+      echo >&2 "Error: Failed to execute command \"$*\" with cheatsheet script"
+      return 1
+    fi
+  fi
+}' # Shell command cheatsheet tool
+```
+</details>
+
+配置完成后，然后执行 `source ~/.bashrc` 或 `source ~/.zshrc` 使配置生效。
+
+#### Fish
 
 将以下代码添加到你的 `~/.config/fish/config.fish` 文件中：
 
 ```fish
 function cs
-curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh | bash -s -- $argv
+  curl -sSL https://cs.yycc.dev | bash -s -- $argv
 end
 ```
 
@@ -52,26 +144,26 @@ cs docker -l
 cs # 交互式菜单
 ```
 
-### 2. 远程使用 (通过 `curl`，推荐 )
+### 2. 远程使用
 
 无需下载项目，直接通过 `curl` 命令远程执行脚本：
 
 * **交互式菜单:**
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh | bash
+curl -s https://cs.yycc.dev | bash
 ```
 
 * **查看指定命令的速查表:**
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh | bash -s -- git
+curl -s https://cs.yycc.dev | bash -s -- git
 ```
 
 * **列出所有支持的命令:**
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh | bash -s -- -l
+curl -s https://cs.yycc.dev | bash -s -- -l
 ```
 ### 3. 本地使用
 
@@ -133,7 +225,7 @@ cli-cheatsheets/
 └── LICENSE                 # 开源许可证
 ```
 
-### 速查表类别
+## 速查表类别
 
 * **[Android](#android)**: Android 开发和设备管理命令
 * **[Build Tools](#build-tools)**: 构建自动化工具
@@ -148,13 +240,13 @@ cli-cheatsheets/
 
 ---
 
-## Android
+### Android
 
 (`cheatsheets/android/`) Android 开发和设备管理命令
 
 * `adb-cheatsheet.txt`: Android Debug Bridge (ADB) 命令，用于设备管理、应用安装和调试
 
-## Build Tools
+### Build Tools
 
 (`cheatsheets/build/`) 构建自动化工具
 
@@ -162,7 +254,7 @@ cli-cheatsheets/
 * `gradle-cheatsheet.txt`: Gradle 构建自动化工具命令
 * `mvn-cheatsheet.txt`: Apache Maven 项目管理和构建自动化工具命令
 
-## Database
+### Database
 
 (`cheatsheets/database/`) 数据库管理工具
 
@@ -171,14 +263,14 @@ cli-cheatsheets/
 * `psql-cheatsheet.txt`: PostgreSQL 数据库命令
 * `redis-cli-cheatsheet.txt`: Redis 命令行界面命令
 
-## Media
+### Media
 
 (`cheatsheets/media/`) 媒体处理工具
 
 * `Imagemagick-cheatsheet.txt`: ImageMagick 图像处理命令
 * `ffmpeg-cheatsheet.txt`: FFmpeg 多媒体框架命令，用于音频和视频处理
 
-## Network
+### Network
 
 (`cheatsheets/network/`) 网络工具
 
@@ -198,7 +290,7 @@ cli-cheatsheets/
 * `traceroute-cheatsheet.txt`: 网络路由跟踪命令
 * `wget-cheatsheet.txt`: 文件检索命令
 
-## Package Managers
+### Package Managers
 
 (`cheatsheets/package/`) 包管理器
 
@@ -216,7 +308,7 @@ cli-cheatsheets/
 * `uv-cheatsheet.txt`: Python 包安装器和解析器命令
 * `yarn-cheatsheet.txt`: 另一种 Node.js 包管理器命令
 
-## Runtime
+### Runtime
 
 (`cheatsheets/runtime/`) 编程语言运行时环境
 
@@ -224,8 +316,9 @@ cli-cheatsheets/
 * `java-cheatsheet.txt`: Java 运行时和开发命令
 * `node-cheatsheet.txt`: Node.js 运行时命令
 * `python-cheatsheet.txt`: Python 运行时命令
+* `rust-cheatsheet.txt`: Rust 编程语言命令
 
-## System
+### System
 
 (`cheatsheets/system/`) 系统工具
 
@@ -238,6 +331,7 @@ cli-cheatsheets/
 * `df-cheatsheet.txt`: 磁盘空间使用情况命令
 * `diff-cheatsheet.txt`: 文件比较命令
 * `du-cheatsheet.txt`: 磁盘使用情况命令
+* `find-cheatsheet.txt`: 文件查找命令
 * `free-cheatsheet.txt`: 内存使用情况命令
 * `grep-cheatsheet.txt`: 文本搜索命令
 * `gzip-cheatsheet.txt`: 文件压缩命令
@@ -249,6 +343,7 @@ cli-cheatsheets/
 * `killall-cheatsheet.txt`: 按名称终止进程命令
 * `less-cheatsheet.txt`: 文件分页命令
 * `ln-cheatsheet.txt`: 链接创建命令
+* `ls-cheatsheet.txt`: 目录内容列表命令
 * `lsof-cheatsheet.txt`: 列出打开文件命令
 * `mount-cheatsheet.txt`: 文件系统挂载命令
 * `nano-cheatsheet.txt`: Nano 文本编辑器命令
@@ -268,19 +363,22 @@ cli-cheatsheets/
 * `uptime-cheatsheet.txt`: 系统运行时间命令
 * `vim-cheatsheet.txt`: Vim 文本编辑器命令
 * `watch-cheatsheet.txt`: 命令执行监控命令
+* `xargs-cheatsheet.txt`: 从标准输入构建和执行命令
 * `yum-cheatsheet.txt`: Yellowdog Updater Modified 包管理器命令
 * `zip-cheatsheet.txt`: 归档创建命令
 
-## Tools
+### Tools
 
 (`cheatsheets/tools/`) 通用开发工具
 
 * `docker-cheatsheet.txt`: Docker 容器平台命令
+* `docker-compose-cheatsheet.txt`: Docker Compose 多容器定义和运行工具命令
 * `git-cheatsheet.txt`: Git 版本控制系统命令
 * `jq-cheatsheet.txt`: JSON 处理器命令
+* `tmux-cheatsheet.txt`: 终端复用器命令
 * `yq-cheatsheet.txt`: YAML 处理器命令
 
-## Web Servers
+### Web Servers
 
 (`cheatsheets/webserver/`) Web 服务器配置和管理工具
 
@@ -290,7 +388,7 @@ cli-cheatsheets/
 
 ---
 
-### 5. 如何贡献
+## 贡献
 
 欢迎大家为本项目贡献速查表、改进脚本或提出建议！
 

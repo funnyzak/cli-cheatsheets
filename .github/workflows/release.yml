@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    paths:
+      - 'cheatsheets/**'
+    branches: [ main, dev ]
+  workflow_dispatch:
+
+jobs:
+  release-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |          
+          # Package cheatsheets folder and cheatsheets.sh file
+          PROJECT_NAME=$(basename $GITHUB_REPOSITORY)
+          DATE_SUFFIX=$(date +%y%m%d%H%M)
+          
+          mkdir -p dist
+          tar -czf "dist/${PROJECT_NAME}-${DATE_SUFFIX}.tar.gz" cheatsheets cheatsheets.sh
+          
+          # Create release
+          if [[ "${GITHUB_REF}" =~ ^refs/tags/ ]]; then
+              RELEASE_NAME=${GITHUB_REF#refs/tags/}
+          else
+              RELEASE_NAME=${DATE_SUFFIX}
+          fi
+          gh release create "$RELEASE_NAME" dist/* --title "$RELEASE_NAME" --notes "Release created on ${DATE_SUFFIX}"
