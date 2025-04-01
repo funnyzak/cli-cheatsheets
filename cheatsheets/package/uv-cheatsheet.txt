@@ -1,139 +1,170 @@
 ##############################################################################
-# uv 命令速查表 (uv Command Cheatsheet)
-# 快速的 Python 包安装器和解析器
-# GitHub: https://github.com/funnyzak/cli-cheatsheets
+# uv - Python Package Manager 速查表 (uv Cheatsheet)
+# 一个极其快速的 Python 包安装程序和解析器，旨在替代 pip 和 venv。
+# https://github.com/funnyzak/cli-cheatsheets (Cheatsheet Repo)
 ##############################################################################
 
 # 图例 (Legend):
-#   - PKG:  Python 包名 (Package name, 例如: requests, numpy)
-#   - VERSION: 版本号或版本范围 (Version number or range, 例如: ==2.28.1, >=3.7)
-#   - PATH: 文件或目录路径 (File or directory path)
-#   - VENV_NAME: 虚拟环境名称 (Virtual environment name, 例如: .venv, myenv)
-#   - INDEX_URL: PyPI 镜像地址 (PyPI mirror URL, 例如: https://pypi.tuna.tsinghua.edu.cn/simple)
+#   - <package>:         包名 (e.g., requests, "django>=4.0")
+#   - <requirement_file>: 需求文件名 (e.g., requirements.txt, pyproject.toml)
+#   - <venv_dir>:        虚拟环境目录名 (默认: .venv)
+#   - <python_version>:  Python 版本 (e.g., 3.11, python3.10)
+#   - <command>:         要在虚拟环境中执行的命令
+#   - <script.py>:       要执行的 Python 脚本
 
 ##############################################################################
-# 基础操作 (Basic Operations)
+# 通用选项 (General Options)
 ##############################################################################
 
-uv --help                                      # 显示帮助信息
-uv --version                                   # 显示 uv 版本
+uv --version                     # 显示 uv 版本
+uv --help                        # 显示主帮助信息
+uv <subcommand> --help           # 显示子命令的帮助信息 (e.g., uv pip install --help)
+uv --verbose                     # 启用详细输出 (或 -v, -vv, -vvv 增加详细程度)
+uv --quiet                       # 抑制除错误外的所有输出
+uv --native-tls                  # 使用系统的本地 TLS 库 (替代 rustls)
+uv --no-cache                    # 禁用所有缓存
 
 ##############################################################################
-# 包管理 (Package Management)
+# 虚拟环境管理 (Virtual Environment Management, uv venv)
 ##############################################################################
 
-uv pip install PKG                              # 安装包 (最新版本)
-uv pip install PKG==VERSION                      # 安装指定版本
-uv pip install PKG>=VERSION                      # 安装指定版本范围
-uv pip install -r requirements.txt              # 从 requirements.txt 安装
-uv pip install .                               # 安装当前目录的包 (setup.py 或 pyproject.toml)
-uv pip install PATH                             # 安装本地包 (wheel 文件或目录)
-uv pip install -i INDEX_URL PKG                  # 从指定 PyPI 镜像安装
-uv pip install --index-url INDEX_URL PKG        # 同上，更明确的写法
+uv venv [<venv_dir>]             # 创建虚拟环境 (默认: .venv)
+uv venv <venv_dir> -p <python>   # 使用指定 Python 解释器创建虚拟环境
+uv venv --seed                   # 创建虚拟环境并安装 pip
 
-uv pip uninstall PKG                            # 卸载包
-
-uv pip list                                    # 列出已安装的包
-uv pip show PKG                                 # 显示包的详细信息
-uv pip check                                   # 检查已安装包的依赖冲突
-
-uv pip cache dir                               # 显示 uv 缓存目录
-uv pip cache purge                             # 清空 uv 缓存
-
-# 提示:
-#   - uv 默认使用虚拟环境，如未激活会自动创建 .venv
-#   - 可以使用 -v 或 -vv 增加输出详细程度
-#   - 环境变量 `PIP_INDEX_URL` 可全局设置 PyPI 镜像
+# 注意: uv 创建环境后，仍需使用 Shell 的标准方式激活环境:
+#   source .venv/bin/activate    # (Bash/Zsh)
+#   .venv\Scripts\activate.bat   # (Windows Cmd)
+#   .venv\Scripts\Activate.ps1   # (Windows PowerShell)
 
 ##############################################################################
-# 虚拟环境管理 (Virtual Environment Management)
+# 包安装与管理 (Package Installation & Management, uv pip)
 ##############################################################################
 
-uv venv [VENV_NAME]                             # 创建虚拟环境 (默认 .venv)
-uv venv create [VENV_NAME]                        # 显式创建虚拟环境
-uv venv activate [VENV_NAME]                      # 激活虚拟环境 (不同 Shell 命令不同)
-uv venv deactivate                               # 停用虚拟环境
+# 安装包 (Install Packages)
+uv pip install <package> [<package>...]      # 安装一个或多个包
+uv pip install -r <requirement_file>       # 从需求文件安装包
+uv pip install -r req1.txt -r req2.txt     # 从多个需求文件安装
+uv pip install -e <path_to_project>        # 以可编辑模式安装本地项目
+uv pip install "package[extra]"            # 安装带可选依赖的包
+uv pip install <package> --upgrade         # 升级包到最新兼容版本
+uv pip install <package> --reinstall       # 重新安装包
+uv pip install <package> --no-deps         # 安装包但不安装其依赖
 
-# 提示:
-#   - 激活虚拟环境后，后续的 pip install 等操作将在该环境中进行
-#   - 建议在项目根目录创建虚拟环境
-#   - 激活脚本示例:
-#     - bash/zsh: `source .venv/bin/activate` 或 `. .venv/bin/activate`
-#     - fish:     `. .venv/bin/activate.fish`
-#     - powershell: `.venv/Scripts/Activate.ps1`
-#     - cmd:      `.venv\Scripts\activate.bat`
+# 卸载包 (Uninstall Packages)
+uv pip uninstall <package> [<package>...]    # 卸载一个或多个包
+uv pip uninstall -r <requirement_file>     # 卸载需求文件中列出的所有包
+
+# 列出包 (List Packages)
+uv pip list                              # 列出已安装的包
+uv pip list --outdated                   # 列出可升级的包
+uv pip list --editable                   # 仅列出以可编辑模式安装的包
+uv pip list --exclude-editable           # 排除以可编辑模式安装的包
+uv pip list --format freeze              # 以 requirements.txt 格式输出 (类 pip freeze)
+uv pip list --format json                # 以 JSON 格式输出
+
+# 显示包信息 (Show Package Information)
+uv pip show <package> [<package>...]       # 显示一个或多个已安装包的详细信息
+
+# 检查依赖 (Check Dependencies)
+uv pip check                             # 检查已安装包之间的依赖关系是否满足
 
 ##############################################################################
 # 依赖管理 (Dependency Management)
 ##############################################################################
 
-uv pip freeze > requirements.txt                  # 生成 requirements.txt
-uv pip compile requirements.in -o requirements.txt # 从 requirements.in 编译 requirements.txt (高级)
-uv pip sync                                    # 同步虚拟环境到 requirements.txt (高级)
+# 同步环境 (Synchronize Environment)
+uv pip sync <requirement_file>             # 同步环境，确保仅安装文件中指定的包 (会卸载多余的包)
+uv pip sync req1.txt req2.txt              # 从多个文件同步
 
-# 提示:
-#   - requirements.txt 用于记录项目依赖，方便环境复现
-#   - compile 和 sync 命令用于更复杂的依赖管理场景
-#   - requirements.in 通常用于更高级的依赖约束和版本管理
-
-##############################################################################
-# 运行 Python (Running Python)
-##############################################################################
-
-uv python PATH/SCRIPT.py                        # 在 uv 环境中运行 Python 脚本
-uv run PATH/SCRIPT.py                           # 别名，同上
-
-# 提示:
-#   - 确保在虚拟环境激活或使用 `uv python` 执行脚本，以使用 uv 管理的包
+# 编译/锁定依赖 (Compile/Lock Dependencies)
+uv pip compile pyproject.toml -o requirements.txt  # 将 pyproject.toml 依赖解析并锁定到 requirements.txt
+uv pip compile requirements.in -o requirements.txt # 将 requirements.in 解析并锁定到 requirements.txt
+uv pip compile ... --upgrade             # 尝试升级所有包到最新版本再锁定
+uv pip compile ... --resolution=lowest-direct # 使用最低兼容版本解析直接依赖
+uv pip compile ... --all-extras          # 包含所有可选依赖进行解析
+uv pip compile ... --output-file -       # 将结果输出到标准输出
 
 ##############################################################################
-# 配置 (Configuration)
+# 运行命令/脚本 (Running Commands/Scripts, uv run)
 ##############################################################################
 
-# uv 兼容 pip 的配置方式，可以通过以下方式配置:
+uv run <command> [args...]           # 在检测到的虚拟环境中执行命令
+uv run -- <script.py> [args...]      # 在检测到的虚拟环境中执行 Python 脚本
+uv run --python <python> <command>   # 在指定 Python 版本的临时环境中执行命令
 
-# 1. 配置文件 (pip.conf 或 pip.ini):
-#    - 全局:  通常在 `~/.config/pip/pip.conf` (Linux/macOS) 或 `%APPDATA%\pip\pip.ini` (Windows)
-#    - 虚拟环境:  `.venv/pip.conf` 或 `.venv/pip.ini`
-#    - 示例配置 (设置清华 PyPI 镜像源):
-#      ```
-#      [global]
-#      index-url = https://pypi.tuna.tsinghua.edu.cn/simple
-#      ```
+# 注意: `uv run` 会自动检测 `.venv` 或 `pyproject.toml` 来确定环境。
 
-# 2. 环境变量:
-#    - `PIP_INDEX_URL`:  设置 PyPI 镜像源 (例如: `export PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple`)
-#    - `PIP_TRUSTED_HOST`:  配合 `PIP_INDEX_URL` 使用，信任镜像站 (例如: `export PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn`)
+##############################################################################
+# 缓存管理 (Cache Management, uv cache)
+##############################################################################
 
-# 提示:
-#   - 配置文件优先级高于环境变量
-#   - 虚拟环境中的配置文件优先级高于全局配置文件
+uv cache clean                           # 清除 uv 缓存
+uv cache dir                             # 显示 uv 缓存目录路径
+
+##############################################################################
+# 工具命令 (Tool Commands, uv tool) - 管理 uv 本身或相关工具
+##############################################################################
+
+# (uv tool 子命令目前较少，未来可能扩展)
+# uv tool install <tool_name> [...]   # (假设未来可能有类似 pipx 的功能)
+# uv tool list                        # (假设未来可能有列出已安装工具的功能)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 快速创建环境并安装依赖:
+#   uv venv && uv pip install -r requirements.txt
+#   # 或者直接从 pyproject.toml (如果定义了 [project.dependencies]):
+#   uv venv && uv pip install .
+
+# 使用 pyproject.toml 管理项目依赖:
+#   # 在 pyproject.toml 中定义依赖:
+#   # [project]
+#   # name = "my-package"
+#   # version = "0.1.0"
+#   # dependencies = [ "requests", "click" ]
+#   # [project.optional-dependencies]
+#   # test = [ "pytest" ]
+#   # 然后运行:
+#   uv pip install .          # 安装基本依赖
+#   uv pip install ".[test]"  # 安装基本依赖和 test 可选依赖
+
+# 生成锁文件并同步:
+#   uv pip compile pyproject.toml -o requirements.lock.txt
+#   uv pip sync requirements.lock.txt
+
+# 利用 uv 的速度进行快速原型或测试:
+#   uv run --python 3.11 pip install -r requirements-dev.txt && uv run pytest
 
 ##############################################################################
 # 示例 (Examples)
 ##############################################################################
 
-# 创建并激活虚拟环境，使用清华镜像安装 requests 包，并生成 requirements.txt
-#   uv venv my-project-venv
-#   source my-project-venv/bin/activate
-#   uv pip install -i https://pypi.tuna.tsinghua.edu.cn/simple requests
-#   uv pip freeze > requirements.txt
+# 1. 创建新项目环境并安装 Flask:
+#   mkdir my_flask_app && cd my_flask_app
+#   uv venv
+#   source .venv/bin/activate  # 或者相应的激活命令
+#   uv pip install flask
+#   uv pip list --format freeze > requirements.txt
 
-# 从 requirements.txt 创建虚拟环境并安装依赖 (假设 requirements.txt 已存在)
-#   uv venv my-project-venv
-#   uv pip install -r requirements.txt
+# 2. 从 pyproject.toml 安装项目并运行测试:
+#   git clone <your_project_repo>
+#   cd <your_project_repo>
+#   uv venv
+#   uv pip install ".[test]"  # 假设 test extra 在 pyproject.toml 中定义
+#   uv run pytest
 
-# 全局设置清华 PyPI 镜像 (通过环境变量, 临时生效)
-#   export PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
-#   export PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn
-#   uv pip install PKG  # 后续安装都将使用清华镜像
+# 3. 编译并同步锁定的依赖:
+#   uv pip compile requirements.in -o requirements.txt --upgrade
+#   uv pip sync requirements.txt
 
 ##############################################################################
-# 鸣谢 & 更多资源 (Credit & Further Resources)
+# 更多资源 (Further Resources)
 ##############################################################################
 
-# uv 官方文档:  https://docs.astral.sh/uv/
-# uv GitHub 仓库: https://github.com/astral-sh/uv
-# pip 官方文档 (配置参考): https://pip.pypa.io/en/stable/configuration/
+# 官方文档: https://docs.astral.sh/uv/
+# GitHub 仓库: https://github.com/astral-sh/uv
 
-# vim: set ts=4 sw=4 tw=0 et ft=txt :
+# vim: set ts=4 sw=4 tw=0 et ft=bash :
