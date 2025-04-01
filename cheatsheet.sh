@@ -31,150 +31,79 @@ declare -A COMMANDS
 declare -A COMMAND_DESCRIPTIONS
 declare -A COMMAND_CATEGORIES
 
-# 系统类命令
-COMMAND_CATEGORIES["apt"]="system"
-COMMAND_DESCRIPTIONS["apt"]="Debian/Ubuntu包管理器"
+# Shell 变量定义脚本
 
-COMMAND_CATEGORIES["awk"]="system"
-COMMAND_DESCRIPTIONS["awk"]="文本处理工具"
+# Android 类命令
+COMMAND_CATEGORIES["adb"]="android"
+COMMAND_DESCRIPTIONS["adb"]="Android调试桥接器"
 
-COMMAND_CATEGORIES["cat"]="system"
-COMMAND_DESCRIPTIONS["cat"]="查看文件内容"
+# 构建工具类命令
+COMMAND_CATEGORIES["cmake"]="build"
+COMMAND_DESCRIPTIONS["cmake"]="CMake 构建系统"
 
-COMMAND_CATEGORIES["chmod"]="system"
-COMMAND_DESCRIPTIONS["chmod"]="修改文件权限"
+COMMAND_CATEGORIES["gradle"]="build"
+COMMAND_DESCRIPTIONS["gradle"]="Gradle 构建工具"
 
-COMMAND_CATEGORIES["chown"]="system"
-COMMAND_DESCRIPTIONS["chown"]="修改文件所有者"
+COMMAND_CATEGORIES["mvn"]="build"
+COMMAND_DESCRIPTIONS["mvn"]="Maven 构建工具"
 
-COMMAND_CATEGORIES["cut"]="system"
-COMMAND_DESCRIPTIONS["cut"]="文本处理工具"
+# 数据库类命令
+COMMAND_CATEGORIES["mongo"]="database"
+COMMAND_DESCRIPTIONS["mongo"]="MongoDB 客户端"
 
-COMMAND_CATEGORIES["df"]="system"
-COMMAND_DESCRIPTIONS["df"]="查看磁盘空间使用情况"
+COMMAND_CATEGORIES["mysql"]="database"
+COMMAND_DESCRIPTIONS["mysql"]="MySQL 客户端"
 
-COMMAND_CATEGORIES["diff"]="system"
-COMMAND_DESCRIPTIONS["diff"]="文件比较工具"
+COMMAND_CATEGORIES["psql"]="database"
+COMMAND_DESCRIPTIONS["psql"]="PostgreSQL 客户端"
 
-COMMAND_CATEGORIES["du"]="system"
-COMMAND_DESCRIPTIONS["du"]="查看文件和目录占用的磁盘空间"
+COMMAND_CATEGORIES["redis-cli"]="database"
+COMMAND_DESCRIPTIONS["redis-cli"]="Redis 客户端"
 
-COMMAND_CATEGORIES["free"]="system"
-COMMAND_DESCRIPTIONS["free"]="查看内存使用情况"
+# 命令行工具类命令 (CLI Tools)
+COMMAND_CATEGORIES["ansible"]="cli"
+COMMAND_DESCRIPTIONS["ansible"]="自动化工具"
 
-COMMAND_CATEGORIES["grep"]="system"
-COMMAND_DESCRIPTIONS["grep"]="文本搜索工具"
+COMMAND_CATEGORIES["helm"]="cli"
+COMMAND_DESCRIPTIONS["helm"]="Kubernetes 包管理器"
 
-COMMAND_CATEGORIES["gzip"]="system"
-COMMAND_DESCRIPTIONS["gzip"]="压缩工具"
-
-COMMAND_CATEGORIES["history"]="system"
-COMMAND_DESCRIPTIONS["history"]="查看命令历史"
-
-COMMAND_CATEGORIES["htop"]="system"
-COMMAND_DESCRIPTIONS["htop"]="交互式进程查看器"
-
-COMMAND_CATEGORIES["ip"]="system"
-COMMAND_DESCRIPTIONS["ip"]="显示/操作路由、设备、策略路由和隧道"
-
-COMMAND_CATEGORIES["iptables"]="system"
-COMMAND_DESCRIPTIONS["iptables"]="Linux防火墙工具"
-
-COMMAND_CATEGORIES["kill"]="system"
-COMMAND_DESCRIPTIONS["kill"]="终止进程"
-
-COMMAND_CATEGORIES["killall"]="system"
-COMMAND_DESCRIPTIONS["killall"]="按名称终止进程"
-
-COMMAND_CATEGORIES["less"]="system"
-COMMAND_DESCRIPTIONS["less"]="文件内容分页查看器"
-
-COMMAND_CATEGORIES["tail"]="system"
-COMMAND_DESCRIPTIONS["tail"]="查看文件尾部内容"
-
-COMMAND_CATEGORIES["ln"]="system"
-COMMAND_DESCRIPTIONS["ln"]="创建链接文件"
-
-COMMAND_CATEGORIES["lsof"]="system"
-COMMAND_DESCRIPTIONS["lsof"]="列出打开文件"
-
-COMMAND_CATEGORIES["date"]="system"
-COMMAND_DESCRIPTIONS["date"]="显示或设置系统日期和时间"
-
-COMMAND_CATEGORIES["more"]="system"
-COMMAND_DESCRIPTIONS["more"]="分页查看文件内容"
+COMMAND_CATEGORIES["watchman"]="cli"
+COMMAND_DESCRIPTIONS["watchman"]="文件监控工具"
 
 
-COMMAND_CATEGORIES["mount"]="system"
-COMMAND_DESCRIPTIONS["mount"]="挂载文件系统"
+# 云平台工具类命令 (Cloud Tools)
+COMMAND_CATEGORIES["awscli"]="cloud"
+COMMAND_DESCRIPTIONS["awscli"]="AWS 命令行工具"
 
-COMMAND_CATEGORIES["nano"]="system"
-COMMAND_DESCRIPTIONS["nano"]="简易文本编辑器"
+COMMAND_CATEGORIES["az"]="cloud"
+COMMAND_DESCRIPTIONS["az"]="Azure 命令行工具"
 
-COMMAND_CATEGORIES["operators"]="system"
-COMMAND_DESCRIPTIONS["operators"]="Shell操作符"
-
-COMMAND_CATEGORIES["pmap"]="system"
-COMMAND_DESCRIPTIONS["pmap"]="显示进程内存映射"
-
-COMMAND_CATEGORIES["ps"]="system"
-COMMAND_DESCRIPTIONS["ps"]="查看进程状态"
-
-COMMAND_CATEGORIES["rclone"]="system"
+COMMAND_CATEGORIES["rclone"]="cloud"
 COMMAND_DESCRIPTIONS["rclone"]="云存储同步工具"
 
-COMMAND_CATEGORIES["rsync"]="system"
+COMMAND_CATEGORIES["rsync"]="cloud"
 COMMAND_DESCRIPTIONS["rsync"]="远程文件同步工具"
 
-COMMAND_CATEGORIES["sed"]="system"
-COMMAND_DESCRIPTIONS["sed"]="流编辑器"
 
-COMMAND_CATEGORIES["shutdown"]="system"
-COMMAND_DESCRIPTIONS["shutdown"]="关闭系统"
+# 媒体处理类命令
+COMMAND_CATEGORIES["ffmpeg"]="media"
+COMMAND_DESCRIPTIONS["ffmpeg"]="音视频处理工具"
 
-COMMAND_CATEGORIES["sort"]="system"
-COMMAND_DESCRIPTIONS["sort"]="排序工具"
+COMMAND_CATEGORIES["Imagemagick"]="media"
+COMMAND_DESCRIPTIONS["Imagemagick"]="图像处理工具"
 
-COMMAND_CATEGORIES["systemctl"]="system"
-COMMAND_DESCRIPTIONS["systemctl"]="systemd系统和服务管理器"
-
-COMMAND_CATEGORIES["tar"]="system"
-COMMAND_DESCRIPTIONS["tar"]="归档工具"
-
-COMMAND_CATEGORIES["top"]="system"
-COMMAND_DESCRIPTIONS["top"]="动态显示进程"
-
-COMMAND_CATEGORIES["uname"]="system"
-COMMAND_DESCRIPTIONS["uname"]="显示系统信息"
-
-COMMAND_CATEGORIES["unzip"]="system"
-COMMAND_DESCRIPTIONS["unzip"]="解压缩工具"
-
-COMMAND_CATEGORIES["uptime"]="system"
-COMMAND_DESCRIPTIONS["uptime"]="显示系统运行时间"
-
-COMMAND_CATEGORIES["vim"]="system"
-COMMAND_DESCRIPTIONS["vim"]="高级文本编辑器"
-
-COMMAND_CATEGORIES["watch"]="system"
-COMMAND_DESCRIPTIONS["watch"]="定期执行命令"
-
-COMMAND_CATEGORIES["yum"]="system"
-COMMAND_DESCRIPTIONS["yum"]="CentOS/RHEL包管理器"
-
-COMMAND_CATEGORIES["zip"]="system"
-COMMAND_DESCRIPTIONS["zip"]="压缩工具"
-
-
-# 网络类命令
+# 网络工具类命令
 COMMAND_CATEGORIES["curl"]="network"
 COMMAND_DESCRIPTIONS["curl"]="网络请求工具"
 
 COMMAND_CATEGORIES["dig"]="network"
 COMMAND_DESCRIPTIONS["dig"]="DNS 查询工具"
 
+COMMAND_CATEGORIES["frp"]="network"
+COMMAND_DESCRIPTIONS["frp"]="内网穿透工具"
+
 COMMAND_CATEGORIES["ifconfig"]="network"
-COMMAND_DESCRIPTIONS["ifconfig"]="(已过时，但仍常用) 网络接口配置"
+COMMAND_DESCRIPTIONS["ifconfig"]="网络接口配置"
 
 COMMAND_CATEGORIES["nc"]="network"
 COMMAND_DESCRIPTIONS["nc"]="网络工具 (netcat)"
@@ -183,10 +112,10 @@ COMMAND_CATEGORIES["netstat"]="network"
 COMMAND_DESCRIPTIONS["netstat"]="网络连接状态查看"
 
 COMMAND_CATEGORIES["nmcli"]="network"
-COMMAND_DESCRIPTIONS["nmcli"]="NetworkManager命令行工具"
+COMMAND_DESCRIPTIONS["nmcli"]="NetworkManager 命令行工具"
 
 COMMAND_CATEGORIES["nslookup"]="network"
-COMMAND_DESCRIPTIONS["nslookup"]="DNS 查询工具 (已过时)"
+COMMAND_DESCRIPTIONS["nslookup"]="DNS 查询工具"
 
 COMMAND_CATEGORIES["ping"]="network"
 COMMAND_DESCRIPTIONS["ping"]="网络连通性测试"
@@ -204,7 +133,7 @@ COMMAND_CATEGORIES["tcpdump"]="network"
 COMMAND_DESCRIPTIONS["tcpdump"]="网络数据包分析工具"
 
 COMMAND_CATEGORIES["telnet"]="network"
-COMMAND_DESCRIPTIONS["telnet"]="远程登录 (不安全，但仍用于测试)"
+COMMAND_DESCRIPTIONS["telnet"]="远程登录工具"
 
 COMMAND_CATEGORIES["traceroute"]="network"
 COMMAND_DESCRIPTIONS["traceroute"]="路由追踪"
@@ -213,42 +142,15 @@ COMMAND_CATEGORIES["wget"]="network"
 COMMAND_DESCRIPTIONS["wget"]="文件下载工具"
 
 
-# 工具类命令
-COMMAND_CATEGORIES["cmake"]="tools"
-COMMAND_DESCRIPTIONS["cmake"]="构建工具"
-
-COMMAND_CATEGORIES["docker"]="tools"
-COMMAND_DESCRIPTIONS["docker"]="容器化平台"
-
-COMMAND_CATEGORIES["git"]="tools"
-COMMAND_DESCRIPTIONS["git"]="分布式版本控制系统"
-
-COMMAND_CATEGORIES["jq"]="tools"
-COMMAND_DESCRIPTIONS["jq"]="JSON 处理器"
-
-COMMAND_CATEGORIES["yq"]="tools"
-COMMAND_DESCRIPTIONS["yq"]="YAML 处理器"
-
-
-# 安卓类命令
-COMMAND_CATEGORIES["adb"]="android"
-COMMAND_DESCRIPTIONS["adb"]="Android调试桥接器"
-
-
-# 媒体类命令
-COMMAND_CATEGORIES["ffmpeg"]="media"
-COMMAND_DESCRIPTIONS["ffmpeg"]="音视频处理工具"
-
-COMMAND_CATEGORIES["Imagemagick"]="media"
-COMMAND_DESCRIPTIONS["Imagemagick"]="图像处理工具"
-
-
-# 包管理类命令
+# 包管理工具类命令
 COMMAND_CATEGORIES["apk"]="package"
 COMMAND_DESCRIPTIONS["apk"]="Alpine Linux 包管理器"
 
 COMMAND_CATEGORIES["brew"]="package"
 COMMAND_DESCRIPTIONS["brew"]="macOS 包管理器"
+
+COMMAND_CATEGORIES["cargo"]="package"
+COMMAND_DESCRIPTIONS["cargo"]="Rust 包管理器"
 
 COMMAND_CATEGORIES["composer"]="package"
 COMMAND_DESCRIPTIONS["composer"]="PHP 依赖管理器"
@@ -257,83 +159,212 @@ COMMAND_CATEGORIES["gem"]="package"
 COMMAND_DESCRIPTIONS["gem"]="Ruby Gems 包管理器"
 
 COMMAND_CATEGORIES["npm"]="package"
-COMMAND_DESCRIPTIONS["npm"]="Node.js包管理器"
+COMMAND_DESCRIPTIONS["npm"]="Node.js 包管理器"
 
 COMMAND_CATEGORIES["pacman"]="package"
 COMMAND_DESCRIPTIONS["pacman"]="Arch Linux 包管理器"
 
-
-COMMAND_CATEGORIES["cargo"]="package"
-COMMAND_DESCRIPTIONS["cargo"]="Rust 包管理器"
-
-COMMAND_CATEGORIES["uv"]="package"
-COMMAND_DESCRIPTIONS["uv"]="Python 包安装器和解析器"
-
-COMMAND_CATEGORIES["pipx"]="package"
-COMMAND_DESCRIPTIONS["pipx"]="Python 包管理器 (隔离环境)"
-
-COMMAND_CATEGORIES["poetry"]="package"
-COMMAND_DESCRIPTIONS["poetry"]="Python 包管理器 (依赖管理)"
-
 COMMAND_CATEGORIES["pip"]="package"
 COMMAND_DESCRIPTIONS["pip"]="Python 包管理器"
 
+COMMAND_CATEGORIES["pipx"]="package"
+COMMAND_DESCRIPTIONS["pipx"]="Python 独立程序包管理器"
+
 COMMAND_CATEGORIES["pnpm"]="package"
-COMMAND_DESCRIPTIONS["pnpm"]="高性能Node.js包管理器"
+COMMAND_DESCRIPTIONS["pnpm"]="高性能 Node.js 包管理器"
+
+COMMAND_CATEGORIES["poetry"]="package"
+COMMAND_DESCRIPTIONS["poetry"]="Python 依赖和包管理"
+
+COMMAND_CATEGORIES["uv"]="package"
+COMMAND_DESCRIPTIONS["uv"]="快速 Python 包安装器"
 
 COMMAND_CATEGORIES["yarn"]="package"
-COMMAND_DESCRIPTIONS["yarn"]="替代npm的包管理器"
+COMMAND_DESCRIPTIONS["yarn"]="Node.js 包管理器"
 
 
-# 运行时类命令
+# 运行时环境类命令
 COMMAND_CATEGORIES["golang"]="runtime"
-COMMAND_DESCRIPTIONS["golang"]="Go语言运行时"
+COMMAND_DESCRIPTIONS["golang"]="Go 语言运行时"
 
 COMMAND_CATEGORIES["java"]="runtime"
-COMMAND_DESCRIPTIONS["java"]="Java运行时"
+COMMAND_DESCRIPTIONS["java"]="Java 运行时"
 
 COMMAND_CATEGORIES["node"]="runtime"
-COMMAND_DESCRIPTIONS["node"]="Node.js运行时"
+COMMAND_DESCRIPTIONS["node"]="Node.js 运行时"
+
+COMMAND_CATEGORIES["php"]="runtime"
+COMMAND_DESCRIPTIONS["php"]="PHP 运行时"
 
 COMMAND_CATEGORIES["python"]="runtime"
-COMMAND_DESCRIPTIONS["python"]="Python运行时"
+COMMAND_DESCRIPTIONS["python"]="Python 运行时"
 
 
-# Web服务器类命令
+# 安全工具类命令
+COMMAND_CATEGORIES["nmap"]="security"
+COMMAND_DESCRIPTIONS["nmap"]="网络扫描工具"
+
+
+# 操作系统命令 (OS Commands)
+COMMAND_CATEGORIES["apt"]="os"
+COMMAND_DESCRIPTIONS["apt"]="Debian/Ubuntu 包管理器"
+
+COMMAND_CATEGORIES["awk"]="os"
+COMMAND_DESCRIPTIONS["awk"]="文本处理工具"
+
+COMMAND_CATEGORIES["cat"]="os"
+COMMAND_DESCRIPTIONS["cat"]="查看文件内容"
+
+COMMAND_CATEGORIES["chmod"]="os"
+COMMAND_DESCRIPTIONS["chmod"]="修改文件权限"
+
+COMMAND_CATEGORIES["chown"]="os"
+COMMAND_DESCRIPTIONS["chown"]="修改文件所有者"
+
+COMMAND_CATEGORIES["cut"]="os"
+COMMAND_DESCRIPTIONS["cut"]="文本列提取工具"
+
+COMMAND_CATEGORIES["date"]="os"
+COMMAND_DESCRIPTIONS["date"]="显示或设置系统日期"
+
+COMMAND_CATEGORIES["df"]="os"
+COMMAND_DESCRIPTIONS["df"]="磁盘空间使用情况"
+
+COMMAND_CATEGORIES["diff"]="os"
+COMMAND_DESCRIPTIONS["diff"]="文件比较工具"
+
+COMMAND_CATEGORIES["du"]="os"
+COMMAND_DESCRIPTIONS["du"]="磁盘使用量统计"
+
+COMMAND_CATEGORIES["free"]="os"
+COMMAND_DESCRIPTIONS["free"]="内存使用情况"
+
+COMMAND_CATEGORIES["grep"]="os"
+COMMAND_DESCRIPTIONS["grep"]="文本搜索工具"
+
+COMMAND_CATEGORIES["gzip"]="os"
+COMMAND_DESCRIPTIONS["gzip"]="文件压缩工具"
+
+COMMAND_CATEGORIES["history"]="os"
+COMMAND_DESCRIPTIONS["history"]="命令历史记录"
+
+COMMAND_CATEGORIES["htop"]="os"
+COMMAND_DESCRIPTIONS["htop"]="交互式进程查看器"
+
+COMMAND_CATEGORIES["ip"]="os"
+COMMAND_DESCRIPTIONS["ip"]="IP 地址和网络配置工具"
+
+COMMAND_CATEGORIES["iptables"]="os"
+COMMAND_DESCRIPTIONS["iptables"]="Linux 防火墙工具"
+
+COMMAND_CATEGORIES["kill"]="os"
+COMMAND_DESCRIPTIONS["kill"]="终止进程"
+
+COMMAND_CATEGORIES["killall"]="os"
+COMMAND_DESCRIPTIONS["killall"]="按名称终止进程"
+
+COMMAND_CATEGORIES["less"]="os"
+COMMAND_DESCRIPTIONS["less"]="分页文件查看器"
+
+COMMAND_CATEGORIES["ln"]="os"
+COMMAND_DESCRIPTIONS["ln"]="创建链接"
+
+COMMAND_CATEGORIES["lsof"]="os"
+COMMAND_DESCRIPTIONS["lsof"]="列出打开文件"
+
+COMMAND_CATEGORIES["more"]="os"
+COMMAND_DESCRIPTIONS["more"]="分页文件查看器"
+
+COMMAND_CATEGORIES["mount"]="os"
+COMMAND_DESCRIPTIONS["mount"]="挂载文件系统"
+
+COMMAND_CATEGORIES["nano"]="os"
+COMMAND_DESCRIPTIONS["nano"]="文本编辑器"
+
+COMMAND_CATEGORIES["operators"]="os"
+COMMAND_DESCRIPTIONS["operators"]="Shell 操作符"
+
+COMMAND_CATEGORIES["pmap"]="os"
+COMMAND_DESCRIPTIONS["pmap"]="进程内存映射"
+
+COMMAND_CATEGORIES["ps"]="os"
+COMMAND_DESCRIPTIONS["ps"]="进程状态查看"
+
+COMMAND_CATEGORIES["sed"]="os"
+COMMAND_DESCRIPTIONS["sed"]="流文本编辑器"
+
+COMMAND_CATEGORIES["shutdown"]="os"
+COMMAND_DESCRIPTIONS["shutdown"]="系统关机"
+
+COMMAND_CATEGORIES["sort"]="os"
+COMMAND_DESCRIPTIONS["sort"]="文本排序工具"
+
+COMMAND_CATEGORIES["systemctl"]="os"
+COMMAND_DESCRIPTIONS["systemctl"]="Systemd 服务管理"
+
+COMMAND_CATEGORIES["tail"]="os"
+COMMAND_DESCRIPTIONS["tail"]="显示文件尾部"
+
+COMMAND_CATEGORIES["tar"]="os"
+COMMAND_DESCRIPTIONS["tar"]="归档工具"
+
+COMMAND_CATEGORIES["top"]="os"
+COMMAND_DESCRIPTIONS["top"]="动态进程查看器"
+
+COMMAND_CATEGORIES["tree"]="os"
+COMMAND_DESCRIPTIONS["tree"]="以树形结构显示目录"
+
+COMMAND_CATEGORIES["uname"]="os"
+COMMAND_DESCRIPTIONS["uname"]="显示系统信息"
+
+COMMAND_CATEGORIES["unzip"]="os"
+COMMAND_DESCRIPTIONS["unzip"]="解压缩工具"
+
+COMMAND_CATEGORIES["uptime"]="os"
+COMMAND_DESCRIPTIONS["uptime"]="系统运行时间"
+
+COMMAND_CATEGORIES["vim"]="os"
+COMMAND_DESCRIPTIONS["vim"]="文本编辑器"
+
+COMMAND_CATEGORIES["watch"]="os"
+COMMAND_DESCRIPTIONS["watch"]="定期执行命令"
+
+COMMAND_CATEGORIES["yum"]="os"
+COMMAND_DESCRIPTIONS["yum"]="CentOS/RHEL 包管理器"
+
+COMMAND_CATEGORIES["zip"]="os"
+COMMAND_DESCRIPTIONS["zip"]="压缩工具"
+
+
+# 数据处理工具类命令
+COMMAND_CATEGORIES["jq"]="data-process"
+COMMAND_DESCRIPTIONS["jq"]="JSON 处理工具"
+
+COMMAND_CATEGORIES["yq"]="data-process"
+COMMAND_DESCRIPTIONS["yq"]="YAML 处理工具"
+
+# 版本控制工具类命令
+COMMAND_CATEGORIES["git"]="version-control"
+COMMAND_DESCRIPTIONS["git"]="版本控制系统"
+
+# 容器化工具类命令
+COMMAND_CATEGORIES["docker"]="container"
+COMMAND_DESCRIPTIONS["docker"]="容器化平台"
+
+
+# Web 服务器类命令
 COMMAND_CATEGORIES["apachectl"]="webserver"
-COMMAND_DESCRIPTIONS["apachectl"]="Apache HTTP 服务器控制工具"
+COMMAND_DESCRIPTIONS["apachectl"]="Apache 服务器控制"
 
 COMMAND_CATEGORIES["caddy"]="webserver"
-COMMAND_DESCRIPTIONS["caddy"]="现代化Web服务器"
+COMMAND_DESCRIPTIONS["caddy"]="Caddy Web 服务器"
 
 COMMAND_CATEGORIES["nginx"]="webserver"
-COMMAND_DESCRIPTIONS["nginx"]="高性能Web服务器"
+COMMAND_DESCRIPTIONS["nginx"]="NGINX Web 服务器"
 
-
-# 数据库类命令
-COMMAND_CATEGORIES["mongo"]="database"
-COMMAND_DESCRIPTIONS["mongo"]="MongoDB shell 客户端"
-
-COMMAND_CATEGORIES["mysql"]="database"
-COMMAND_DESCRIPTIONS["mysql"]="MySQL 客户端"
-
-COMMAND_CATEGORIES["psql"]="database"
-COMMAND_DESCRIPTIONS["psql"]="PostgreSQL 客户端"
-
-COMMAND_CATEGORIES["redis-cli"]="database"
-COMMAND_DESCRIPTIONS["redis-cli"]="Redis 客户端"
-
-COMMAND_CATEGORIES["cmake"]="build"
-COMMAND_DESCRIPTIONS["cmake"]="构建工具"
-
-COMMAND_CATEGORIES["gradle"]="build"
-COMMAND_DESCRIPTIONS["gradle"]="构建工具 (Java, Android)"
-
-COMMAND_CATEGORIES["mvn"]="build"
-COMMAND_DESCRIPTIONS["mvn"]="Maven 构建工具 (Java)"
 
 # 临时目录，用于缓存命令速查表
-CACHE_DIR="/tmp/cheatsheet_cache"
+CACHE_DIR="${CLI_CHEATSHEET_CACHE_DIR:-/tmp/cheatsheet_cache}"
 
 # 颜色定义
 RED='\033[0;31m'
@@ -361,6 +392,9 @@ show_help() {
   echo "  ${0##*/} git            # 查看git命令速查表"
   echo "  ${0##*/} -l             # 列出所有可用命令"
   echo "  ${0##*/} -u https://example.com/path/ git  # 使用自定义URL查看git命令速查表"
+  echo "环境变量:"
+  echo "  CLI_CHEATSHEET_PATH: 自定义速查表存放路径"
+  echo "  CLI_CHEATSHEET_CACHE_DIR: 临时目录，用于缓存命令速查表(默认: /tmp/cheatsheet_cache)"
   echo ""
 }
 
@@ -401,6 +435,13 @@ list_commands() {
     done
     echo ""
   done
+}
+
+notfound_tips() {
+  echo ""
+  echo -e "${YELLOW}如果确认命令有效但未收录，您可以到项目提交PR或提交Issue进行添加建议${NC}"
+  echo ""
+  echo -e "${GREEN}项目地址: https://github.com/funnyzak/cli-cheatsheets${NC}"
 }
 
 get_cheatsheet() {
@@ -454,7 +495,9 @@ get_cheatsheet() {
       else
         rm -f "$cache_file"
         echo -e "${RED}错误: 无法获取速查表，请检查命令名称和网络连接${NC}"
-        echo "尝试访问: $url"
+        echo -e "${YELLOW}尝试访问:${NC} ${url}"
+        echo ""
+        nanotfound_tips
         return 1
       fi
     fi
@@ -523,7 +566,7 @@ show_menu() {
             read -r
           }
         # 检查是否输入的是命令名而不是编号
-        elif [[ -n "${COMMAND_DESCRIPTIONS[$choice]}" ]]; then
+        elif [[ -n "${COMMAND_DESCRIPTIONS[${choice:-}]+_}" ]]; then
           clear
           get_cheatsheet "$choice" "$base_url" || {
             echo -e "\n${YELLOW}按回车键返回菜单...${NC}"
@@ -588,9 +631,10 @@ main() {
     show_menu "$base_url"
   else
     # 检查命令是否支持
-    if [[ -z "${COMMAND_DESCRIPTIONS[$command_name]}" ]]; then
+    if [[ -z "${COMMAND_DESCRIPTIONS[${command_name:-}]+_}" ]]; then
       echo -e "${RED}错误: 命令 '$command_name' 不在支持列表中${NC}"
       echo "使用 '$0 -l' 查看支持的命令列表"
+      notfound_tips
       exit 1
     fi
 
