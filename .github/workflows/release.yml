@@ -24,10 +24,10 @@ jobs:
         run: |
           echo "PROJECT_NAME=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_ENV
           echo "DATE_SUFFIX=$(date +%y%m%d%H%M)" >> $GITHUB_ENV
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+          if [[ "${{ github.ref }}" == refs/tags/* ]] && [[ "${{ github.event_name }}" == "push" ]]; then
             echo "RELEASE_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
           else
-            echo "RELEASE_NAME=release-${{ env.DATE_SUFFIX }}" >> $GITHUB_ENV
+            echo "RELEASE_NAME=${{ env.DATE_SUFFIX }}" >> $GITHUB_ENV
           fi
       
       - name: Create distribution package
@@ -37,7 +37,7 @@ jobs:
       
       - name: Create GitHub Release By Tag
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/') && github.event_name == 'push'
         with:
           name: "${{ env.RELEASE_NAME }}"
           tag_name: "${{ env.RELEASE_NAME }}"
@@ -54,9 +54,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Creating release for branch..."
-          gh release create "${{ env.RELEASE_NAME }}" dist/* --title "${{ env.RELEASE_NAME }}" --notes "Release created on ${{ env.DATE_SUFFIX }}"
-          
+          gh release create "${{ env.RELEASE_NAME }}" dist/* --title "${{ env.RELEASE_NAME }}" --notes "Release created on ${{ env.DATE_SUFFIX }}" --force || {
+            echo "::warning::Failed to create release, it might already exist. Attempting to update..."
+            gh release upload "${{ env.RELEASE_NAME }}" dist/* --clobber || echo "::error::Failed to update existing release"
+          }
+      
       - name: Send Apprise Notification
+        if: success()
         run: |
           curl -X POST \
           -F "tag=p" \

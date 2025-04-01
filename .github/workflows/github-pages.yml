@@ -46,6 +46,7 @@ jobs:
           commit_message: ${{ github.event.head_commit.message }}
 
       - name: Send Apprise Notification
+        if: success()
         run: |
           curl -X POST \
           -F "tag=p" \
