@@ -14,6 +14,9 @@
 #   curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh | bash
 #   curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh | bash -s -- git
 #   curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh | bash -s -- -l
+#
+# 环境变量:
+#   CLI_CHEATSHEET_PATH: 自定义速查表存放路径
 
 # 脚本错误处理
 set -euo pipefail
@@ -400,42 +403,64 @@ list_commands() {
   done
 }
 
-# 函数：从URL获取速查表内容并显示
 get_cheatsheet() {
   local cmd="$1"
   local base_url="$2"
   local category="${COMMAND_CATEGORIES[$cmd]}"
   local url="${base_url}${category}/${cmd}-cheatsheet.txt"
   local cache_file="$CACHE_DIR/${category}_${cmd}.txt"
+  local cheatsheet_file="${category}/${cmd}-cheatsheet.txt"
+  local found=false
 
   # 创建缓存目录（如果不存在）
   mkdir -p "$CACHE_DIR"
 
-  # 检查是否有缓存且不超过7天
-  if [[ -f "$cache_file" ]] && [[ $(find "$cache_file" -mtime -7 -print 2>/dev/null) ]]; then
-    less -R "$cache_file"
-  else
-    echo -e "${YELLOW}正在获取 $cmd 的速查表...${NC}"
+  # 1. 检查环境变量 CLI_CHEATSHEET_PATH
+  if [[ -n "${CLI_CHEATSHEET_PATH:-}" ]] && [[ -d "$CLI_CHEATSHEET_PATH" ]]; then
+    if [[ -f "$CLI_CHEATSHEET_PATH/$cheatsheet_file" ]]; then
+      echo -e "${GREEN}从环境变量指定的路径获取速查表...${NC}"
+      less -R "$CLI_CHEATSHEET_PATH/$cheatsheet_file"
+      found=true
+    fi
+  fi
 
-    # 尝试下载并保存到缓存
-    if curl -s -o "$cache_file" "$url"; then
-      if [[ -s "$cache_file" ]]; then
-        less -R "$cache_file"
+  # 2. 检查脚本同级目录
+  if [[ "$found" == "false" ]]; then
+    local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    if [[ -d "$script_dir/cheatsheets" ]] && [[ -f "$script_dir/cheatsheets/$cheatsheet_file" ]]; then
+      echo -e "${GREEN}从脚本同级目录获取速查表...${NC}"
+      less -R "$script_dir/cheatsheets/$cheatsheet_file"
+      found=true
+    fi
+  fi
+
+  # 3. 检查缓存或从网络获取
+  if [[ "$found" == "false" ]]; then
+    # 检查是否有缓存且不超过2天
+    if [[ -f "$cache_file" ]] && [[ $(find "$cache_file" -mtime -2 -print 2>/dev/null) ]]; then
+      less -R "$cache_file"
+    else
+      echo -e "${YELLOW}正在从网络获取 $cmd 的速查表...${NC}"
+
+      # 尝试下载并保存到缓存
+      if curl -s -o "$cache_file" "$url"; then
+        if [[ -s "$cache_file" ]]; then
+          less -R "$cache_file"
+        else
+          rm -f "$cache_file"
+          echo -e "${RED}错误: 速查表内容为空${NC}"
+          return 1
+        fi
       else
         rm -f "$cache_file"
-        echo -e "${RED}错误: 速查表内容为空${NC}"
+        echo -e "${RED}错误: 无法获取速查表，请检查命令名称和网络连接${NC}"
+        echo "尝试访问: $url"
         return 1
       fi
-    else
-      rm -f "$cache_file"
-      echo -e "${RED}错误: 无法获取速查表，请检查命令名称和网络连接${NC}"
-      echo "尝试访问: $url"
-      return 1
     fi
   fi
 }
 
-# 函数：显示交互式菜单
 show_menu() {
   local base_url="$1"
   local choice

@@ -4,20 +4,17 @@
 [![GitHub Stars](https://img.shields.io/github/stars/funnyzak/cli-cheatsheets?style=flat)](https://github.com/funnyzak/cli-cheatsheets/stargazers)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/funnyzak/cli-cheatsheets?style=flat)](https://github.com/funnyzak/cli-cheatsheets/commits/main)
 
-**快速访问命令行工具速查表，提高你的工作效率！**
-
-提供一个集中化的命令行工具速查表仓库，通过简单的 Shell 脚本 `cheatsheet.sh`，你可以快速查询和查看各种常用命令的速查表，无论是本地执行还是远程调用都非常方便。
+提供一个集中化的命令行工具速查表仓库，通过简单的 Shell 脚本 `cheatsheet.sh`，快速查询和查看各种常用命令速查表。
 
 ## 📋 特性
 
 - **丰富的速查表:** 涵盖 Android, Build Tools, Database, Media, Network, Package Managers, Runtime, System, Tools, Web Servers 等多个类别，持续更新和扩充。
 - **快速查询:** 通过简单的命令即可查看指定工具的速查表。
-- **本地和远程执行:** 既可以在本地下载脚本使用，也可以通过 `curl` 命令远程执行。
 - **别名支持:** 方便配置 Bash/Zsh/Fish 别名，实现更快速的调用。
 - **简单易用:** 脚本简洁明了，操作简单直观。
 - **多系统支持:** 兼容 Linux 和 macOS 系统。
 
-![交互式命令行界面](https://github.com/user-attachments/assets/d067604d-c99c-43c3-837d-cc9b1a5b827b)
+![交互式命令行界面](https://github.com/user-attachments/assets/74aea647-0aff-4f4e-b650-c6c7ca39318c)
 
 
 ## 🚀 使用方法
@@ -117,7 +114,7 @@ curl -s https://cs.yycc.dev | bash -s -- git
 ```bash
 curl -s https://cs.yycc.dev | bash -s -- -l
 ```
-### 3. 本地使用
+### 3. 本地使用(离线)
 
 1. **下载项目:**
 
