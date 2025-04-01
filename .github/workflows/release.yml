@@ -22,13 +22,14 @@ jobs:
       - name: Set up environment variables
         id: vars
         run: |
+          _date_suffix=$(date +%y%m%d%H%M)
           echo "PROJECT_NAME=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_ENV
-          echo "DATE_SUFFIX=$(date +%y%m%d%H%M)" >> $GITHUB_ENV
+          echo "DATE_SUFFIX=$_date_suffix" >> $GITHUB_ENV
             # Set release name based on event type
             if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == refs/tags/* ]]; then
               echo "RELEASE_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
             else
-              echo "RELEASE_NAME=$${DATE_SUFFIX}" >> $GITHUB_ENV
+              echo "RELEASE_NAME=${_date_suffix}" >> $GITHUB_ENV
             fi
       - name: Create distribution package
         run: |
