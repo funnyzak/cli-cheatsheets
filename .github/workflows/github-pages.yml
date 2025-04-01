@@ -6,17 +6,10 @@ on:
     branches:
       - main
       - dev
-    paths-ignore:
+    paths:
       - 'README.md'
-      - 'LICENSE'
-      # - '.github/**'
-      - '.gitignore'
-      - '.git/**'
-      - 'cheatsheets/**'
-  pull_request:
-    branches:
-      - main
-      - dev
+      - 'get-cheatsheet.sh'
+      - '.github/workflows/github-pages.yml'
 
 jobs:
   build-and-deploy:
@@ -53,6 +46,7 @@ jobs:
           commit_message: ${{ github.event.head_commit.message }}
 
       - name: Send Apprise Notification
+        if: success()
         run: |
           curl -X POST \
           -F "tag=p" \
