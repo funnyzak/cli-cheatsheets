@@ -4,30 +4,41 @@ on:
   push:
     paths:
       - 'cheatsheets/**'
-    branches: [ main, dev, dev2, dev3, devops ]
+      - 'cheatsheet.sh'
+    branches: [main, dev, dev2, dev3, devops]
   workflow_dispatch:
 
 jobs:
   release-build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Build
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Set up environment variables
+        id: vars
+        run: |
+          echo "PROJECT_NAME=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_ENV
+          echo "DATE_SUFFIX=$(date +%y%m%d%H%M)" >> $GITHUB_ENV
+          echo "RELEASE_NAME=${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('{0}', format('{0}', vars.DATE_SUFFIX)) }}" >> $GITHUB_ENV
+      
+      - name: Create distribution package
+        run: |
+          mkdir -p dist
+          tar -czf "dist/${PROJECT_NAME}-${DATE_SUFFIX}.tar.gz" cheatsheets cheatsheet.sh
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "${{ env.RELEASE_NAME }}"
+          tag_name: "${{ env.RELEASE_NAME }}"
+          files: dist/*
+          draft: false
+          generate_release_notes: true
+          body: "Release created on ${{ env.DATE_SUFFIX }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |          
-          # Package cheatsheets folder and cheatsheets.sh file
-          PROJECT_NAME=$(basename $GITHUB_REPOSITORY)
-          DATE_SUFFIX=$(date +%y%m%d%H%M)
-          
-          mkdir -p dist
-          tar -czf "dist/${PROJECT_NAME}-${DATE_SUFFIX}.tar.gz" cheatsheets cheatsheets.sh
-          
-          # Create release
-          if [[ "${GITHUB_REF}" =~ ^refs/tags/ ]]; then
-              RELEASE_NAME=${GITHUB_REF#refs/tags/}
-          else
-              RELEASE_NAME=${DATE_SUFFIX}
-          fi
-          gh release create "$RELEASE_NAME" dist/* --title "$RELEASE_NAME" --notes "Release created on ${DATE_SUFFIX}"

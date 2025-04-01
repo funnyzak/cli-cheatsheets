@@ -6,17 +6,10 @@ on:
     branches:
       - main
       - dev
-    paths-ignore:
+    paths:
       - 'README.md'
-      - 'LICENSE'
-      # - '.github/**'
-      - '.gitignore'
-      - '.git/**'
-      - 'cheatsheets/**'
-  pull_request:
-    branches:
-      - main
-      - dev
+      - 'get-cheatsheet.sh'
+      - '.github/workflows/github-pages.yml'
 
 jobs:
   build-and-deploy:
