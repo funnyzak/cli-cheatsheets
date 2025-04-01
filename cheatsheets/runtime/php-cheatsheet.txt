@@ -1,0 +1,146 @@
+##############################################################################
+# PHP 命令行速查表 (PHP Command-Line Cheatsheet)
+# 常用 PHP 命令行工具和选项速查
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - FILE:     PHP 脚本文件路径 (Path to a PHP script file)
+#   - SCRIPT:   PHP 代码片段 (PHP code snippet, enclosed in single quotes)
+#   - ARGUMENT: 传递给脚本的参数 (Argument passed to the script)
+#   - OPTION:   PHP 命令行选项 (Command-line option)
+#   - VALUE:    选项的值 (Value of an option)
+
+##############################################################################
+# 基本执行 (Basic Execution)
+##############################################################################
+
+php FILE                                     # 执行 PHP 脚本文件
+php -r SCRIPT                                # 执行单行 PHP 代码 (Run PHP code)
+php -r 'echo phpinfo();'                     # 执行 phpinfo() (常用测试)
+php -f FILE                                   # 强制将 FILE 当作 PHP 脚本执行 (Force execute as PHP)
+php -                                        # 从标准输入读取 PHP 代码并执行 (Read and execute from stdin)
+echo '<?php echo "Hello"; ?>' | php -         # 通过管道传递 PHP 代码
+
+##############################################################################
+# 配置与信息 (Configuration and Information)
+##############################################################################
+
+php -v                                       # 显示 PHP 版本信息 (Show PHP version)
+php --version                                # 显示 PHP 版本信息 (详细) (Detailed version info)
+php -i                                       # 显示 PHP 配置信息 (phpinfo()) (Show PHP configuration)
+php --info                                   # 显示 PHP 配置信息 (phpinfo()) (详细) (Detailed config info)
+php -m                                       # 显示已编译的模块 (Loaded modules)
+php --modules                                # 显示已编译的模块 (详细) (Detailed module list)
+php -c PATH                                  # 指定 php.ini 配置文件路径 (Specify php.ini path)
+php --ini                                    # 显示使用的 php.ini 文件路径 (Show loaded php.ini paths)
+php -d setting=VALUE                         # 设置 PHP 配置指令 (Set PHP configuration directive)
+php -d display_errors=1 -d error_reporting=E_ALL # 临时开启错误显示和所有错误报告 (Enable error display temporarily)
+php --rf function_name                       # 显示内置函数信息 (Show built-in function info)
+php --rc class_name                          # 显示内置类信息 (Show built-in class info)
+
+##############################################################################
+# 调试与错误处理 (Debugging and Error Handling)
+##############################################################################
+
+php -l FILE                                  # 语法检查 (Syntax check, lint)
+php -z FILE                                  # 加载 Zend 扩展 (Load Zend extension)
+php -dz extension=xdebug.so                  # 动态加载扩展 (Dynamic extension loading - e.g., Xdebug)
+php -e                                       # 为 debuggers/profilers 生成扩展信息 (Generate extended info for debuggers/profilers) (Xdebug)
+php -B 'phpdbg_break function_name;' FILE    # 在脚本开始前设置 phpdbg 断点 (Set phpdbg breakpoint before script starts) (phpdbg)
+php -r 'ini_set("display_errors", 1); error_reporting(E_ALL); ...' # 代码中临时设置错误显示 (Set error display in code)
+
+##############################################################################
+# Web 服务器 (内置 Web 服务器) (Built-in Web Server)
+##############################################################################
+
+php -S host:port [-t docroot] [router.php]   # 启动内置 Web 服务器 (Start built-in web server)
+php -S localhost:8080                        # 启动本地 Web 服务器，默认文档根目录为当前目录 (Default document root is current dir)
+php -S 0.0.0.0:80 -t public                   # 监听所有 IP，文档根目录为 public 目录 (Listen on all IPs, docroot is 'public')
+php -S localhost:8080 router.php             # 使用 router.php 作为路由脚本 (Use router.php as routing script)
+
+# 注意:
+#   - 内置服务器仅用于开发和测试环境 (Built-in server is for development and testing only)
+#   - `-t docroot` 指定文档根目录 (Specify document root)
+#   - `router.php`  可以自定义路由规则 (Custom routing rules)
+
+##############################################################################
+# 交互模式 (Interactive Mode)
+##############################################################################
+
+php -a                                       # 进入交互模式 (Interactive mode, REPL)
+php -a -r 'echo 1+1;'                        # 在非交互模式下执行单行代码后进入交互模式 (Execute code and then enter interactive mode)
+
+# 提示:
+#   - 在交互模式中可以直接输入 PHP 代码并立即执行 (Type PHP code and execute immediately)
+#   - 使用 `exit` 或 `Ctrl+D` 退出交互模式 (Exit with `exit` or `Ctrl+D`)
+
+##############################################################################
+# 参数传递 (Argument Passing)
+##############################################################################
+
+php FILE ARGUMENT1 ARGUMENT2 ...               # 传递参数给脚本 (Pass arguments to script)
+php FILE "String with spaces"                 # 传递包含空格的参数 (Arguments with spaces)
+php -r 'var_dump($argv);' arg1 arg2          # 使用 $argv 数组获取参数 (Access arguments using $argv)
+php -r 'var_dump($_SERVER["argv"]);' arg1 arg2 # 使用 $_SERVER["argv"] 获取参数 (Alternative way to access arguments)
+
+# 提示:
+#   - $argv[0] 是脚本文件名 (Script filename is $argv[0])
+#   - $argv[1], $argv[2], ... 是传递的参数 (Arguments start from $argv[1])
+
+##############################################################################
+# 其他常用选项 (Other Useful Options)
+##############################################################################
+
+php --help                                   # 显示帮助信息 (Show help message)
+php -w FILE                                  # 显示 PHP 脚本的源码 (Show source code of PHP script - with comments stripped)
+php -h                                       # 显示帮助信息 (简略) (Show help message - brief)
+php -- credits [what]                        # 显示 PHP Credits (贡献者信息) (Show PHP credits) (what: authors, general, SAPI, modules, etc.)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 结合 shell 命令:
+#   php -r 'echo shell_exec("ls -l");'        # 执行 shell 命令 (Execute shell commands) (注意安全)
+
+# 使用别名简化常用命令:
+#   alias phplint='php -l'                    # 创建语法检查别名 (Create alias for syntax check)
+#   alias phpserver='php -S localhost:8080'   # 创建内置服务器别名 (Create alias for built-in server)
+
+# 使用 `composer` 管理依赖 (Dependency management with Composer - separate tool, but related):
+#   composer install                          # 安装项目依赖 (Install project dependencies)
+#   composer update                           # 更新项目依赖 (Update project dependencies)
+#   composer require package/name             # 添加新的依赖包 (Add new dependency package)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 语法检查一个 PHP 文件:
+#   php -l my_script.php
+
+# 运行一个简单的 Web 服务器，并打开浏览器访问 http://localhost:8080:
+#   php -S localhost:8080 -t public
+
+# 执行一个 PHP 脚本并传递参数:
+#   php my_script.php --name="John Doe" 123
+
+# 在命令行中快速测试一段 PHP 代码:
+#   php -r 'echo "Current time: " . date("Y-m-d H:i:s") . "\n";'
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# PHP 官方文档 (Official PHP Documentation):
+#   https://www.php.net/manual/zh/features.commandline.php
+#   https://www.php.net/manual/zh/
+
+# PHP 命令行选项详解 (Detailed PHP Command-Line Options):
+#   https://www.php.net/manual/zh/features.commandline.options.php
+
+# Awesome PHP - 资源列表 (Awesome PHP - curated list of PHP resources):
+#   https://github.com/ziadoz/awesome-php
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

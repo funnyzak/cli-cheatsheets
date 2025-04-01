@@ -155,7 +155,7 @@ chmod +x cheatsheet.sh
 > 注意: 如果你在本地使用，确保确保 `cheatsheet.sh` 文件具有执行权限。并且脚本同级目录下的 `cheatsheets/` 目录包含了所有速查表文件。或者你也可以在环境变量设置 `CLI_CHEATSHEET_PATH` 指向你本地的速查表文件目录。
 > 例如:
 ```bash
-export CLI_CHEATSHEET_PATH="/Users/leon/Documents/your_path/cli-cheatsheets/cheatsheets/"
+export CLI_CHEATSHEET_PATH="/Users/yourname/cli-cheatsheets/cheatsheets/"
 ```
 
 ## 目录结构

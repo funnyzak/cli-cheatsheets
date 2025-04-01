@@ -1,0 +1,153 @@
+##############################################################################
+# Watchman 速查表 (Watchman Cheatsheet)
+# 文件系统监控服务 (Filesystem Monitoring Service)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PATH:          文件或目录路径 (File or directory path to watch)
+#   - TRIGGER_NAME:  触发器名称 (Name for the trigger)
+#   - COMMAND:       要执行的命令 (Command to execute)
+#   - QUERY:         Watchman 查询表达式 (Watchman query expression)
+#                    (参考: https://facebook.github.io/watchman/docs/query-expressions.html)
+
+##############################################################################
+# 基础操作 (Basic Operations)
+##############################################################################
+
+watchman --version                       # 显示 Watchman 版本
+watchman version                         # 显示 Watchman 版本 (JSON 输出)
+watchman watch-list                      # 列出所有监控的根目录
+watchman watch-project PATH              # 显示指定路径的项目根目录 (Watch root)
+watchman watch PATH                      # 启动监控 PATH 目录
+watchman watch-del PATH                  # 停止监控 PATH 目录
+watchman state-enter PATH NAME VALUE      # 设置 PATH 的状态 (自定义状态)
+watchman state-leave PATH NAME            # 清除 PATH 的状态
+watchman get-sockname                    # 获取 Watchman socket 文件路径
+watchman get-logname                     # 获取 Watchman 日志文件路径
+watchman log-level LEVEL                 # 设置日志级别 (error, warning, info, debug)
+watchman shutdown-server                 # 关闭 Watchman 服务
+
+##############################################################################
+# 触发器 (Triggers - Actions on File Changes)
+##############################################################################
+
+watchman trigger-list PATH                # 列出 PATH 目录的所有触发器
+watchman trigger-add PATH TRIGGER_NAME -- COMMAND [ARGS...] # 添加触发器
+#   - 当 PATH 目录下文件发生变化时，执行 COMMAND
+#   - 变化事件信息将通过标准输入传递给 COMMAND (JSON 格式)
+#   - 常用选项:
+#     --empty              # 初始触发 (在添加触发器后立即触发一次)
+#     --stdin              # 通过标准输入传递变化事件 (默认)
+#     --no-stdin           # 不通过标准输入传递变化事件
+#     --sync-timeout=MS    # 同步触发超时时间 (毫秒)
+#     --wait-for-watchman  # 等待 Watchman 服务就绪再添加触发器
+
+watchman trigger-del PATH TRIGGER_NAME    # 删除 PATH 目录的指定触发器
+watchman trigger-del-all PATH            # 删除 PATH 目录的所有触发器
+watchman trigger-state PATH TRIGGER_NAME  # 获取触发器状态
+
+##############################################################################
+# 查询 (Querying - Finding Files and Changes)
+##############################################################################
+
+watchman query PATH -- QUERY              # 对 PATH 执行查询
+#   - QUERY 是 Watchman 查询表达式，用于过滤文件
+#   - 查询结果将通过标准输出以 JSON 格式返回
+
+watchman find PATH [EXPRESSION]           # 查找 PATH 下匹配 EXPRESSION 的文件 (旧命令，推荐使用 query)
+#   - EXPRESSION 是 find 风格的表达式 (功能较 query 弱)
+
+watchman since PATH CLOCKSPEC             # 获取自 CLOCKSPEC 之后 PATH 目录的文件变化
+#   - CLOCKSPEC 可以是:
+#     - "c:TIMESTAMP" (时间戳)
+#     - "n:NAME"      (命名时钟)
+#     - "p:PID"       (进程 ID 时钟)
+#     - "t:TERM-NAME" (终端名时钟)
+#     - "0"           (初始状态，所有文件)
+
+##############################################################################
+# 查询表达式示例 (Query Expression Examples)
+##############################################################################
+
+# 查找 PATH 目录下所有 .js 文件
+watchman query PATH -- '{ "expression": ["suffix", "js"] }'
+
+# 查找 PATH 目录下所有 .js 和 .css 文件
+watchman query PATH -- '{ "expression": ["anyof", ["suffix", "js"], ["suffix", "css"]] }'
+
+# 查找 PATH 目录下所有 .js 文件，并且文件名包含 "test"
+watchman query PATH -- '{ "expression": ["allof", ["suffix", "js"], ["match", "*test*", "name"]] }'
+
+# 查找 PATH 目录下所有目录
+watchman query PATH -- '{ "expression": ["type", "d"] }'
+
+# 查找 PATH 目录下文件大小大于 1MB 的文件
+watchman query PATH -- '{ "expression": ["pcre", "^[^ ]+ ", "content"] }' # 查找文件内容匹配正则的文件 (性能消耗大)
+
+# 忽略 node_modules 目录 (排除目录)
+watchman query PATH -- '{ "expression": ["not", ["dirname", "node_modules"]] }'
+watchman query PATH -- '{ "expression": ["not", ["match", "node_modules", "dirname"]] }' # 另一种写法
+
+# 查找最近 5 分钟内修改过的文件
+watchman query PATH -- '{ "expression": ["since", "5min"] }'
+
+##############################################################################
+# 触发器命令示例 (Trigger Command Examples)
+##############################################################################
+
+# 当 PATH 目录下 .js 文件发生变化时，执行 echo 命令
+watchman trigger-add PATH js-changed -- echo "JavaScript file changed!"
+
+# 当 PATH 目录下文件发生变化时，执行 npm run build 命令 (假设 package.json 中定义了 build 脚本)
+watchman trigger-add PATH build-trigger -- npm run build
+
+# 触发器命令中获取变化的文件列表 (通过标准输入 JSON)
+# 示例脚本 (trigger-script.sh):
+# #!/bin/bash
+# jq -r '.files[]' | while read file; do
+#   echo "File changed: $file"
+# done
+
+# watchman trigger-add PATH file-changed -- sh trigger-script.sh
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 jq 处理 JSON 输出:
+#   watchman query ... | jq '.'                 # 格式化 JSON 输出
+#   watchman query ... | jq -r '.files[]'       # 提取文件列表
+
+# 结合 xargs 执行批量操作:
+#   watchman query ... | jq -r '.files[]' | xargs -I {} command {} # 对每个文件执行 command
+
+# 使用 --empty 触发器进行初始化操作:
+#   watchman trigger-add PATH initial-trigger --empty -- echo "Initial trigger fired!"
+
+# 使用命名时钟 (named clock) 跟踪特定进程的变化:
+#   watchman clock PATH -j | jq -r '.clockstring'  # 获取当前 clockstring
+#   watchman since PATH 'n:my-clock'                # 获取自命名时钟 'my-clock' 之后的变化
+#   watchman state-enter PATH clockname my-clock    # 设置命名时钟 'my-clock'
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 监控当前目录，并在 .js 文件变化时打印文件名
+# watchman watch .
+# watchman trigger-add . js-monitor -- jq -r '.files[]'
+
+# 监控 /path/to/project 目录，并在文件变化时触发构建
+# watchman watch /path/to/project
+# watchman trigger-add /path/to/project build-project -- npm run build
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Watchman 官方文档: https://facebook.github.io/watchman/
+# Watchman 查询表达式文档: https://facebook.github.io/watchman/docs/query-expressions.html
+# Watchman GitHub 仓库: https://github.com/facebook/watchman
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

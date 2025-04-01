@@ -1,0 +1,180 @@
+##############################################################################
+# FRP 速查表 (FRP Cheatsheet)
+# 快速反向代理工具 - Fast Reverse Proxy
+# GitHub: https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - SERVER_ADDR:  FRP 服务器地址 (Server Address, 例如: your_server_ip 或 domain.com)
+#   - SERVER_PORT:  FRP 服务器端口 (Server Port, 默认: 7000)
+#   - LOCAL_PORT:   本地服务端口 (Local Service Port, 例如: 80, 22)
+#   - REMOTE_PORT:  远程服务器暴露端口 (Remote Server Exposed Port)
+#   - PROXY_NAME:   代理名称 (Proxy Name, 自定义名称)
+#   - CONFIG_FILE:  配置文件路径 (Configuration File Path, 例如: frpc.ini, frps.ini)
+
+##############################################################################
+# 服务器端 (frps - Server Side)
+##############################################################################
+
+# 启动 frps 服务 (Start frps server)
+frps -c frps.ini                             # 使用配置文件启动 (Start with config file)
+
+# 常用选项 (Common Options):
+#   - -c CONFIG_FILE:   指定配置文件路径 (Specify config file path)
+#   - -l LISTEN_ADDR:  监听地址 (Listen address, 默认: 0.0.0.0)
+#   - -p LISTEN_PORT:  监听端口 (Listen port, 默认: 7000)
+#   - -k AUTH_TOKEN:   身份验证令牌 (Authentication token)
+#   - -t TCP_MUX_PORT: TCP 多路复用端口 (TCP multiplexer port, 默认: 7001)
+
+# 示例 frps.ini 配置文件 (Example frps.ini configuration):
+# [common]
+# bind_port = 7000
+# token = your_auth_token
+
+##############################################################################
+# 客户端 (frpc - Client Side)
+##############################################################################
+
+# 启动 frpc 客户端 (Start frpc client)
+frpc -c frpc.ini                             # 使用配置文件启动 (Start with config file)
+
+# 常用选项 (Common Options):
+#   - -c CONFIG_FILE:   指定配置文件路径 (Specify config file path)
+#   - -s SERVER_ADDR:  FRP 服务器地址 (FRP server address)
+#   - -p SERVER_PORT:  FRP 服务器端口 (FRP server port, 默认: 7000)
+#   - -k AUTH_TOKEN:   身份验证令牌 (Authentication token)
+#   - -u USER:         用户名 (User name, 用于身份验证)
+
+##############################################################################
+# 客户端配置文件 frpc.ini 常用配置 (frpc.ini Common Configurations)
+##############################################################################
+
+# [common] 区块 (Common Section - Required)
+# 必须配置，所有代理共享 (Required, shared by all proxies)
+# server_addr = SERVER_ADDR
+# server_port = SERVER_PORT
+# token = your_auth_token
+
+# TCP 代理 (TCP Proxy)
+# 将本地 TCP 端口映射到远程 (Map local TCP port to remote)
+# [tcp_proxy_name]
+# type = tcp
+# local_port = LOCAL_PORT
+# remote_port = REMOTE_PORT
+# local_ip = 127.0.0.1  # 可选, 默认 127.0.0.1 (Optional, default 127.0.0.1)
+# remote_addr =  # 可选, 绑定到指定远程地址 (Optional, bind to specific remote address)
+
+# STCP 代理 (Secret TCP Proxy)
+# TCP 加密代理，需要客户端和服务端共享 secret_key (Encrypted TCP proxy, requires shared secret_key)
+# [stcp_proxy_name]
+# type = stcp
+# sk = your_secret_key
+# local_port = LOCAL_PORT
+# remote_port = REMOTE_PORT
+# local_ip = 127.0.0.1  # 可选 (Optional)
+
+# HTTP 代理 (HTTP Proxy)
+# HTTP 协议代理，支持域名绑定 (HTTP protocol proxy, supports domain binding)
+# [http_proxy_name]
+# type = http
+# local_port = LOCAL_PORT
+# custom_domains = your_domain.com  # 域名列表，逗号分隔 (Domain list, comma-separated)
+# locations = /api,/static         # URL 路径列表 (URL path list)
+# use_compression = true           # 启用压缩 (Enable compression)
+# http_user = your_http_user       # HTTP Basic Auth 用户名 (HTTP Basic Auth username)
+# http_pwd = your_http_password    # HTTP Basic Auth 密码 (HTTP Basic Auth password)
+
+# HTTPS 代理 (HTTPS Proxy)
+# HTTPS 协议代理 (HTTPS protocol proxy)
+# [https_proxy_name]
+# type = https
+# local_port = LOCAL_PORT
+# custom_domains = your_domain.com
+# locations = /
+
+# UDP 代理 (UDP Proxy)
+# UDP 端口映射 (UDP port mapping)
+# [udp_proxy_name]
+# type = udp
+# local_port = LOCAL_PORT
+# remote_port = REMOTE_PORT
+# local_ip = 127.0.0.1  # 可选 (Optional)
+
+# XTCP 代理 (XTCP Proxy)
+# 客户端主动连接模式的 TCP 代理 (TCP proxy in client-initiated connection mode)
+# 通常用于内网穿透，无需服务端监听端口 (Typically for NAT traversal, no server-side listening port required)
+# [xtcp_proxy_name]
+# type = xtcp
+# sk = your_secret_key
+# server_port = REMOTE_PORT  # 服务端监听端口 (Server-side listening port on frps)
+# bind_addr =  # 可选，绑定到指定本地地址 (Optional, bind to specific local address)
+# bind_port = LOCAL_PORT  # 本地服务端口 (Local service port)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 后台运行 (Run in background):
+# nohup frps -c frps.ini &
+# nohup frpc -c frpc.ini &
+
+# 使用 screen 或 tmux 会话管理 (Use screen or tmux for session management)
+# screen -S frps
+# frps -c frps.ini
+# Ctrl+a d  (detach)
+
+# 日志查看 (View logs):
+# 查看 frps 和 frpc 的日志文件 (Check log files of frps and frpc)
+# 配置文件中可配置日志路径 (Log path can be configured in config files)
+
+# 配置文件热加载 (Hot reload config file):
+# frps 和 frpc 支持热加载配置文件 (frps and frpc support hot reload of config files)
+# 发送 SIGHUP 信号 (Send SIGHUP signal)
+# kill -SIGHUP <frps_pid>
+# kill -SIGHUP <frpc_pid>
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 示例 1:  TCP 端口转发，将本地 22 端口 (SSH) 映射到远程服务器的 6000 端口
+# (Example 1: TCP port forwarding, map local port 22 (SSH) to remote server port 6000)
+# frpc.ini 客户端配置 (frpc.ini client configuration):
+# [common]
+# server_addr = your_server_ip
+# server_port = 7000
+# token = your_auth_token
+
+# [ssh]
+# type = tcp
+# local_port = 22
+# remote_port = 6000
+
+# 远程服务器访问 SSH: ssh user@your_server_ip -p 6000
+
+# 示例 2: HTTP 代理，将本地 8080 端口 HTTP 服务通过域名 yourdomain.com 暴露
+# (Example 2: HTTP proxy, expose local port 8080 HTTP service via domain yourdomain.com)
+# frpc.ini 客户端配置 (frpc.ini client configuration):
+# [common]
+# server_addr = your_server_ip
+# server_port = 7000
+# token = your_auth_token
+
+# [web]
+# type = http
+# local_port = 8080
+# custom_domains = yourdomain.com
+
+# 通过 http://yourdomain.com 访问本地 8080 服务 (Access local 8080 service via http://yourdomain.com)
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# frp GitHub 仓库 (frp GitHub Repository):
+# https://github.com/fatedier/frp
+
+# frp 官方文档 (frp Official Documentation):
+# https://gofrp.org/docs/
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

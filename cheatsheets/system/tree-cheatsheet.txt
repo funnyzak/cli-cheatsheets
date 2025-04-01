@@ -1,0 +1,117 @@
+##############################################################################
+# tree 命令速查表 (tree Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - [DIR]:     目录路径 (Directory path, 例如: /home/user/documents, .)
+#   - [FILE]:    文件名 (Filename, 例如:  myfile.txt)
+#   - [PATTERN]: 文件名/目录名匹配模式 (Pattern for filename/dirname matching, 例如: *.txt, images*)
+#   - [DEPTH]:   目录深度 (Directory depth, 正整数, 例如: 2, 3)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+tree                                        # 显示当前目录的树状结构
+tree [DIR]                                   # 显示指定目录的树状结构
+tree [DIR1] [DIR2] ...                       # 显示多个目录的树状结构
+
+##############################################################################
+# 显示选项 (Display Options)
+##############################################################################
+
+tree -a                                      # 显示所有文件和目录 (包括隐藏文件)
+tree -d                                      # 仅显示目录
+tree -f                                      # 显示完整路径 (Full pathname prefix)
+tree -i                                      # 不显示缩进线 (No indentation lines)
+tree -L [DEPTH]                              # 最大显示深度 (Max display depth)
+tree -L 2                                     # 例如: 最大深度为 2
+tree -N                                      # 不使用彩色输出 (No color)
+tree -p                                      # 显示文件类型和权限 (File type and permissions)
+tree -q                                      # 将不可打印字符显示为问号 (?)
+tree -s                                      # 显示文件和目录大小 (File and directory sizes)
+tree -h                                      # 以人类可读的格式显示文件大小 (Human-readable sizes)
+tree -D                                      # 显示最后修改日期 (Date of last modification)
+tree -t                                      # 按最后修改时间排序 (Sort by modification time)
+tree -r                                      # 反向排序 (Reverse order)
+tree -u                                      # 显示用户名称或 UID (Show user names or UIDs)
+tree -g                                      # 显示组名称或 GID (Show group names or GIDs)
+tree --du                                    # 显示每个目录的磁盘使用情况 (Disk usage of directories)
+tree --filelimit #[NUM]                      # 限制每个目录显示的文件数量 (Don't descend into dirs with more than # files)
+tree --dirsfirst                             # 目录排在文件前面 (List directories before files)
+
+##############################################################################
+# 过滤选项 (Filtering Options)
+##############################################################################
+
+tree -P [PATTERN]                            # 只显示匹配模式的文件和目录 (Pattern to include)
+tree -P "*.txt"                              # 例如: 只显示 .txt 文件
+tree -I [PATTERN]                            # 排除匹配模式的文件和目录 (Pattern to exclude)
+tree -I "node_modules|*.log"                 # 例如: 排除 node_modules 目录和 .log 文件
+tree --matchdirs                             # 模式匹配也应用于目录名 (Pattern matching also applies to directory names)
+
+##############################################################################
+# 输出选项 (Output Options)
+##############################################################################
+
+tree -o [FILE]                               # 将输出保存到文件 (Output to file)
+tree -J                                      # 以 JSON 格式输出 (Output in JSON format)
+tree -X                                      # 以 XML 格式输出 (Output in XML format)
+tree -H [BASEHREF]                           # 生成 HTML 格式的目录树 (Output as HTML)
+tree --noreport                               # 不显示文件和目录数量报告 (Suppress file/directory count report)
+
+##############################################################################
+# 排序选项 (Sorting Options)
+##############################################################################
+
+tree -v                                      # 按版本号排序 (Version sort)
+tree -U                                      # 不排序，按目录内容原始顺序显示 (Leave files unsorted)
+tree -C                                      # 强制彩色输出 (Force color output when using -o)
+
+##############################################################################
+# 其他选项 (Other Options)
+##############################################################################
+
+tree -v (小写 v)                             # 显示 tree 命令版本 (Verbose output, version info)
+tree --help                                  # 显示帮助信息
+tree --version                               # 显示版本信息
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 结合 -d 和 -L 快速查看目录结构深度:
+#   tree -d -L 2                             # 显示目录结构，最大深度为 2
+
+# 使用 -P 和 -I 进行精细化文件过滤:
+#   tree -P "*.jpg" -I "thumb*"              # 显示 jpg 图片，排除缩略图
+
+# 使用 -o 输出到文件，方便查看和分享:
+#   tree -o directory_tree.txt
+
+# 结合 watch 命令定时刷新目录树 (需要安装 watch):
+#   watch -n 1 tree                          # 每秒刷新一次当前目录树
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 显示当前目录的树状结构，最大深度为 1:
+#   tree -L 1
+
+# 显示 /etc 目录的目录结构，仅显示目录，并按时间排序:
+#   tree -d -t /etc
+
+# 将当前目录的树状结构保存到 tree.txt 文件中:
+#   tree -o tree.txt
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# https://www.computerhope.com/unix/tree.htm
+# https://linux.die.net/man/1/tree
+# 可以在终端中执行 `man tree` 或 `tree --help` 查看更详细的帮助文档
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :
