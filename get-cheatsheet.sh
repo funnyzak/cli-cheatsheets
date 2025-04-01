@@ -24,8 +24,7 @@ REPO_OWNER="funnyzak"
 REPO_NAME="cli-cheatsheets"
 
 DEFAULT_URL="https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/refs/heads/$REPO_BRANCH"
-CN_URL="https://raw.gitcode.com/$REPO_OWNER/$REPO_NAME/raw/$REPO_BRANCH"
-
+CN_URL="https://gitee.com/$REPO_OWNER/$REPO_NAME/raw/$REPO_BRANCH"
 _get=""
 
 if _exists curl && [ "${USE_WGET:-0}" = "0" ]; then

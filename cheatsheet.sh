@@ -24,8 +24,7 @@ set -euo pipefail
 # 默认URL前缀
 DEFAULT_URL="https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/${REPO_BRANCH:-main}/cheatsheets/"
 # 中国地区加速URL前缀
-CN_URL="https://raw.gitcode.com/funnyzak/cli-cheatsheets/raw/${REPO_BRANCH:-main}/cheatsheets/"
-
+CN_URL="https://gitee.com/funnyzak/cli-cheatsheets/raw/${REPO_BRANCH:-main}/cheatsheets/"
 # 支持的命令列表及其描述和所属分类
 declare -A COMMANDS
 declare -A COMMAND_DESCRIPTIONS

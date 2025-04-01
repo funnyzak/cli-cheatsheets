@@ -1,4 +1,4 @@
-# Command-Line Cheatsheets (cli-cheatsheets)
+# Command-Line Cheatsheets 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub Stars](https://img.shields.io/github/stars/funnyzak/cli-cheatsheets?style=flat)](https://github.com/funnyzak/cli-cheatsheets/stargazers)
@@ -38,6 +38,8 @@ wget -qO- https://cs.yycc.dev | bash -s -- git
 ```
 
 > 以上`URL`是一个短地址，实际指向的是 [`/get-cheatsheet.sh`](https://github.com/funnyzak/cli-cheatsheets/blob/main/get-cheatsheet.sh)，你可以在分支 [`gh-pages`](https://github.com/funnyzak/cli-cheatsheets/tree/gh-pages) 中找到它。
+> 你也可以直接使用 [`https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh`](https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/main/cheatsheet.sh) 进行远程执行。
+> 国区可以使用`Gitee` 的镜像地址： [`https://gitee.com/funnyzak/cli-cheatsheets/raw/main/cheatsheet.sh`](https://gitee.com/funnyzak/cli-cheatsheets/raw/main/cheatsheet.sh)。
 
 ### 1. 配置别名 (Bash/Zsh/Fish)
 
@@ -50,7 +52,7 @@ wget -qO- https://cs.yycc.dev | bash -s -- git
 **简化版本：**
 
 ```bash
-alias cs='() { curl -s https://cs.yycc.dev | bash -s -- "$@" }'
+alias cs='() { curl -s https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh | bash -s -- "$@" }'
 ```
 
 使用如下命令查看速查表：
@@ -68,7 +70,7 @@ cs
 ```bash
 alias cs='() {
   local tmpfile=$(mktemp)
-  curl -sSL "Https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/${REPO_BRANCH:-main}/cheatsheet.sh" -o "$tmpfile" && chmod +x "$tmpfile" && "$tmpfile" "$@" && rm -f "$tmpfile"
+  curl -sSL "https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/${REPO_BRANCH:-main}/cheatsheet.sh" -o "$tmpfile" && chmod +x "$tmpfile" && "$tmpfile" "$@" && rm -f "$tmpfile"
 }'
 ```
 配置完成后，然后执行 `source ~/.bashrc` 或 `source ~/.zshrc` 使配置生效。
@@ -79,7 +81,7 @@ alias cs='() {
 
 ```fish
 function cs
-  curl -sSL https://cs.yycc.dev | bash -s -- $argv
+  curl -sSL https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh | bash -s -- $argv
 end
 ```
 
@@ -100,19 +102,19 @@ cs # 交互式菜单
 * **交互式菜单:**
 
 ```bash
-curl -s https://cs.yycc.dev | bash
+curl -s https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh -o cheatsheet.sh && chmod +x cheatsheet.sh && ./cheatsheet.sh
 ```
 
 * **查看指定命令的速查表:**
 
 ```bash
-curl -s https://cs.yycc.dev | bash -s -- git
+curl -s https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh | bash -s -- git
 ```
 
 * **列出所有支持的命令:**
 
 ```bash
-curl -s https://cs.yycc.dev | bash -s -- -l
+curl -s https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh | bash -s -- -l
 ```
 ### 3. 本地使用(离线)
 
@@ -134,20 +136,20 @@ curl -s https://cs.yycc.dev | bash -s -- -l
     ```bash
     # 交互式菜单 (无参数)
     ./cheatsheet.sh
-
+    
     # 查看指定命令的速查表
     ./cheatsheet.sh git
     ./cheatsheet.sh docker
     ./cheatsheet.sh mongo
-
+    
     # 列出所有支持的命令
     ./cheatsheet.sh -l
     ./cheatsheet.sh --list
-
+    
     # 显示帮助信息
     ./cheatsheet.sh -h
     ./cheatsheet.sh --help
-
+    
     # 使用自定义 URL 前缀 (高级用法)
     # 如果你将 cheatsheets 目录部署在自定义的 Web 服务器上
     ./cheatsheet.sh -u https://example.com/path/ git

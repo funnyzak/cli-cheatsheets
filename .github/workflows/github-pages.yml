@@ -10,7 +10,9 @@ on:
       - 'README.md'
       - 'get-cheatsheet.sh'
       - '.github/workflows/github-pages.yml'
-
+    tags:
+      - "*"
+      
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
