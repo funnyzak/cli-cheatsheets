@@ -1,0 +1,274 @@
+##############################################################################
+# AWS CLI 速查表 (AWS CLI Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - REGION:     AWS 区域 (Region, 例如: us-west-2, ap-southeast-1)
+#   - PROFILE:    AWS CLI 配置文件名 (Profile name, 例如: default, dev, prod)
+#   - SERVICE:    AWS 服务名称 (Service name, 例如: s3, ec2, iam)
+#   - COMMAND:    AWS CLI 命令 (Command, 例如: ls, cp, describe-instances)
+#   - RESOURCE:   AWS 资源 (Resource, 例如: bucket, instance, user)
+#   - BUCKET:     S3 存储桶名称 (S3 Bucket name, 例如: my-bucket)
+#   - KEY:        S3 对象键 (S3 Object Key, 例如: path/to/file.txt)
+#   - INSTANCE_ID: EC2 实例 ID (EC2 Instance ID, 例如: i-xxxxxxxxxxxxx)
+#   - USER_NAME:  IAM 用户名 (IAM User Name, 例如: my-user)
+#   - POLICY_ARN: IAM 策略 ARN (IAM Policy ARN, 例如: arn:aws:iam::aws:policy/...)
+#   - STACK_NAME: CloudFormation 堆栈名称 (CloudFormation Stack Name, 例如: my-stack)
+#   - TEMPLATE_FILE: CloudFormation 模板文件路径 (Template File Path, 例如: template.yaml)
+
+##############################################################################
+# 配置 (Configuration)
+##############################################################################
+
+aws configure                                   # 交互式配置 AWS CLI
+aws configure list                              # 列出当前配置
+aws configure list-profiles                     # 列出所有配置 Profile
+
+# 设置默认配置 (Set default configuration):
+#   aws configure set aws_access_key_id YOUR_ACCESS_KEY
+#   aws configure set aws_secret_access_key YOUR_SECRET_KEY
+#   aws configure set region YOUR_REGION
+#   aws configure set output json
+
+# 使用指定 Profile (Use a specific profile):
+#   aws --profile PROFILE COMMAND
+
+# 设置环境变量 (Environment Variables):
+#   export AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY
+#   export AWS_SECRET_ACCESS_KEY=YOUR_SECRET_KEY
+#   export AWS_REGION=YOUR_REGION
+#   export AWS_PROFILE=PROFILE
+
+##############################################################################
+# 通用选项 (General Options)
+##############################################################################
+
+aws --version                                   # 显示 AWS CLI 版本
+aws --help                                      # 显示 AWS CLI 帮助
+aws SERVICE help                                # 显示服务帮助 (例如: aws s3 help)
+aws SERVICE COMMAND help                        # 显示命令帮助 (例如: aws s3 ls help)
+
+aws --region REGION COMMAND                     # 指定 AWS 区域
+aws --profile PROFILE COMMAND                    # 使用指定配置 Profile
+aws --output FORMAT COMMAND                      # 指定输出格式 (json, text, table)
+aws --debug COMMAND                             # 开启调试模式 (详细输出)
+aws --query QUERY COMMAND                       # 使用 JMESPath 查询过滤结果
+aws --dryrun COMMAND                            # 模拟运行，不实际执行操作
+
+# 输出格式 (Output Formats):
+#   - json:   JSON 格式 (默认)
+#   - text:   文本格式 (空格分隔)
+#   - table:  表格格式 (易于阅读)
+
+# JMESPath 查询示例 (JMESPath Query Examples):
+#   --query 'Buckets[].Name'                      # 获取所有 Bucket 名称
+#   --query 'Instances[*].[InstanceId, PublicIpAddress]' # 获取实例 ID 和公网 IP
+
+##############################################################################
+# S3 - 存储 (Simple Storage Service)
+##############################################################################
+
+# 存储桶操作 (Bucket Operations):
+aws s3 ls                                       # 列出所有 S3 存储桶
+aws s3 ls s3://BUCKET                           # 列出指定存储桶内容
+aws s3 mb s3://BUCKET                           # 创建存储桶 (Make Bucket)
+aws s3 rb s3://BUCKET                           # 删除存储桶 (Remove Bucket, 需为空)
+aws s3 rb s3://BUCKET --force                   # 强制删除存储桶 (即使不为空，谨慎使用)
+
+# 对象操作 (Object Operations):
+aws s3 cp SOURCE DEST                          # 复制对象 (本地/S3 之间)
+aws s3 cp FILE s3://BUCKET/KEY                  # 上传文件到 S3
+aws s3 cp s3://BUCKET/KEY FILE                  # 从 S3 下载文件
+aws s3 cp DIR s3://BUCKET/PREFIX --recursive    # 递归上传目录到 S3
+aws s3 cp s3://BUCKET/PREFIX DIR --recursive    # 递归下载 S3 目录
+aws s3 sync SOURCE DEST                        # 同步目录/存储桶 (本地/S3 之间)
+aws s3 sync DIR s3://BUCKET/PREFIX               # 同步本地目录到 S3
+aws s3 sync s3://BUCKET/PREFIX DIR               # 同步 S3 目录到本地
+aws s3 rm s3://BUCKET/KEY                      # 删除 S3 对象
+aws s3 rm s3://BUCKET/PREFIX --recursive        # 递归删除 S3 目录/前缀
+aws s3 mv s3://BUCKET/SOURCE s3://BUCKET/DEST   # 移动/重命名 S3 对象 (同一存储桶内)
+
+# 高级 S3 操作 (Advanced S3 Operations):
+aws s3 presign s3://BUCKET/KEY                   # 生成预签名 URL (临时访问)
+aws s3 website s3://BUCKET                       # 配置静态网站托管
+aws s3api get-bucket-location --bucket BUCKET   # 获取存储桶所在区域
+aws s3api put-bucket-versioning --bucket BUCKET --versioning-configuration Status=Enabled # 启用版本控制
+
+# 提示:
+#   - SOURCE 和 DEST 可以是本地路径或 s3://BUCKET/KEY 格式
+#   - 使用 --recursive 进行递归操作目录/前缀
+#   - 使用 --acl 设置访问控制列表
+#   - 使用 --storage-class 指定存储类别 (STANDARD, REDUCED_REDUNDANCY, etc.)
+
+##############################################################################
+# EC2 - 弹性计算云 (Elastic Compute Cloud)
+##############################################################################
+
+# 实例操作 (Instance Operations):
+aws ec2 describe-instances                       # 列出 EC2 实例
+aws ec2 describe-instances --instance-ids INSTANCE_ID [INSTANCE_ID...] # 列出指定实例
+aws ec2 run-instances --image-id AMI_ID --instance-type INSTANCE_TYPE --key-name KEY_NAME --security-group-ids SG_ID --subnet-id SUBNET_ID --count COUNT # 启动 EC2 实例
+aws ec2 start-instances --instance-ids INSTANCE_ID [INSTANCE_ID...] # 启动已停止的实例
+aws ec2 stop-instances --instance-ids INSTANCE_ID [INSTANCE_ID...]  # 停止实例
+aws ec2 reboot-instances --instance-ids INSTANCE_ID [INSTANCE_ID...] # 重启实例
+aws ec2 terminate-instances --instance-ids INSTANCE_ID [INSTANCE_ID...] # 终止实例 (永久删除)
+
+# 镜像操作 (Image Operations - AMI):
+aws ec2 describe-images                          # 列出 AMI 镜像
+aws ec2 describe-images --owners amazon          # 列出 Amazon 官方 AMI
+aws ec2 describe-images --filters "Name=name,Values=amzn2-*" # 过滤 AMI
+
+# 安全组操作 (Security Group Operations):
+aws ec2 describe-security-groups                 # 列出安全组
+aws ec2 create-security-group --group-name SG_NAME --description "描述" # 创建安全组
+aws ec2 delete-security-group --group-ids SG_ID  # 删除安全组
+aws ec2 authorize-security-group-ingress --group-id SG_ID --protocol tcp --port 22 --cidr 0.0.0.0/0 # 允许 SSH 入站
+aws ec2 authorize-security-group-egress --group-id SG_ID --protocol tcp --port 80 --cidr 0.0.0.0/0  # 允许 HTTP 出站
+aws ec2 revoke-security-group-ingress ...       # 撤销入站规则
+aws ec2 revoke-security-group-egress ...        # 撤销出站规则
+
+# 密钥对操作 (Key Pair Operations):
+aws ec2 describe-key-pairs                       # 列出密钥对
+aws ec2 create-key-pair --key-name KEY_NAME      # 创建密钥对，下载 .pem 文件
+aws ec2 delete-key-pair --key-name KEY_NAME      # 删除密钥对
+
+# 其他 EC2 操作 (Other EC2 Operations):
+aws ec2 describe-subnets                         # 列出子网
+aws ec2 describe-vpcs                            # 列出 VPC
+aws ec2 describe-regions                         # 列出可用区域
+
+# 提示:
+#   - 使用 --filters 过滤结果，例如: `--filters "Name=instance-state-name,Values=running"`
+#   - 使用 --output text --query ... 获取特定字段，方便脚本处理
+#   - 实例状态: pending, running, stopping, stopped, shutting-down, terminated
+
+##############################################################################
+# IAM - 身份与访问管理 (Identity and Access Management)
+##############################################################################
+
+# 用户操作 (User Operations):
+aws iam get-user                                 # 获取当前 IAM 用户信息
+aws iam get-user --user-name USER_NAME           # 获取指定用户信息
+aws iam list-users                               # 列出所有 IAM 用户
+aws iam create-user --user-name USER_NAME        # 创建 IAM 用户
+aws iam delete-user --user-name USER_NAME        # 删除 IAM 用户 (需先删除关联资源)
+
+# 策略操作 (Policy Operations):
+aws iam list-policies                            # 列出 IAM 策略
+aws iam get-policy --policy-arn POLICY_ARN       # 获取策略详情
+aws iam get-policy-version --policy-arn POLICY_ARN --version-id VERSION_ID # 获取策略版本
+aws iam create-policy --policy-name POLICY_NAME --policy-document FILE://policy.json # 创建策略
+aws iam delete-policy --policy-arn POLICY_ARN       # 删除策略
+
+# 用户策略管理 (User Policy Management):
+aws iam attach-user-policy --user-name USER_NAME --policy-arn POLICY_ARN # 附加策略到用户
+aws iam detach-user-policy --user-name USER_NAME --policy-arn POLICY_ARN # 分离用户策略
+aws iam list-attached-user-policies --user-name USER_NAME # 列出用户附加的策略
+aws iam put-user-policy --user-name USER_NAME --policy-name POLICY_NAME --policy-document FILE://inline-policy.json # 设置内联策略 (不推荐)
+aws iam delete-user-policy --user-name USER_NAME --policy-name POLICY_NAME # 删除用户内联策略
+
+# 角色操作 (Role Operations):
+aws iam list-roles                               # 列出 IAM 角色
+aws iam create-role --role-name ROLE_NAME --assume-role-policy-document FILE://assume-role-policy.json # 创建角色
+aws iam delete-role --role-name ROLE_NAME        # 删除角色
+
+# 提示:
+#   - 策略文档 (Policy Document) 使用 JSON 格式
+#   - 最小权限原则 (Principle of Least Privilege): 授予必要的最小权限
+
+##############################################################################
+# CloudFormation - 云Formation (CloudFormation)
+##############################################################################
+
+# 堆栈操作 (Stack Operations):
+aws cloudformation describe-stacks                # 列出 CloudFormation 堆栈
+aws cloudformation describe-stacks --stack-name STACK_NAME # 查看指定堆栈信息
+aws cloudformation create-stack --stack-name STACK_NAME --template-body file://TEMPLATE_FILE --parameters ParameterKey=Param1,ParameterValue=Value1 # 创建堆栈
+aws cloudformation update-stack --stack-name STACK_NAME --template-body file://TEMPLATE_FILE --parameters ParameterKey=Param1,ParameterValue=Value1 # 更新堆栈
+aws cloudformation delete-stack --stack-name STACK_NAME # 删除堆栈
+aws cloudformation validate-template --template-body file://TEMPLATE_FILE # 验证模板语法
+
+# 堆栈事件 (Stack Events):
+aws cloudformation describe-stack-events --stack-name STACK_NAME # 查看堆栈事件 (排错)
+
+# 导出和导入 (Exports and Imports):
+aws cloudformation list-exports                  # 列出 CloudFormation 导出
+aws cloudformation list-imports --export-name EXPORT_NAME # 列出导入指定导出的堆栈
+
+# 提示:
+#   - 模板 (Template) 可以是 YAML 或 JSON 格式
+#   - 使用 --parameters 传递参数
+#   - 使用 --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM 允许 CloudFormation 创建 IAM 资源
+
+##############################################################################
+# 其他常用服务 (Other Common Services)
+##############################################################################
+
+# CloudWatch Logs (日志):
+aws logs describe-log-groups                      # 列出 CloudWatch Logs 日志组
+aws logs get-log-events --log-group-name LOG_GROUP_NAME --log-stream-name LOG_STREAM_NAME # 获取日志事件
+
+# DynamoDB (NoSQL 数据库):
+aws dynamodb list-tables                         # 列出 DynamoDB 表
+aws dynamodb describe-table --table-name TABLE_NAME # 查看表信息
+aws dynamodb put-item --table-name TABLE_NAME --item '{"PK": {"S": "value1"}, "SK": {"S": "value2"}}' # 写入数据
+
+# ECS (容器服务):
+aws ecs describe-clusters                        # 列出 ECS 集群
+aws ecs describe-services --cluster CLUSTER_NAME --services SERVICE_NAME # 查看 ECS 服务信息
+
+# Lambda (无服务器计算):
+aws lambda list-functions                       # 列出 Lambda 函数
+aws lambda invoke --function-name FUNCTION_NAME --payload '{"key": "value"}' output.json # 调用 Lambda 函数
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 tab 自动补全:
+#   - 确保已配置 AWS CLI 自动补全 (参考官方文档)
+#   - 输入 aws s3 <TAB>, aws ec2 describe-<TAB> 等
+
+# 使用 `--query` 过滤和提取信息:
+#   aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId, PublicIpAddress]' --output text
+
+# 使用 `--output text` 和 `cut`, `awk` 等工具进一步处理文本输出:
+#   aws ec2 describe-instances --output text --query 'Reservations[*].Instances[*].PublicIpAddress' | cut -f 2
+
+# 结合 `jq` 处理 JSON 输出 (更强大的 JSON 处理器):
+#   aws s3 ls --output json | jq '.[].Name'
+
+# 使用 `aws help` 探索更多服务和命令:
+#   aws help
+#   aws s3 help
+#   aws ec2 help
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 上传本地文件到 S3 存储桶:
+#    aws s3 cp my-local-file.txt s3://my-bucket/my-remote-file.txt
+
+# 2. 列出正在运行的 EC2 实例 ID 和公网 IP 地址 (表格输出):
+#    aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[*].Instances[*].[InstanceId, PublicIpAddress]' --output table
+
+# 3. 创建 IAM 用户并附加 S3 只读策略:
+#    aws iam create-user --user-name my-new-user
+#    aws iam attach-user-policy --user-name my-new-user --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# AWS CLI 官方文档 (Official Documentation):
+#   https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html
+
+# AWS CLI Command Reference:
+#   https://awscli.amazonaws.com/v2/documentation/api/latest/reference/
+
+# AWS CLI GitHub 仓库:
+#   https://github.com/aws/aws-cli
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

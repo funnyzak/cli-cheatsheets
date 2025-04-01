@@ -1,0 +1,269 @@
+##############################################################################
+# Azure CLI 速查表 (Azure CLI Cheatsheet)
+# 用于 Azure 资源管理的常用命令速查
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - RG:          资源组名称 (Resource Group Name)
+#   - NAME:        资源名称 (Resource Name)
+#   - LOCATION:    Azure 区域 (Azure Location, 例如: eastus, westeurope)
+#   - SIZE:        虚拟机大小 (VM Size, 例如: Standard_DS2_v2)
+#   - IMAGE:       虚拟机镜像 (VM Image, 例如: UbuntuLTS, WindowsServer)
+#   - USER:        用户名 (Username)
+#   - PASSWORD:    密码 (Password)
+#   - KEY_FILE:    SSH 密钥文件路径 (SSH Key File Path)
+#   - SUBNET:      子网名称或 ID (Subnet Name or ID)
+#   - VNET:        虚拟网络名称或 ID (Virtual Network Name or ID)
+#   - NSG:         网络安全组名称或 ID (Network Security Group Name or ID)
+#   - PORT:        端口号 (Port Number)
+#   - STORAGE_ACCOUNT: 存储账户名称 (Storage Account Name)
+#   - CONTAINER:   存储容器名称 (Storage Container Name)
+#   - FILEPATH:    本地文件路径 (Local File Path)
+#   - BLOBPATH:    Blob 存储路径 (Blob Storage Path)
+
+##############################################################################
+# 常用配置 (Common Configuration)
+##############################################################################
+
+az login                                         # 登录 Azure (交互式)
+az login --service-principal -u <appId> -p <password> --tenant <tenant>  # 使用服务主体登录
+az account show                                   # 显示当前账号信息
+az account set --subscription <subscriptionId>   # 设置当前订阅
+az account list -o table                         # 列出所有订阅 (表格输出)
+az configure                                      # 配置 Azure CLI (交互式)
+az configure --defaults location=<LOCATION> rg=<RG> # 设置默认位置和资源组
+
+##############################################################################
+# 资源组管理 (Resource Group Management, az group)
+##############################################################################
+
+az group create -n <RG> -l <LOCATION>             # 创建资源组
+az group list -o table                           # 列出资源组 (表格输出)
+az group show -n <RG>                            # 显示资源组详情
+az group delete -n <RG> --yes                    # 删除资源组 (谨慎操作)
+az group export -n <RG>                          # 导出资源组模板 (JSON)
+
+##############################################################################
+# 虚拟机管理 (Virtual Machine Management, az vm)
+##############################################################################
+
+az vm create -g <RG> -n <NAME> --image <IMAGE> --size <SIZE> --admin-username <USER> --admin-password <PASSWORD> # 创建虚拟机 (密码认证)
+az vm create -g <RG> -n <NAME> --image <IMAGE> --size <SIZE> --admin-username <USER> --ssh-key-value @<KEY_FILE>  # 创建虚拟机 (SSH 密钥认证)
+az vm list -g <RG> -o table                       # 列出资源组虚拟机 (表格输出)
+az vm show -g <RG> -n <NAME>                     # 显示虚拟机详情
+az vm start -g <RG> -n <NAME>                    # 启动虚拟机
+az vm stop -g <RG> -n <NAME>                     # 停止虚拟机
+az vm restart -g <RG> -n <NAME>                  # 重启虚拟机
+az vm delete -g <RG> -n <NAME> --yes             # 删除虚拟机 (谨慎操作)
+az vm deallocate -g <RG> -n <NAME>               # 解除分配虚拟机 (停止计费)
+az vm get-ip-address -g <RG> -n <NAME>           # 获取虚拟机公网 IP 地址
+az vm open-port -g <RG> -n <NAME> --port <PORT>  # 开放虚拟机端口 (创建 NSG 规则)
+az vm run-command invoke -g <RG> -n <NAME> --command-id RunShellScript --scripts "command to run" # 在虚拟机上执行命令
+
+# 提示:
+#   - 使用 `--no-wait` 后台创建虚拟机
+#   - 使用 `--public-ip-address-type` 指定公网 IP 类型 (Dynamic/Static)
+#   - 使用 `--generate-ssh-keys` 自动生成 SSH 密钥对
+
+##############################################################################
+# 虚拟机扩展 (VM Extensions, az vm extension)
+##############################################################################
+
+az vm extension set -g <RG> --vm-name <NAME> --name <EXTENSION_NAME> --publisher <PUBLISHER> --version <VERSION> --settings <SETTINGS_JSON> # 安装虚拟机扩展
+az vm extension show -g <RG> --vm-name <NAME> --name <EXTENSION_NAME>   # 显示虚拟机扩展详情
+az vm extension list -g <RG> --vm-name <NAME>                           # 列出虚拟机扩展
+az vm extension delete -g <RG> --vm-name <NAME> --name <EXTENSION_NAME> # 删除虚拟机扩展
+
+# 示例扩展:
+#   - Custom Script Extension: 用于在 VM 上执行自定义脚本
+#   - Azure Monitor Agent:  用于监控 VM
+
+##############################################################################
+# 虚拟网络管理 (Virtual Network Management, az network vnet)
+##############################################################################
+
+az network vnet create -g <RG> -n <VNET> --address-prefixes 10.0.0.0/16 -l <LOCATION> # 创建虚拟网络
+az network vnet list -g <RG> -o table                # 列出资源组虚拟网络 (表格输出)
+az network vnet show -g <RG> -n <VNET>              # 显示虚拟网络详情
+az network vnet delete -g <RG> -n <VNET> --yes       # 删除虚拟网络 (谨慎操作)
+
+##############################################################################
+# 子网管理 (Subnet Management, az network vnet subnet)
+##############################################################################
+
+az network vnet subnet create -g <RG> --vnet-name <VNET> -n <SUBNET> --address-prefixes 10.0.1.0/24 # 创建子网
+az network vnet subnet list -g <RG> --vnet-name <VNET> -o table # 列出虚拟网络子网 (表格输出)
+az network vnet subnet show -g <RG> --vnet-name <VNET> -n <SUBNET> # 显示子网详情
+az network vnet subnet delete -g <RG> --vnet-name <VNET> -n <SUBNET> --yes # 删除子网 (谨慎操作)
+
+##############################################################################
+# 网络接口管理 (Network Interface Management, az network nic)
+##############################################################################
+
+az network nic create -g <RG> -n <NAME> --vnet-name <VNET> --subnet <SUBNET> -l <LOCATION> # 创建网卡
+az network nic list -g <RG> -o table                 # 列出资源组网卡 (表格输出)
+az network nic show -g <RG> -n <NAME>               # 显示网卡详情
+az network nic delete -g <RG> -n <NAME> --yes        # 删除网卡 (谨慎操作)
+
+##############################################################################
+# 网络安全组管理 (Network Security Group Management, az network nsg)
+##############################################################################
+
+az network nsg create -g <RG> -n <NSG> -l <LOCATION> # 创建网络安全组
+az network nsg list -g <RG> -o table                  # 列出资源组网络安全组 (表格输出)
+az network nsg show -g <RG> -n <NSG>                # 显示网络安全组详情
+az network nsg delete -g <RG> -n <NSG> -y            # 删除网络安全组 (谨慎操作)
+
+##############################################################################
+# 网络安全组规则 (NSG Rules, az network nsg rule)
+##############################################################################
+
+az network nsg rule create -g <RG> --nsg-name <NSG> -n <RULE_NAME> --priority 100 --direction Inbound --access Allow --protocol Tcp --destination-port-ranges <PORT> # 创建 NSG 入站规则
+az network nsg rule list -g <RG> --nsg-name <NSG> -o table # 列出 NSG 规则 (表格输出)
+az network nsg rule show -g <RG> --nsg-name <NSG> -n <RULE_NAME> # 显示 NSG 规则详情
+az network nsg rule delete -g <RG> --nsg-name <NSG> -n <RULE_NAME> -y # 删除 NSG 规则 (谨慎操作)
+
+# 常用规则配置:
+#   --source-address-prefixes '*': 允许所有来源 IP
+#   --destination-address-prefixes '*': 允许所有目标 IP
+#   --protocol Tcp/Udp/Icmp/Ah/Esp/*
+#   --access Allow/Deny
+#   --direction Inbound/Outbound
+
+##############################################################################
+# 公共 IP 地址 (Public IP Address, az network public-ip)
+##############################################################################
+
+az network public-ip create -g <RG> -n <NAME> -l <LOCATION> --allocation-method Static # 创建静态公共 IP
+az network public-ip list -g <RG> -o table         # 列出资源组公共 IP (表格输出)
+az network public-ip show -g <RG> -n <NAME>       # 显示公共 IP 详情
+az network public-ip delete -g <RG> -n <NAME> -y   # 删除公共 IP (谨慎操作)
+
+##############################################################################
+# 存储账户管理 (Storage Account Management, az storage account)
+##############################################################################
+
+az storage account create -g <RG> -n <STORAGE_ACCOUNT> -l <LOCATION> --sku Standard_LRS # 创建存储账户
+az storage account list -g <RG> -o table            # 列出资源组存储账户 (表格输出)
+az storage account show -g <RG> -n <STORAGE_ACCOUNT> # 显示存储账户详情
+az storage account delete -g <RG> -n <STORAGE_ACCOUNT> --yes # 删除存储账户 (谨慎操作)
+az storage account keys list -g <RG> --account-name <STORAGE_ACCOUNT> # 列出存储账户密钥
+az storage account show-connection-string -g <RG> -n <STORAGE_ACCOUNT> --output tsv # 获取存储账户连接字符串
+
+##############################################################################
+# Blob 存储管理 (Blob Storage, az storage blob)
+##############################################################################
+
+az storage container create --account-name <STORAGE_ACCOUNT> -n <CONTAINER> --public-access off # 创建 Blob 容器 (私有访问)
+az storage container list --account-name <STORAGE_ACCOUNT> -o table # 列出存储账户容器 (表格输出)
+az storage container show --account-name <STORAGE_ACCOUNT> -n <CONTAINER> # 显示容器详情
+az storage container delete --account-name <STORAGE_ACCOUNT> -n <CONTAINER> --yes # 删除容器 (谨慎操作)
+az storage blob upload --account-name <STORAGE_ACCOUNT> -c <CONTAINER> -f <FILEPATH> -n <BLOBPATH> # 上传本地文件到 Blob
+az storage blob download --account-name <STORAGE_ACCOUNT> -c <CONTAINER> -n <BLOBPATH> -f <FILEPATH> # 下载 Blob 文件到本地
+az storage blob list --account-name <STORAGE_ACCOUNT> -c <CONTAINER> -o table # 列出容器内 Blob (表格输出)
+az storage blob delete --account-name <STORAGE_ACCOUNT> -c <CONTAINER> -n <BLOBPATH> --yes # 删除 Blob 文件 (谨慎操作)
+
+##############################################################################
+# Web App 管理 (Web App Management, az webapp)
+##############################################################################
+
+az webapp create -g <RG> -p <PLAN> -n <NAME> --runtime "DOTNET|NODE|PHP|PYTHON|JAVA" # 创建 Web App
+az webapp list -g <RG> -o table                       # 列出资源组 Web App (表格输出)
+az webapp show -g <RG> -n <NAME>                     # 显示 Web App 详情
+az webapp delete -g <RG> -n <NAME> --yes              # 删除 Web App (谨慎操作)
+az webapp browse -g <RG> -n <NAME>                   # 在浏览器中打开 Web App
+az webapp log tail -g <RG> -n <NAME>                 # 查看 Web App 日志 (实时)
+az webapp deploy --resource-group <RG> --name <NAME> --src-path <FILEPATH> --type zip # 从 zip 包部署 Web App
+
+# 提示:
+#   - 创建 Web App 前需要先创建 App Service Plan (az appservice plan)
+
+##############################################################################
+# 数据库管理 (Database Management, 例如 az sql, az cosmosdb)
+# (此处仅为示例，具体命令请参考对应数据库服务文档)
+##############################################################################
+
+# SQL Database 示例 (Azure SQL Database)
+# az sql server create ...
+# az sql db create ...
+
+# Cosmos DB 示例 (Azure Cosmos DB)
+# az cosmosdb create ...
+# az cosmosdb database create ...
+
+# ... (更多数据库服务命令) ...
+
+##############################################################################
+# 监控 (Monitoring, az monitor)
+##############################################################################
+
+az monitor activity-log list                        # 查看活动日志 (审计日志)
+az monitor metrics list --resource <RESOURCE_ID>     # 查看资源指标
+az monitor metrics alert create --resource-group <RG> --name <ALERT_NAME> --scopes <RESOURCE_ID> --condition "..." --action <ACTION_GROUP_ID> # 创建指标告警
+
+# 提示:
+#   - RESOURCE_ID 可以通过 `az resource list` 或资源详情命令获取
+#   - 告警条件和操作组配置较为复杂，请参考官方文档
+
+##############################################################################
+# 资源查询 (Resource Query, az resource)
+##############################################################################
+
+az resource list -g <RG> -o table                    # 列出资源组所有资源 (表格输出)
+az resource list --name <NAME> -o table               # 按名称列出资源 (表格输出)
+az resource show --ids <RESOURCE_ID>                  # 按 ID 显示资源详情 (从其他命令获取 ID)
+az resource tag create --tags " Dept=IT Environment=Prod" --ids <RESOURCE_ID> # 为资源添加标签
+az resource delete --ids <RESOURCE_ID> --yes          # 按 ID 删除资源 (谨慎操作)
+
+# 提示:
+#   - 使用 `--resource-type` 参数过滤资源类型，例如 `--resource-type "Microsoft.Compute/virtualMachines"`
+#   - 使用 `--query` 参数进行 JMESPath 查询，例如 `--query "[].name"`
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 `--output` 或 `-o` 控制输出格式:
+#   - `-o json`: JSON 格式 (默认)
+#   - `-o yaml`: YAML 格式
+#   - `-o table`: 表格格式 (易读)
+#   - `-o tsv`:  TSV 格式 (制表符分隔值, 方便脚本处理)
+#   - `-o none`: 无输出 (仅执行命令)
+#   - `-o query` '<JMESPath 查询>':  使用 JMESPath 查询自定义输出
+
+# 使用 `--query` 进行 JMESPath 查询:
+#   az vm list -o table --query "[].{Name:name, ResourceGroup:resourceGroup, Location:location, Size:hardwareProfile.vmSize}" # 自定义表格列
+
+# 使用 `jq` 或 `yq` 处理 JSON/YAML 输出:
+#   az vm show -g <RG> -n <NAME> -o json | jq '.publicIps[0].ipAddress' # 获取 JSON 输出中的特定值
+#   az group export -n <RG> -o yaml | yq '.resources[0].name'         # 获取 YAML 输出中的特定值
+
+# 使用 `az feedback` 命令提交反馈或报告问题
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 创建资源组和虚拟机 (Ubuntu, SSH 密钥认证):
+#   az group create -n myResourceGroup -l eastus
+#   az vm create -g myResourceGroup -n myVM --image UbuntuLTS --size Standard_DS2_v2 --admin-username azureuser --generate-ssh-keys
+
+# 创建存储账户和 Blob 容器，并上传文件:
+#   az storage account create -g myResourceGroup -n mystorageaccount -l eastus --sku Standard_LRS
+#   az storage container create --account-name mystorageaccount -n mycontainer --public-access off
+#   az storage blob upload --account-name mystorageaccount -c mycontainer -f ./myfile.txt -n myfile.txt
+
+# 获取虚拟机公网 IP 并 SSH 登录:
+#   IP_ADDRESS=$(az vm get-ip-address -g myResourceGroup -n myVM -o tsv --query "publicIpAddress")
+#   ssh azureuser@$IP_ADDRESS -i ~/.ssh/id_rsa
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Azure CLI 官方文档: https://docs.microsoft.com/cli/azure/
+# Azure CLI 示例: https://docs.microsoft.com/cli/azure/example/
+# Azure CLI GitHub: https://github.com/Azure/azure-cli
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

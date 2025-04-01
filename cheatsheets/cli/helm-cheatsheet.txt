@@ -1,0 +1,142 @@
+##############################################################################
+# Helm 速查表 (Helm Cheatsheet)
+# Kubernetes 包管理器 (Kubernetes Package Manager)
+# https://helm.sh/
+# GitHub: https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - CHART:      Helm Chart 名称或路径 (Chart name or path, e.g., mychart, ./mychart, oci://registry-1.docker.io/bitnamicharts/nginx)
+#   - RELEASE:    Helm Release 名称 (Release name, e.g., my-release)
+#   - REPO:       Helm Chart 仓库名称 (Repository name, e.g., stable, my-repo)
+#   - NAMESPACE:  Kubernetes 命名空间 (Kubernetes namespace, e.g., default, my-namespace)
+#   - VALUE_FILE: Values 文件路径 (Values file path, e.g., values.yaml, my-values.yaml)
+#   - KEY=VALUE:  键值对参数 (Key-value pair parameter, e.g., image.tag=latest)
+
+##############################################################################
+# 仓库管理 (Repository Management, helm repo)
+##############################################################################
+
+helm repo add REPO URL                         # 添加 Chart 仓库
+helm repo list                                # 列出已配置的 Chart 仓库
+helm repo update                              # 更新 Chart 仓库索引
+helm repo remove REPO                           # 移除 Chart 仓库
+helm repo index PATH                          # 创建本地仓库索引 (用于文件服务器)
+
+##############################################################################
+# Chart 管理 (Chart Management, helm chart)
+##############################################################################
+
+helm create CHART                             # 创建新的 Chart
+helm lint CHART                               # Lint 检查 Chart (最佳实践)
+helm package CHART [-d DEST] [-u URL]        # 打包 Chart 为 .tgz 文件
+helm push CHART REPO                          # 推送 Chart 到 OCI 仓库 (实验性)
+helm pull REPO/CHART [--version VERSION]      # 下载 Chart 到本地 (从仓库)
+helm pull oci://REGISTRY/CHART [--version VERSION] # 从 OCI 仓库下载 Chart
+helm show chart REPO/CHART [--version VERSION] # 显示 Chart 信息 (从仓库)
+helm show values REPO/CHART [--version VERSION] # 显示 Chart 默认 Values (从仓库)
+helm show readme REPO/CHART [--version VERSION] # 显示 Chart README (从仓库)
+helm inspect CHART                            # 检查本地 Chart 文件
+
+##############################################################################
+# Release 管理 (Release Management, helm release)
+##############################################################################
+
+helm install RELEASE CHART                     # 安装 Chart 创建 Release
+helm install RELEASE REPO/CHART              # 从仓库安装 Chart
+helm upgrade RELEASE CHART                     # 升级 Release
+helm upgrade RELEASE REPO/CHART              # 升级 Release (从仓库)
+helm uninstall RELEASE                        # 卸载 Release
+helm list [-a] [-n NAMESPACE]                 # 列出 Release (默认当前命名空间)
+helm status RELEASE [-n NAMESPACE]             # 查看 Release 状态
+helm history RELEASE [-n NAMESPACE]            # 查看 Release 历史版本
+helm rollback RELEASE [REVISION] [-n NAMESPACE] # 回滚 Release 到指定版本
+helm get all RELEASE [-n NAMESPACE]            # 获取 Release 所有信息 (YAML 格式)
+helm get values RELEASE [-n NAMESPACE]         # 获取 Release 当前 Values
+helm get manifest RELEASE [-n NAMESPACE]       # 获取 Release 部署的 Manifest 文件
+helm test RELEASE [-n NAMESPACE]               # 运行 Release 的测试套件
+
+##############################################################################
+# Values 管理 (Values Management)
+##############################################################################
+
+# 通过 --set 覆盖 Values
+# Override values using --set
+helm install RELEASE CHART --set KEY=VALUE
+helm upgrade RELEASE CHART --set KEY=VALUE
+
+# 使用 Values 文件
+# Use values files
+helm install RELEASE CHART -f VALUE_FILE
+helm install RELEASE CHART -f values.yaml -f overrides.yaml # 多文件合并
+
+# 获取 Chart 默认 Values (用于参考)
+# Get default chart values (for reference)
+helm show values REPO/CHART > default-values.yaml
+
+##############################################################################
+# 模板和 Dry-run (Templating and Dry-run)
+##############################################################################
+
+helm template RELEASE CHART [-n NAMESPACE]       # 本地渲染 Chart 模板 (不部署)
+helm template RELEASE REPO/CHART [-n NAMESPACE] # 渲染仓库 Chart 模板
+helm install --dry-run RELEASE CHART           # Dry-run 安装 (模拟部署)
+helm upgrade --dry-run RELEASE CHART           # Dry-run 升级 (模拟升级)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 指定命名空间: -n NAMESPACE 或 --namespace NAMESPACE
+# Specify namespace: -n NAMESPACE or --namespace NAMESPACE
+helm install my-nginx nginx -n my-namespace
+
+# 使用别名简化命令: (例如: alias h=helm)
+# Use alias to simplify commands: (e.g., alias h=helm)
+# h install my-nginx nginx
+
+# 使用管道和 grep 过滤输出:
+# Use pipe and grep to filter output:
+# helm list | grep my-release
+# helm get values my-release | grep image.tag
+
+# 使用 -o yaml 或 -o json  指定输出格式 (部分命令支持)
+# Use -o yaml or -o json to specify output format (supported by some commands)
+# helm get all my-release -o yaml
+
+# 使用 --wait 等待 Release 就绪 (安装/升级)
+# Use --wait to wait for Release to be ready (install/upgrade)
+# helm install --wait my-nginx nginx
+
+# 使用 --timeout 指定超时时间 (例如: 5m 五分钟)
+# Use --timeout to specify timeout (e.g., 5m for 5 minutes)
+# helm install --timeout 5m my-nginx nginx
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 添加 Bitnami Chart 仓库
+#    helm repo add bitnami https://charts.bitnami.com/bitnami
+
+# 2. 安装 Nginx Chart 到 default 命名空间, Release 名称为 my-nginx
+#    helm install my-nginx bitnami/nginx
+
+# 3. 升级 my-nginx Release, 并设置 service.type 为 LoadBalancer
+#    helm upgrade my-nginx bitnami/nginx --set service.type=LoadBalancer
+
+# 4. 卸载 my-nginx Release
+#    helm uninstall my-nginx
+
+# 5. 列出 default 命名空间下所有 Release
+#    helm list -n default
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Helm 官方文档 (Official Documentation): https://helm.sh/docs/
+# Helm CLI 参考 (CLI Reference): https://helm.sh/docs/helm/
+# Awesome Helm Charts: https://github.com/helm/awesome-charts
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

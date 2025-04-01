@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'cheatsheets/**'
-    branches: [ main, dev ]
+    branches: [ main, dev, dev2, dev3, devops ]
   workflow_dispatch:
 
 jobs:

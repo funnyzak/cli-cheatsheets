@@ -1,0 +1,154 @@
+##############################################################################
+# Ansible 命令速查表 (Ansible Command Cheatsheet)
+# 用于快速参考 Ansible 常用命令和选项
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PLAYBOOK_FILE:  Ansible Playbook 文件路径 (例如: site.yml, deploy.yaml)
+#   - INVENTORY_FILE: Ansible Inventory 文件路径 (例如: hosts, inventory.ini)
+#   - HOST_PATTERN:   主机或组的匹配模式 (例如: all, webservers, 192.168.1.10)
+#   - MODULE_NAME:    Ansible 模块名称 (例如: command, copy, service, apt)
+#   - MODULE_ARGS:    模块参数 (例如: name=nginx state=started)
+#   - TASK_NAME:      Playbook 中的任务名称 (用于 --start-at-task)
+#   - TAGS:         Playbook 中任务的标签 (用于 --tags, --skip-tags)
+#   - EXTRA_VARS:     额外的变量 (例如: --extra-vars "var1=value1 var2=value2")
+#   - VAULT_FILE:     Ansible Vault 加密文件路径 (例如: secrets.yml)
+#   - VAULT_ID:       Ansible Vault ID (当使用多个 vault 密码时)
+
+##############################################################################
+# 核心命令执行 (Core Command Execution)
+##############################################################################
+
+ansible HOST_PATTERN -m MODULE_NAME -a "MODULE_ARGS"   # 执行 Ad-hoc 命令 (默认模块: command)
+ansible HOST_PATTERN -m MODULE_NAME -a "MODULE_ARGS" -i INVENTORY_FILE # 指定 Inventory 文件
+ansible HOST_PATTERN -m MODULE_NAME -a "MODULE_ARGS" -u USER         # 使用指定用户执行 (默认当前用户)
+ansible HOST_PATTERN -m MODULE_NAME -a "MODULE_ARGS" -k             # 提示输入 SSH 密码
+ansible HOST_PATTERN -m MODULE_NAME -a "MODULE_ARGS" --become        # 使用特权提升 (sudo)
+ansible HOST_PATTERN -m MODULE_NAME -a "MODULE_ARGS" --become -K     # 提示输入 sudo 密码
+ansible HOST_PATTERN -m MODULE_NAME -a "MODULE_ARGS" -vvv           # 增加输出详细度 (Verbose)
+
+# 提示:
+#   - 使用 -i <inventory_file> 指定 inventory 文件，默认为 /etc/ansible/hosts
+#   - 使用 -u <username> 指定远程用户，默认为当前用户
+#   - 使用 -k 提示输入 SSH 密码，或配置 SSH 密钥避免密码输入
+#   - 使用 --become 启用特权提升 (sudo)，需要目标主机配置 sudo
+#   - 使用 -K 提示输入 sudo 密码，或配置免密码 sudo
+
+##############################################################################
+# Inventory 管理 (Inventory Management)
+##############################################################################
+
+ansible-inventory -i INVENTORY_FILE --list                   # 列出 Inventory 信息 (JSON 格式)
+ansible-inventory -i INVENTORY_FILE --graph                  # 图形化展示 Inventory
+ansible-inventory -i INVENTORY_FILE --host HOSTNAME           # 查看指定主机的信息
+
+# 提示:
+#   - Ansible Inventory 可以是 INI 格式或 YAML 格式
+#   - 可以使用动态 Inventory 脚本 (dynamic inventory) 从云平台或 CMDB 获取主机信息
+
+##############################################################################
+# Playbook 执行 (Playbook Execution, ansible-playbook)
+##############################################################################
+
+ansible-playbook PLAYBOOK_FILE                               # 执行 Playbook
+ansible-playbook PLAYBOOK_FILE -i INVENTORY_FILE             # 指定 Inventory 文件
+ansible-playbook PLAYBOOK_FILE -l HOST_PATTERN               # 限制主机范围 (Limit)
+ansible-playbook PLAYBOOK_FILE --tags TAGS                    # 仅执行指定标签的任务
+ansible-playbook PLAYBOOK_FILE --skip-tags TAGS               # 跳过指定标签的任务
+ansible-playbook PLAYBOOK_FILE --start-at-task TASK_NAME      # 从指定任务开始执行
+ansible-playbook PLAYBOOK_FILE --check                       # 检查模式 (Dry-run, 不实际执行)
+ansible-playbook PLAYBOOK_FILE --diff                        # 显示配置变更 (Diff)
+ansible-playbook PLAYBOOK_FILE --extra-vars "EXTRA_VARS"      # 传递额外变量
+ansible-playbook PLAYBOOK_FILE -e "@vars.yml"                # 从 YAML 文件加载变量
+ansible-playbook PLAYBOOK_FILE --vault-password-file=VAULT_PASSWORD_FILE  # 指定 Vault 密码文件
+ansible-playbook PLAYBOOK_FILE --ask-vault-pass              # 提示输入 Vault 密码
+ansible-playbook PLAYBOOK_FILE --vault-id VAULT_ID@VAULT_PASSWORD_FILE # 使用 Vault ID
+
+# 提示:
+#   - 建议使用 --check 和 --diff 在生产环境执行前进行检查
+#   - 使用 --limit 限制 Playbook 执行范围，方便调试
+#   - 使用 --tags 和 --skip-tags 控制任务执行，提高灵活性
+#   - 使用 --start-at-task 从指定任务开始，方便调试大型 Playbook
+#   - 可以通过多种方式传递变量，例如 --extra-vars, -e @vars.yml, inventory 文件等
+
+##############################################################################
+# Vault 管理 (Vault Management, ansible-vault)
+##############################################################################
+
+ansible-vault create VAULT_FILE                              # 创建新的 Vault 加密文件
+ansible-vault encrypt VAULT_FILE                             # 加密现有文件
+ansible-vault decrypt VAULT_FILE                             # 解密 Vault 文件 (显示到终端)
+ansible-vault view VAULT_FILE                                # 查看 Vault 文件 (不解密到文件)
+ansible-vault edit VAULT_FILE                                # 编辑 Vault 文件 (自动加解密)
+ansible-vault rekey VAULT_FILE                               # 更改 Vault 文件密码
+ansible-vault encrypt_string                                 # 加密字符串 (输出加密后的字符串)
+ansible-vault encrypt_string --vault-id VAULT_ID             # 加密字符串 (使用指定 Vault ID)
+ansible-vault decrypt_string                                 # 解密字符串 (需要提供 Vault 密码)
+ansible-vault decrypt_string --vault-id VAULT_ID             # 解密字符串 (使用指定 Vault ID)
+
+# 提示:
+#   - 建议使用 ansible-vault encrypt_string 加密敏感信息，例如密码、密钥等
+#   - 使用 .vault_pass 文件或 --vault-password-file 选项管理 Vault 密码
+#   - 可以使用多个 Vault ID 和不同的密码管理不同敏感程度的信息
+
+##############################################################################
+# Ad-Hoc 命令示例 (Ad-Hoc Command Examples)
+##############################################################################
+
+ansible all -m ping                                         # 测试所有主机连通性 (ping 模块)
+ansible webservers -m service -a "name=nginx state=restarted" # 重启 webservers 组的 nginx 服务
+ansible 192.168.1.10 -m copy -a "src=/local/file dest=/remote/path" # 复制文件到指定主机
+ansible db_servers -m shell -a "df -h"                       # 在 db_servers 组执行 shell 命令 df -h
+ansible localhost -m debug -a "msg='Hello Ansible!'"         # 在本地执行 debug 模块，输出信息
+
+##############################################################################
+# Playbook 示例 (Playbook Examples)
+##############################################################################
+
+# 示例 Playbook (example.yml):
+# ---
+# - hosts: webservers
+#   become: true
+#   tasks:
+#     - name: Ensure nginx is installed
+#       apt:
+#         name: nginx
+#         state: present
+#     - name: Ensure nginx is running
+#       service:
+#         name: nginx
+#         state: started
+
+# 执行示例 Playbook:
+# ansible-playbook example.yml
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 --limit 缩小执行范围进行调试:
+#   ansible-playbook site.yml --limit webserver1
+
+# 使用 --tags 和 --skip-tags 精细控制任务执行:
+#   ansible-playbook deploy.yml --tags deploy_app  # 只执行标记为 deploy_app 的任务
+#   ansible-playbook deploy.yml --skip-tags config_db # 跳过标记为 config_db 的任务
+
+# 使用 --start-at-task 从 Playbook 中间开始执行:
+#   ansible-playbook big_playbook.yml --start-at-task "Configure Database"
+
+# 使用 -vvv 或 -vvvv 增加输出详细度，排查问题:
+#   ansible-playbook site.yml -vvv
+
+# 使用 --check 和 --diff 进行预演，避免误操作:
+#   ansible-playbook deploy.yml --check --diff
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Ansible 官方文档: https://docs.ansible.com/
+# Ansible Galaxy (模块和角色仓库): https://galaxy.ansible.com/
+# Ansible Community Forum: https://forum.ansible.com/
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :
