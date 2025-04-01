@@ -117,46 +117,47 @@ curl -s https://cs.yycc.dev | bash -s -- -l
 ### 3. 本地使用(离线)
 
 1. **下载项目:**
-
-```bash
-git clone https://github.com/funnyzak/cli-cheatsheets.git
-cd cli-cheatsheets
-```
+    ```bash
+    git clone https://github.com/funnyzak/cli-cheatsheets.git
+    cd cli-cheatsheets
+    # 后续更新可以使用
+    git pull origin main
+    ```
+    或着直接从 [`Release`](https://github.com/funnyzak/cli-cheatsheets/releases) 页面下载最新的压缩包，解压后进入目录。
 
 2. **赋予执行权限:**
-```bash
-chmod +x cheatsheet.sh
-```
-
+    ```bash
+    chmod +x cheatsheet.sh
+    ```
 3. **运行脚本:**
 
-```bash
-# 交互式菜单 (无参数)
-./cheatsheet.sh
+    ```bash
+    # 交互式菜单 (无参数)
+    ./cheatsheet.sh
 
-# 查看指定命令的速查表
-./cheatsheet.sh git
-./cheatsheet.sh docker
-./cheatsheet.sh mongo
+    # 查看指定命令的速查表
+    ./cheatsheet.sh git
+    ./cheatsheet.sh docker
+    ./cheatsheet.sh mongo
 
-# 列出所有支持的命令
-./cheatsheet.sh -l
-./cheatsheet.sh --list
+    # 列出所有支持的命令
+    ./cheatsheet.sh -l
+    ./cheatsheet.sh --list
 
-# 显示帮助信息
-./cheatsheet.sh -h
-./cheatsheet.sh --help
+    # 显示帮助信息
+    ./cheatsheet.sh -h
+    ./cheatsheet.sh --help
 
-# 使用自定义 URL 前缀 (高级用法)
-# 如果你将 cheatsheets 目录部署在自定义的 Web 服务器上
-./cheatsheet.sh -u https://example.com/path/ git
-```
+    # 使用自定义 URL 前缀 (高级用法)
+    # 如果你将 cheatsheets 目录部署在自定义的 Web 服务器上
+    ./cheatsheet.sh -u https://example.com/path/ git
+    ```
 
-> 注意: 如果你在本地使用，确保确保 `cheatsheet.sh` 文件具有执行权限。并且脚本同级目录下的 `cheatsheets/` 目录包含了所有速查表文件。或者你也可以在环境变量设置 `CLI_CHEATSHEET_PATH` 指向你本地的速查表文件目录。
-> 例如:
-```bash
-export CLI_CHEATSHEET_PATH="/Users/yourname/cli-cheatsheets/cheatsheets/"
-```
+    > 注意: 如果你在本地使用，确保确保 `cheatsheet.sh` 文件具有执行权限。并且脚本同级目录下的 `cheatsheets/` 目录包含了所有速查表文件。或者你也可以在环境变量设置 `CLI_CHEATSHEET_PATH` 指向你本地的速查表文件目录。
+    > 例如:
+    ```bash
+    export CLI_CHEATSHEET_PATH="/Users/yourname/cli-cheatsheets/cheatsheets/"
+    ```
 
 ## 目录结构
 
