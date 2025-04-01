@@ -4,20 +4,17 @@
 [![GitHub Stars](https://img.shields.io/github/stars/funnyzak/cli-cheatsheets?style=flat)](https://github.com/funnyzak/cli-cheatsheets/stargazers)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/funnyzak/cli-cheatsheets?style=flat)](https://github.com/funnyzak/cli-cheatsheets/commits/main)
 
-**快速访问命令行工具速查表，提高你的工作效率！**
-
-提供一个集中化的命令行工具速查表仓库，通过简单的 Shell 脚本 `cheatsheet.sh`，你可以快速查询和查看各种常用命令的速查表，无论是本地执行还是远程调用都非常方便。
+提供一个集中化的命令行工具速查表仓库，通过简单的 Shell 脚本 `cheatsheet.sh`，快速查询和查看各种常用命令速查表。
 
 ## 📋 特性
 
 - **丰富的速查表:** 涵盖 Android, Build Tools, Database, Media, Network, Package Managers, Runtime, System, Tools, Web Servers 等多个类别，持续更新和扩充。
 - **快速查询:** 通过简单的命令即可查看指定工具的速查表。
-- **本地和远程执行:** 既可以在本地下载脚本使用，也可以通过 `curl` 命令远程执行。
 - **别名支持:** 方便配置 Bash/Zsh/Fish 别名，实现更快速的调用。
 - **简单易用:** 脚本简洁明了，操作简单直观。
 - **多系统支持:** 兼容 Linux 和 macOS 系统。
 
-![交互式命令行界面](https://github.com/user-attachments/assets/af4ede39-5b74-4aa0-9c17-f58260c24448)
+![交互式命令行界面](https://github.com/user-attachments/assets/74aea647-0aff-4f4e-b650-c6c7ca39318c)
 
 
 ## 🚀 使用方法
@@ -66,64 +63,14 @@ cs
 ```
 
 **完整版本：** 此方式包含交互式菜单。
-<details>
-<summary>点击展开完整版本别名配置</summary>
 
 在 `~/.zshrc` 中添加以下代码：
 ```bash
 alias cs='() {
-  echo -e "Command cheatsheet tool.\nUsage:\n cs [command] - View specific command usage\n cs -l - List all supported commands"
-  local remote_url_prefix="https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/${REPO_BRANCH:-main}/"
-  local remote_url_prefix_cn="https://raw.gitcode.com/funnyzak/cli-cheatsheets/raw/${REPO_BRANCH:-main}/"
-  local cheatsheet_remote_url=""
-  local tmpfile=""
-  if curl -s --connect-timeout 2 "$remote_url_prefix_cn" >/dev/null 2>&1; then
-    cheatsheet_remote_url="${remote_url_prefix_cn}cheatsheet.sh"
-  else
-    cheatsheet_remote_url="${remote_url_prefix}cheatsheet.sh"
-  fi
-  if [ $# -eq 0 ]; then
-    tmpfile=$(mktemp)
-    if ! curl -sSL "$cheatsheet_remote_url" -o "$tmpfile"; then
-      echo >&2 "错误：无法下载 cheatsheet 脚本"
-      return 1
-    fi
-    chmod +x "$tmpfile"
-    if ! "$tmpfile"; then
-      echo >&2 "错误：执行 cheatsheet 脚本失败"
-      rm -f "$tmpfile"
-      return 1
-    fi
-
-    # Clean up temporary file
-    rm -f "$tmpfile"
-  else
-    if ! curl -sSL "$cheatsheet_remote_url" | bash -s -- "$@"; then
-      echo >&2 "错误：执行 cheatsheet 脚本失败"
-      return 1
-    fi
-  fi
-}' # Shell command cheatsheet tool
+  local tmpfile=$(mktemp)
+  curl -sSL "Https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/${REPO_BRANCH:-main}/cheatsheet.sh" -o "$tmpfile" && chmod +x "$tmpfile" && "$tmpfile" "$@" && rm -f "$tmpfile"
+}'
 ```
-
-使用短地址，简化版本：
-
-```bash
-alias cs='() {
-  echo -e "Command cheatsheet tool.\nUsage:\n cs [command] - View specific command usage\n cs -l - List all supported commands"
-  if [ $# -eq 0 ]; then
-    curl -sSL https://cs.yycc.dev && 
-    
-  else
-    if ! curl -sSL "$remote_url_prefix" | bash -s -- "$@"; then
-      echo >&2 "Error: Failed to execute command \"$*\" with cheatsheet script"
-      return 1
-    fi
-  fi
-}' # Shell command cheatsheet tool
-```
-</details>
-
 配置完成后，然后执行 `source ~/.bashrc` 或 `source ~/.zshrc` 使配置生效。
 
 #### Fish
@@ -167,7 +114,7 @@ curl -s https://cs.yycc.dev | bash -s -- git
 ```bash
 curl -s https://cs.yycc.dev | bash -s -- -l
 ```
-### 3. 本地使用
+### 3. 本地使用(离线)
 
 1. **下载项目:**
 
