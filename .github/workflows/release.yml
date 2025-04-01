@@ -31,8 +31,9 @@ jobs:
           mkdir -p dist
           tar -czf "dist/${PROJECT_NAME}-${DATE_SUFFIX}.tar.gz" cheatsheets cheatsheet.sh
       
-      - name: Create GitHub Release
+      - name: Create GitHub Release By Tag
         uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           name: "${{ env.RELEASE_NAME }}"
           tag_name: "${{ env.RELEASE_NAME }}"
@@ -42,3 +43,25 @@ jobs:
           body: "Release created on ${{ env.DATE_SUFFIX }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release By Branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: startsWith(github.ref, 'refs/heads/')
+        run: |
+          echo "Creating release for branch..."
+          gh release create "${{ env.RELEASE_NAME }}" dist/* --title "${{ env.RELEASE_NAME }}" --notes "Release created on ${{ env.DATE_SUFFIX }}"
+          
+      - name: Send Apprise Notification
+        run: |
+          curl -X POST \
+          -F "tag=p" \
+          -F "body=🚀 ${{ github.event.repository.name }} Release ${{ env.RELEASE_NAME }} 发布成功 #github
+          
+          分支: ${{ github.ref_name }}
+          时间: $(date '+%Y-%m-%d %H:%M:%S')
+          
+          📎 相关链接
+          • [仓库地址](https://github.com/${{ github.repository }})
+          • [Release页面](https://github.com/${{ github.repository }}/releases/tag/${{ env.RELEASE_NAME }})" \
+          "${{ secrets.APPRISE_HTTP_URL }}"
