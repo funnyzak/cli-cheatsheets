@@ -1,0 +1,162 @@
+##############################################################################
+# 阿里云 OSSUTIL 速查表 (Alibaba Cloud OSSUTIL Cheatsheet)
+# 阿里云 OSS 命令行工具 (Command-line tool for Alibaba Cloud OSS)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - BUCKET_NAME:  OSS Bucket 名称 (e.g., my-bucket)
+#   - OBJECT_PATH:  OSS Object 路径 (e.g., path/to/object.txt)
+#   - LOCAL_PATH:   本地文件/目录路径 (e.g., /local/path/file.txt, /local/dir/)
+#   - ENDPOINT:     OSS Endpoint (e.g., oss-cn-hangzhou.aliyuncs.com)
+#   - ACL:          访问控制列表 (Access Control List, e.g., private, public-read, public-read-write)
+#   - POLICY_FILE:  Policy 策略文件路径 (e.g., policy.json)
+#   - CORS_FILE:    CORS 规则配置文件路径 (e.g., cors.xml)
+#   - LIFECYCLE_FILE: 生命周期规则配置文件路径 (e.g., lifecycle.xml)
+
+##############################################################################
+# 基础配置与帮助 (Basic Configuration & Help)
+##############################################################################
+
+ossutil config                                  # 配置 OSS 账户信息 (AccessKey, SecretKey, Endpoint)
+ossutil config -e ENDPOINT -i ACCESS_KEY_ID -k ACCESS_KEY_SECRET -L zh_CN # 非交互式配置 (中文)
+ossutil help                                    # 显示通用帮助信息
+ossutil help <command>                           # 显示指定命令的帮助，例如: ossutil help cp
+
+##############################################################################
+# Bucket 操作 (Bucket Operations)
+##############################################################################
+
+ossutil ls                                      # 列出所有 Bucket
+ossutil ls oss://                               # 列出所有 Bucket (等同于上条)
+ossutil ls oss://<BUCKET_NAME>                    # 列出 Bucket 中的 Object (根目录)
+ossutil ls oss://<BUCKET_NAME>/<OBJECT_PATH>      # 列出 Bucket 指定路径下的 Object 和目录
+
+ossutil mb oss://<BUCKET_NAME>                    # 创建 Bucket (默认私有读写)
+ossutil mb oss://<BUCKET_NAME> --acl ACL         # 创建 Bucket 并设置 ACL (例如: --acl public-read)
+ossutil rb oss://<BUCKET_NAME>                    # 删除空 Bucket
+ossutil rb oss://<BUCKET_NAME> -f                 # 强制删除非空 Bucket (谨慎使用)
+
+ossutil bucket-info oss://<BUCKET_NAME>          # 查看 Bucket 基本信息
+ossutil bucket-acl oss://<BUCKET_NAME>           # 查看 Bucket ACL
+ossutil set-bucket-acl oss://<BUCKET_NAME> ACL   # 设置 Bucket ACL (例如: ossutil set-bucket-acl oss://my-bucket public-read)
+
+ossutil bucket-policy oss://<BUCKET_NAME>        # 查看 Bucket Policy
+ossutil set-bucket-policy oss://<BUCKET_NAME> POLICY_FILE # 设置 Bucket Policy (例如: ossutil set-bucket-policy oss://my-bucket policy.json)
+ossutil rm-bucket-policy oss://<BUCKET_NAME>     # 删除 Bucket Policy
+
+ossutil bucket-cors oss://<BUCKET_NAME>          # 查看 Bucket CORS
+ossutil set-bucket-cors oss://<BUCKET_NAME> CORS_FILE # 设置 Bucket CORS (例如: ossutil set-bucket-cors oss://my-bucket cors.xml)
+ossutil rm-bucket-cors oss://<BUCKET_NAME>       # 删除 Bucket CORS
+
+ossutil bucket-lifecycle oss://<BUCKET_NAME>     # 查看 Bucket Lifecycle
+ossutil set-bucket-lifecycle oss://<BUCKET_NAME> LIFECYCLE_FILE # 设置 Bucket Lifecycle (例如: ossutil set-bucket-lifecycle oss://my-bucket lifecycle.xml)
+ossutil rm-bucket-lifecycle oss://<BUCKET_NAME>  # 删除 Bucket Lifecycle
+
+##############################################################################
+# Object 操作 (Object Operations)
+##############################################################################
+
+ossutil cp LOCAL_PATH oss://<BUCKET_NAME>/<OBJECT_PATH> # 上传本地文件/目录到 OSS
+ossutil cp oss://<BUCKET_NAME>/<OBJECT_PATH> LOCAL_PATH  # 从 OSS 下载 Object 到本地
+
+ossutil cp LOCAL_PATH oss://<BUCKET_NAME>/<OBJECT_PATH> -r  # 递归上传本地目录
+ossutil cp oss://<BUCKET_NAME>/<OBJECT_PATH> LOCAL_PATH -r  # 递归下载 OSS 目录
+
+ossutil cp LOCAL_PATH oss://<BUCKET_NAME>/<OBJECT_PATH> --update # 上传时仅更新已修改的文件
+ossutil cp oss://<BUCKET_NAME>/<OBJECT_PATH> LOCAL_PATH --update # 下载时仅更新本地已修改的文件
+
+ossutil cp LOCAL_PATH oss://<BUCKET_NAME>/<OBJECT_PATH> --force  # 强制覆盖同名 Object
+
+ossutil rm oss://<BUCKET_NAME>/<OBJECT_PATH>            # 删除指定 Object
+ossutil rm oss://<BUCKET_NAME>/<OBJECT_PATH> -r         # 递归删除 OSS 目录及其内容
+ossutil rm oss://<BUCKET_NAME>/<OBJECT_PATH> -rf        # 强制递归删除 (谨慎使用)
+
+ossutil mv oss://<BUCKET_NAME>/<SRC_OBJECT_PATH> oss://<BUCKET_NAME>/<DST_OBJECT_PATH> # 移动/重命名 Object
+
+ossutil restore oss://<BUCKET_NAME>/<OBJECT_PATH>       # 解冻归档类型的 Object
+
+ossutil signurl oss://<BUCKET_NAME>/<OBJECT_PATH>       # 生成 Object 的签名 URL (默认 60 秒过期)
+ossutil signurl oss://<BUCKET_NAME>/<OBJECT_PATH> -t 3600 # 生成 1 小时 (3600 秒) 过期时间的签名 URL
+
+ossutil meta oss://<BUCKET_NAME>/<OBJECT_PATH>          # 查看 Object 元信息
+ossutil stat oss://<BUCKET_NAME>/<OBJECT_PATH>          # 查看 Object 状态信息 (更详细的元信息)
+
+##############################################################################
+# 高级功能 (Advanced Features)
+##############################################################################
+
+ossutil sync LOCAL_PATH oss://<BUCKET_NAME>/<OBJECT_PATH> # 本地目录与 OSS 目录同步 (双向)
+ossutil sync oss://<BUCKET_NAME>/<OBJECT_PATH> LOCAL_PATH # OSS 目录与本地目录同步 (双向)
+ossutil sync LOCAL_PATH oss://<BUCKET_NAME>/<OBJECT_PATH> -r # 递归同步
+
+ossutil website get oss://<BUCKET_NAME>                 # 获取 Bucket 静态网站配置
+ossutil set-website oss://<BUCKET_NAME> INDEX_FILE ERROR_FILE # 设置 Bucket 静态网站配置
+ossutil rm-website oss://<BUCKET_NAME>                  # 删除 Bucket 静态网站配置
+
+# 图片处理 (Image Processing, 需要开通图片服务)
+# ossutil image ...  (具体命令请参考 ossutil help image)
+
+# 视频处理 (Video Processing, 需要开通视频服务)
+# ossutil video ...  (具体命令请参考 ossutil help video)
+
+# 服务端加密 (Server-Side Encryption)
+# ossutil cp ... --server-side-encryption AES256  # 使用 AES256 服务端加密上传
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+# -r, --recursive:   递归操作目录 (applies to cp, rm, sync, etc.)
+# -f, --force:       强制操作 (例如强制删除非空 Bucket, 覆盖同名 Object)
+# --update:          仅更新已修改的文件 (用于 cp, sync)
+# --acl ACL:         设置 ACL (用于 mb, cp, set-bucket-acl)
+# --version-id ID:   指定 Object 版本 (用于 get, restore, delete 等版本控制功能)
+# -e ENDPOINT:       指定 Endpoint (覆盖 config 文件中的配置)
+# -L LANGUAGE:       设置语言 (zh_CN, en_US)
+# -c FILE:           指定配置文件路径 (默认 ~/.ossutilconfig)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用环境变量简化配置:
+#   export OSS_ACCESS_KEY_ID=your_access_key_id
+#   export OSS_ACCESS_KEY_SECRET=your_access_key_secret
+#   export OSS_ENDPOINT=oss-cn-hangzhou.aliyuncs.com
+#   ossutil ls oss://my-bucket  (无需 config 命令)
+
+# 批量操作可以使用 Shell 脚本结合 ossutil 命令:
+#   for file in *.txt; do
+#     ossutil cp $file oss://my-bucket/text/
+#   done
+
+# 使用 --dry-run 进行模拟操作，查看命令执行效果，但不实际执行:
+#   ossutil cp LOCAL_DIR oss://BUCKET/OSS_DIR -r --dry-run
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 上传本地文件到 OSS:
+#   ossutil cp ./my_document.pdf oss://my-bucket/documents/
+
+# 2. 下载 OSS 目录到本地:
+#   ossutil cp oss://my-bucket/images/ ./local_images/ -r
+
+# 3. 创建公开读 Bucket:
+#   ossutil mb oss://my-public-bucket --acl public-read
+
+# 4. 同步本地网站目录到 OSS，并设置静态网站托管:
+#   ossutil sync ./website/ oss://my-website-bucket/ -r
+#   ossutil set-website oss://my-website-bucket index.html error.html
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# 阿里云 OSS 官方文档: https://help.aliyun.com/product/31815.html
+# ossutil GitHub 仓库 (可能非官方):  (请自行搜索 "ossutil github" 获取最新信息)
+# ossutil 命令行工具使用手册 (详细命令和选项):  ossutil help
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

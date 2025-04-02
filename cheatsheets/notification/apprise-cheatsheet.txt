@@ -1,0 +1,159 @@
+##############################################################################
+# Apprise 速查表 (Apprise Cheatsheet)
+# 命令行通知工具 (Command-line Notification Tool)
+# https://github.com/caronc/apprise
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - URL:     Apprise 通知 URL (Notification URL, 例如: tgram://TOKEN/CHAT_ID, mailto://user:pass@gmail.com)
+#            参考: https://github.com/caronc/apprise/wiki/Notification_Services
+#   - TITLE:   通知标题 (Notification Title)
+#   - BODY:    通知内容 (Notification Body)
+#   - ATTACHMENT: 附件路径 (Path to Attachment File)
+#   - CONFIG_FILE: Apprise 配置文件路径 (Path to Apprise Configuration File)
+#   - TAG:     通知标签 (Notification Tag, 用于过滤)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+apprise -t "标题" -b "消息内容" -vvv "通知URL"    # 发送带标题和内容的通知 (详细输出)
+apprise -b "简单消息" "通知URL"                 # 发送简单消息 (无标题)
+apprise -vvv -c apprise.yml -t "标题" -b "消息"  # 使用配置文件发送通知 (详细输出)
+apprise "通知URL1" "通知URL2" -b "多渠道通知"      # 同时发送到多个通知渠道
+
+# 提示:
+#   - URL 可以是多个，用空格分隔，实现多渠道通知。
+#   - 使用 -vvv 增加详细输出，方便调试。
+#   - 标题 (-t) 和 内容 (-b) 参数可选，但建议使用标题提高可读性。
+
+##############################################################################
+# 通知内容 (Notification Content)
+##############################################################################
+
+apprise -b "这是一段消息\n包含换行符" "通知URL"   # 消息内容包含换行符 (\n)
+apprise -b "特殊字符: !@#$%^&*()" "通知URL"       # 消息内容包含特殊字符
+apprise -b "Emoji: 🎉🚀👍" "通知URL"             # 消息内容包含 Emoji (部分服务支持)
+apprise -t "HTML 标题" -b "<b>加粗</b> <i>斜体</i>" "通知URL" # 发送 HTML 格式内容 (如果服务支持)
+apprise -f message.txt "通知URL"                # 从文件读取消息内容 (message.txt)
+
+# 提示:
+#   - 不同的通知服务对消息格式的支持程度不同，请参考 Apprise 文档。
+#   - 使用 `-f <file>` 从文件读取消息内容，适用于长消息或脚本生成的消息。
+
+##############################################################################
+# 附件 (Attachments)
+##############################################################################
+
+apprise -b "带附件的通知" -a image.png "通知URL"   # 发送带附件的通知 (image.png)
+apprise -a file1.txt -a file2.pdf "通知URL"      # 发送多个附件
+apprise -a "path/with space.txt" "通知URL"      # 附件路径包含空格，用引号括起来
+
+# 提示:
+#   - 部分通知服务不支持附件，或者对附件类型和大小有限制。
+#   - 使用 `-a <file>` 添加附件，可以多次使用添加多个附件。
+
+##############################################################################
+# 配置文件 (Configuration File)
+##############################################################################
+
+apprise -c apprise.yml -t "标题" -b "消息"          # 使用配置文件 apprise.yml
+apprise -c /path/to/config.yml -b "消息"         # 指定配置文件路径
+apprise -c apprise.yml -t "标题" -b "消息" -n my-config # 使用配置文件中的指定配置块 (name: my-config)
+
+# 配置文件示例 (apprise.yml):
+# attach:
+#   - /path/to/attachments
+# urls:
+#   default:
+#     - tgram://TOKEN/CHAT_ID
+#   my-config:
+#     - mailto://user:pass@gmail.com
+
+# 提示:
+#   - 配置文件可以管理多个通知 URL 和附件路径，方便复用和管理。
+#   - 配置文件支持 YAML 格式，更易读和编辑。
+#   - 使用 `-n <name>` 选择配置文件中的特定配置块。
+
+##############################################################################
+# 高级选项 (Advanced Options)
+##############################################################################
+
+apprise --tag critical --tag alert -b "重要通知" "通知URL" # 添加标签 (critical, alert)
+apprise --body-format text -b "纯文本消息" "通知URL"     # 指定消息体格式为 text (默认)
+apprise --body-format html -b "<b>HTML</b> 消息" "通知URL"     # 指定消息体格式为 html
+apprise --disable-web-parsing -b "<br> 不解析 HTML" "通知URL" # 禁用 Web 内容解析 (如 HTML)
+apprise --timeout 10 -b "超时测试" "通知URL"           # 设置超时时间为 10 秒
+
+# 提示:
+#   - 使用 `--tag <tag>` 添加标签，方便在接收端或配置文件中进行过滤。
+#   - `--body-format` 可以指定消息格式，根据通知服务支持选择 text, html, markdown 等。
+#   - `--disable-web-parsing`  避免 Apprise 尝试解析消息内容中的 Web 元素。
+#   - `--timeout`  设置请求超时时间，防止程序阻塞。
+
+##############################################################################
+# 最佳实践 (Best Practices & Tips)
+##############################################################################
+
+# 1. 使用配置文件管理通知 URL:
+#    - 特别是当 URL 包含敏感信息 (如 API Token, 密码) 时，避免直接在命令行暴露。
+#    - 配置文件易于维护和版本控制。
+#    - 可以定义多组 URL 配置，方便在不同场景下使用。
+
+# 2. 善用标签 (Tags) 进行分类和过滤:
+#    - 为不同类型的通知添加标签，例如 "重要", "警告", "监控" 等。
+#    - 在接收端或配置文件中，可以根据标签进行过滤或路由。
+#    - 提高通知管理的灵活性和效率。
+
+# 3. 测试通知 URL:
+#    - 在脚本或自动化任务中使用 Apprise 前，先用简单的命令测试 URL 是否有效。
+#    - 例如: `apprise -vvv -b "测试消息" "您的通知URL"`，观察输出信息。
+
+# 4. 灵活选择消息格式:
+#    - 根据通知渠道和接收端的需求，选择合适的 `--body-format` (text, html, markdown)。
+#    - 对于支持 HTML 或 Markdown 的渠道，可以发送更丰富的消息内容。
+
+# 5.  利用 `-vvv` 进行问题排查:
+#    - 当通知发送失败或遇到问题时，使用 `-vvv` 增加详细输出，查看错误信息和调试日志。
+#    - 帮助快速定位问题原因。
+
+# 6.  结合 Shell 脚本和管道:
+#    - 将 Apprise 集成到 Shell 脚本中，实现自动化通知。
+#    - 可以结合管道，将命令的输出作为通知内容发送。
+#    - 例如: `df -h | apprise -b "$(cat -)" "通知URL"` (发送磁盘空间信息)
+
+# 7.  考虑使用环境变量存储敏感信息 (进阶):
+#    -  对于非常敏感的 URL 组件 (例如 API 密钥)，可以考虑存储在环境变量中，然后在配置文件或命令行中引用。
+#    -  提高安全性，避免硬编码敏感信息。 (本速查表不详细展开，请查阅 Apprise 文档)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 示例 1: 发送服务器 CPU 负载告警到 Telegram
+# 获取 CPU 负载 (使用 `uptime` 或 `top` 等命令)
+CPU_LOAD=$(uptime | awk -F 'load average:' '{print $2}' | tr -d ',')
+# 构建告警消息
+MESSAGE="服务器 CPU 负载过高！\n负载: ${CPU_LOAD}"
+# 发送通知 (假设 Telegram URL 已配置在 apprise.yml 中 default 配置块)
+apprise -c apprise.yml -t "CPU 告警" -b "$MESSAGE"
+
+# 示例 2:  监控文件变化并发送通知
+# (需要 `inotify-tools` 或其他文件监控工具)
+# 假设使用 `inotifywait` 监控 /var/log/nginx/error.log 文件变化
+# 监控到变化时，发送通知
+inotifywait -m -e modify /var/log/nginx/error.log | while read event; do
+  MESSAGE="Nginx 错误日志 /var/log/nginx/error.log 发生变化:\n$event"
+  apprise -b "$MESSAGE" "通知URL" # 替换为您的通知 URL
+done
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Apprise 官方文档: https://github.com/caronc/apprise/wiki
+# Apprise 通知服务列表: https://github.com/caronc/apprise/wiki/Notification_Services
+# Apprise 配置文件详解: https://github.com/caronc/apprise/wiki/Config_Files
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :
