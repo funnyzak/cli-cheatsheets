@@ -61,6 +61,11 @@ COMMAND_DESCRIPTIONS["webpack"]="前端构建工具"
 COMMAND_CATEGORIES["xcodebuild"]="build"
 COMMAND_DESCRIPTIONS["xcodebuild"]="Xcode 构建工具"
 
+COMMAND_CATEGORIES["flutter"]="build"
+COMMAND_DESCRIPTIONS["flutter"]="Flutter 开发框架"
+
+COMMAND_CATEGORIES["react-native"]="build"
+COMMAND_DESCRIPTIONS["react-native"]="React Native 开发框架"
 
 # 数据库类命令
 COMMAND_CATEGORIES["mongo"]="database"
@@ -221,9 +226,6 @@ COMMAND_DESCRIPTIONS["venv"]="Python 虚拟环境"
 
 COMMAND_CATEGORIES["dotnet"]="runtime"
 COMMAND_DESCRIPTIONS["dotnet"]="DotNet 运行时"
-
-COMMAND_CATEGORIES["flutter"]="runtime"
-COMMAND_DESCRIPTIONS["flutter"]="Flutter 运行时"
 
 
 # 安全工具类命令

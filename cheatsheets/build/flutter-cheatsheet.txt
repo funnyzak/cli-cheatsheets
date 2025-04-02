@@ -1,7 +1,7 @@
 ##############################################################################
 # Flutter CLI 速查表 (Flutter CLI Cheatsheet)
 # 快速参考 Flutter 命令行工具常用命令
-# Source: https://github.com/funnyzak/cli-cheatsheets (Placeholder)
+# Source: https://github.com/funnyzak/cli-cheatsheets
 # Flutter Docs: https://flutter.dev/docs
 ##############################################################################
 
