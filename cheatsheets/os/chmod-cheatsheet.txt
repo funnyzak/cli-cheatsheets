@@ -1,109 +1,127 @@
 ##############################################################################
-# chmod 命令速查表 (chmod Command Cheatsheet)
-# 文件权限修改 (Change File Mode Bits)
+# chmod Command 速查表 (chmod Command Cheatsheet)
+# 修改文件或目录的访问权限 (Change file/directory access permissions)
 # https://github.com/funnyzak/cli-cheatsheets
 ##############################################################################
 
-# 图例 (Legend):
-#   - u:  User (文件所有者)
-#   - g:  Group (文件所属组)
-#   - o:  Others (其他用户)
-#   - a:  All (所有用户，u, g, o 的总和)
-#   - r:  Read (读取权限)
-#   - w:  Write (写入权限)
-#   - x:  Execute (执行权限)
-#   - s:  Setuid 或 Setgid 位
-#   - t:  Sticky 位
-#   - +:  添加权限
-#   - -:  移除权限
-#   - =:  设置指定权限，清除未指定权限
-#   - 数字模式 (Numeric Mode): 使用八进制数字表示权限 (例如: 777, 644, 755)
+# 图例 / 术语解释 (Legend / Terminology):
+#   MODE:  权限模式 (Permission mode), 可以是八进制数字或符号表示法
+#   FILE:  目标文件或目录路径 (Target file or directory path)
+#   RFILE: 参考文件路径 (Reference file path)
+#
+#   符号模式组成 (Symbolic Mode Components):
+#     [ugoa...]  用户类别 (Who):
+#       u: 用户 (User owner)
+#       g: 组 (Group owner)
+#       o: 其他人 (Others)
+#       a: 所有人 (All - default if omitted)
+#
+#     [+-=]    操作符 (Operator):
+#       +: 添加权限 (Add permission)
+#       -: 移除权限 (Remove permission)
+#       =: 精确设置权限 (Set permission exactly)
+#
+#     [rwxXstugo...] 权限 (Permissions):
+#       r: 读 (Read)
+#       w: 写 (Write)
+#       x: 执行 (Execute) / 搜索 (目录 Search)
+#       X: 特殊执行权限，仅对目录或已有执行权限的文件添加执行权限
+#       s: 设置用户/组ID (SetUID/SetGID)
+#       t: 粘滞位 (Sticky bit)
+#       u: 复制用户权限 (Copy user's permission)
+#       g: 复制组权限 (Copy group's permission)
+#       o: 复制其他人权限 (Copy other's permission)
+#
+#   八进制模式 (Octal Mode):
+#     由 3 位或 4 位数字组成 (e.g., 755, 644, 4755)
+#     每位代表 u, g, o 的权限组合 (r=4, w=2, x=1)
+#     第 4 位 (可选) 代表特殊权限 (SUID=4, SGID=2, Sticky=1)
+#     示例: 7 = rwx (4+2+1), 6 = rw- (4+2), 5 = r-x (4+1), 4 = r-- (4)
 
 ##############################################################################
-# 符号模式 (Symbolic Mode)
+# 基本语法 (Basic Syntax)
 ##############################################################################
 
-chmod u+r FILE                             # 给文件所有者添加读权限
-chmod u-w FILE                             # 移除文件所有者的写权限
-chmod g+w FILE                             # 给文件所属组添加写权限
-chmod o-r FILE                             # 移除其他用户的读权限
-chmod a+x FILE                             # 给所有用户添加执行权限
-chmod u=rwx FILE                           # 设置文件所有者为读写执行权限，清除其他权限
-chmod go=rx FILE                          # 设置组和其他用户为读和执行权限，清除写权限
-chmod ug=rw,o=r FILE                      # 组合设置不同用户组的权限 (逗号分隔)
-chmod u+s FILE                             # 设置 Setuid 位 (运行文件时以文件所有者身份)
-chmod g+s FILE                             # 设置 Setgid 位 (目录：新文件继承目录组；文件：运行文件时以文件所属组身份)
-chmod o+t DIR                              # 设置 Sticky 位 (目录：只有所有者、目录所有者、root 可以删除或重命名目录中的文件)
-chmod a-s FILE                             # 移除 Setuid 和 Setgid 位
-chmod a-t DIR                              # 移除 Sticky 位
-
-# 提示:
-#   - 可以同时操作多个文件或目录，例如: `chmod u+r file1 file2 dir1`
-#   - 使用 `-R` 或 `--recursive` 选项递归修改目录及其内容权限 (谨慎使用)
-#   - 使用 `--preserve-root` 选项防止在根目录递归操作 (默认启用)
-#   - 使用 `--reference=RFILE FILE`  参考 RFILE 的权限设置 FILE
+chmod [OPTIONS] MODE FILE...                   # 基本格式
 
 ##############################################################################
-# 数字模式 (Numeric Mode)
+# 符号模式 (Symbolic Mode - Recommended for Clarity)
 ##############################################################################
 
-# 权限值:
-#   - r (读) = 4
-#   - w (写) = 2
-#   - x (执行) = 1
-#   - - (无权限) = 0
+# --- 添加权限 (+) ---
+chmod u+x FILE                                # 为用户添加执行权限
+chmod g+w FILE                                # 为组添加写权限
+chmod o+r FILE                                # 为其他人添加读权限
+chmod a+x FILE                                # 为所有人添加执行权限 (等同于 +x)
+chmod ug+rw FILE                               # 为用户和组添加读写权限
+chmod +x FILE                                 # 为所有人添加执行权限 (常用)
 
-# 用户组顺序: 所有者 (u) - 所属组 (g) - 其他用户 (o)
-# 例如: 755  ->  u=rwx, g=rx, o=rx
+# --- 移除权限 (-) ---
+chmod u-x FILE                                # 为用户移除执行权限
+chmod g-w FILE                                # 为组移除写权限
+chmod o-r FILE                                # 为其他人移除读权限
+chmod a-x FILE                                # 为所有人移除执行权限 (等同于 -x)
+chmod go-w FILE                               # 为组和其他人移除写权限
 
-chmod 777 FILE                             # 所有用户读写执行权限 (u=rwx, g=rwx, o=rwx)
-chmod 644 FILE                             # 所有者读写，组和其他用户只读 (u=rw, g=r, o=r)
-chmod 755 FILE                             # 所有者读写执行，组和其他用户读执行 (u=rwx, g=rx, o=rx)
-chmod 700 FILE                             # 仅所有者读写执行 (u=rwx, g=---, o=---)
-chmod 600 FILE                             # 仅所有者读写 (u=rw, g=---, o=---)
+# --- 精确设置权限 (=) ---
+chmod u=rwx FILE                              # 设置用户权限为 rwx
+chmod g=rx FILE                               # 设置组权限为 r-x
+chmod o=r FILE                                # 设置其他人权限为 r--
+chmod a=r FILE                                # 设置所有人权限为 r-- (等同于 =r)
+chmod ug=rw,o=r FILE                          # 设置用户/组为 rw-, 其他人为 r-- (等同于 664)
 
-# 特殊权限位 (数字模式前缀):
-#   - Setuid (4)
-#   - Setgid (2)
-#   - Sticky Bit (1)
+# --- 特殊执行权限 (X) ---
+chmod +X FILE                                 # 如果是目录或已有x权限，则添加x权限
 
-# 例如: 4755 -> Setuid + rwxr-xr-x
-
-chmod 4755 FILE                            # 设置 Setuid 位 + 755 权限
-chmod 2755 DIR                             # 设置 Setgid 位 + 755 权限 (目录)
-chmod 1777 DIR                             # 设置 Sticky 位 + 777 权限 (共享目录，如 /tmp)
-chmod 0755 FILE                            # 清除特殊权限位 + 755 权限 (等同于 chmod 755)
+# --- 特殊权限 (SUID, SGID, Sticky) ---
+chmod u+s FILE                                # 添加 SetUID 位 (执行时具有文件所有者权限)
+chmod g+s FILE                                # 添加 SetGID 位 (执行时具有文件组权限 / 目录下文件继承组)
+chmod +t DIR                                  # 添加粘滞位 (通常用于 /tmp，只有所有者能删除文件)
+chmod u-s,g-s FILE                            # 移除 SUID 和 SGID 位
+chmod -t DIR                                  # 移除粘滞位
 
 ##############################################################################
-# 递归操作 (Recursive Operation)
+# 八进制模式 (Octal Mode - Numeric)
 ##############################################################################
 
-chmod -R u+rwx DIR                           # 递归给目录及其内容添加所有者读写执行权限 (谨慎使用)
-chmod --recursive g-w DIR                   # 递归移除目录及其内容组用户的写权限
-chmod -R 755 DIR                             # 递归设置目录及其内容权限为 755 (目录可执行)
-chmod -R 644 DIR                             # 递归设置目录及其内容权限为 644 (目录不可执行，文件常用)
-find DIR -type d -exec chmod 755 {} \;      # 查找目录并设置目录权限为 755 (更精细控制)
-find DIR -type f -exec chmod 644 {} \;      # 查找文件并设置文件权限为 644 (更精细控制)
+# --- 常用权限组合 ---
+chmod 777 FILE                                # rwxrwxrwx (所有人可读写执行 - 谨慎使用!)
+chmod 755 FILE                                # rwxr-xr-x (用户读写执行，组/其他人读执行 - 常用脚本/目录)
+chmod 700 FILE                                # rwx------ (仅用户读写执行 - 私密目录/脚本)
+chmod 644 FILE                                # rw-r--r-- (用户读写，组/其他人只读 - 常用普通文件)
+chmod 664 FILE                                # rw-rw-r-- (用户/组读写，其他人只读)
+chmod 600 FILE                                # rw------- (仅用户读写 - 私密文件, 如 SSH key)
 
-# 提示:
-#   - 递归操作影响范围广，请务必谨慎，尤其在根目录或重要目录。
-#   - `find -exec chmod` 结合使用可以实现更灵活的权限控制。
+# --- 包含特殊权限 ---
+chmod 4755 FILE                               # rwsr-xr-x (SetUID + 755)
+chmod 2755 FILE                               # rwxr-sr-x (SetGID + 755)
+chmod 1777 DIR                                # rwxrwxrwt (Sticky + 777 - 常用 /tmp)
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+chmod -R MODE DIR                             # 递归修改目录及其内容的权限
+chmod --recursive MODE DIR                    # 同 -R
+
+chmod -v MODE FILE                            # 显示详细处理信息 (Verbose)
+chmod --verbose MODE FILE                     # 同 -v
+
+chmod -c MODE FILE                            # 仅在发生更改时显示信息 (Changes)
+chmod --changes MODE FILE                     # 同 -c
+
+chmod --reference=RFILE FILE                  # 使用 RFILE 的权限来设置 FILE 的权限
 
 ##############################################################################
 # 实用技巧 (Tips and Tricks)
 ##############################################################################
 
-# 结合 find 命令批量修改权限:
-#   find . -name "*.sh" -exec chmod +x {} \;    # 给当前目录及子目录所有 .sh 文件添加执行权限
-#   find /var/www -type d -exec chmod 750 {} \; # 设置 /var/www 下所有目录权限为 750
-#   find /var/www -type f -exec chmod 640 {} \; # 设置 /var/www 下所有文件权限为 640
-
-# 使用 `--reference` 复用权限:
-#   chmod --reference=file1 file2               # 将 file2 的权限设置为与 file1 相同
-
-# 查看文件权限 (ls -l 或 stat):
-#   ls -l FILE                                  # 长列表格式显示文件权限 (符号表示)
-#   stat -c "%a %A %n" FILE                     # 显示文件权限 (数字和符号表示)
+# - 使用 `ls -l FILE` 命令查看文件或目录的当前权限。
+# - 对目录需要 `x` 权限才能进入 (`cd`) 或列出其内容 (`ls`)。
+# - 对文件需要 `x` 权限才能执行。
+# - `chmod 777` 通常是不安全的，应避免在生产环境中使用。
+# - 符号模式对于增量修改权限更清晰、更安全。
+# - 八进制模式对于设置绝对权限更快捷。
 
 ##############################################################################
 # 示例 (Examples)
@@ -111,21 +129,32 @@ find DIR -type f -exec chmod 644 {} \;      # 查找文件并设置文件权限�
 
 # 使脚本可执行:
 #   chmod +x my_script.sh
+#   chmod u+x my_script.sh  # 仅限用户
 
-# 设置网站目录权限 (常见 Web 服务器配置):
-#   chmod -R 755 /var/www/html                 # 目录和可执行文件
-#   chmod -R 644 /var/www/html/static          # 静态文件 (图片, CSS, JS)
-#   chmod 777 /var/www/html/upload              # 上传目录 (需谨慎，通常不推荐 777)
+# 设置标准文件权限:
+#   chmod 644 my_document.txt
 
-# 保护敏感配置文件 (仅所有者可读写):
-#   chmod 600 config.ini
+# 设置标准目录权限:
+#   chmod 755 my_directory/
+
+# 递归设置目录权限 (目录 755, 文件 644):
+#   find /path/to/dir -type d -exec chmod 755 {} \;
+#   find /path/to/dir -type f -exec chmod 644 {} \;
+
+# 设置私钥文件权限:
+#   chmod 600 ~/.ssh/id_rsa
+
+# 移除其他人的所有权限:
+#   chmod o-rwx FILE
+
+# 复制另一个文件的权限:
+#   chmod --reference=template_file new_file
 
 ##############################################################################
-# 鸣谢 & 更多资源 (Credit & Further Resources)
+# 更多资源 (Further Resources)
 ##############################################################################
 
-# https://man7.org/linux/man-pages/man1/chmod.1.html
-# https://www.gnu.org/software/coreutils/manual/html_node/chmod-invocation.html
-# https://www.computerhope.com/unix/uchmod.htm
+# 查看 `chmod` 的 man 手册页获取最详细的信息:
+#   man chmod
 
-# vim: set ts=4 sw=4 tw=0 et ft=txt :
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

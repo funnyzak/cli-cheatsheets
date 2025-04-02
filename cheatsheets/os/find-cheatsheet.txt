@@ -1,0 +1,185 @@
+##############################################################################
+# find 命令速查表 (find Command Cheatsheet)
+# 用于文件查找的强大工具 (Powerful tool for file searching)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PATH:   起始搜索路径 (Starting search path, 例如: ., /home/user, /mnt/data)
+#   - NAME:   文件名或模式 (Filename or pattern, 例如: "*.txt", "important.conf")
+#   - TYPE:   文件类型 (File type, 例如: f=文件, d=目录, l=符号链接)
+#   - ACTION: 对找到的文件执行的操作 (Action to perform on found files, 例如: -print, -delete, -exec)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+find PATH                                     # 列出 PATH 下所有文件和目录 (List all files and directories under PATH)
+find PATH -print                              # 显式打印结果 (Explicitly print results - default action)
+
+##############################################################################
+# 按名称查找 (Finding by Name)
+##############################################################################
+
+find PATH -name NAME                          # 按文件名精确查找 (Find by exact filename)
+find PATH -iname NAME                         # 忽略大小写按文件名查找 (Case-insensitive filename search)
+find PATH -name "NAME*"                        # 查找以 NAME 开头的文件 (Find files starting with NAME, wildcard at the end)
+find PATH -name "*.NAME"                        # 查找以 NAME 结尾的文件 (Find files ending with NAME, wildcard at the beginning)
+find PATH -name "*NAME*"                        # 查找包含 NAME 的文件 (Find files containing NAME, wildcard on both sides)
+find PATH -path "*/NAME/*"                     # 按路径名查找 (Find by pathname, including directory path)
+find PATH -ipath "*/NAME/*"                    # 忽略大小写按路径名查找 (Case-insensitive pathname search)
+find PATH -regex "PATTERN"                    # 使用正则表达式查找完整路径 (Find by regular expression matching full path)
+find PATH -iregex "PATTERN"                   # 忽略大小写正则查找完整路径 (Case-insensitive regex path search)
+
+# 提示:
+#   - NAME 可以使用通配符: *, ?, []
+#   - 使用引号 "" 或 '' 避免 Shell 扩展通配符
+#   - -path 和 -ipath 匹配完整路径，包括目录
+
+##############################################################################
+# 按类型查找 (Finding by Type)
+##############################################################################
+
+find PATH -type f                             # 只查找文件 (Find only files)
+find PATH -type d                             # 只查找目录 (Find only directories)
+find PATH -type l                             # 只查找符号链接 (Find only symbolic links)
+find PATH -type b                             # 查找块设备文件 (Find block devices)
+find PATH -type c                             # 查找字符设备文件 (Find character devices)
+find PATH -type p                             # 查找命名管道 (Find named pipes/FIFOs)
+find PATH -type s                             # 查找套接字 (Find sockets)
+
+##############################################################################
+# 组合条件 (Combining Conditions - AND, OR, NOT)
+##############################################################################
+
+find PATH -type f -name "*.txt"               # 查找 TXT 文件 (AND 组合, 默认) (Find TXT files - AND combination, default)
+find PATH -type d -o -type f                 # 查找目录或文件 (OR 组合, -o) (Find directories OR files - OR combination, -o)
+find PATH -not -type d                       # 查找非目录的文件 (NOT 组合, -not 或 !) (Find files that are NOT directories - NOT combination, -not or !)
+find PATH -type f ! -name "*.txt"            # 查找非 TXT 文件 (NOT 和 AND 组合) (Find files that are NOT TXT files - NOT and AND combination)
+
+# 提示:
+#   - 默认多个条件是 AND 关系
+#   - 使用括号 () 和转义符 \ 来分组条件，例如: `find PATH \( -type f -o -type d \) -print`
+#   - 运算符优先级: NOT > AND > OR
+
+##############################################################################
+# 按时间查找 (Finding by Time)
+##############################################################################
+
+find PATH -mtime -N                          # N 天内修改的文件 (Modified in the last N days)
+find PATH -mtime +N                          # N 天前修改的文件 (Modified N days ago or older)
+find PATH -mtime N                           # 恰好 N 天前修改的文件 (Modified exactly N days ago)
+find PATH -atime -N                          # N 天内访问的文件 (Accessed in the last N days)
+find PATH -ctime -N                          # N 天内状态改变的文件 (Status changed in the last N days)
+find PATH -newer FILE                        # 比 FILE 更新的文件 (Newer than FILE)
+find PATH -anewer FILE                       # 比 FILE 访问时间更新的文件 (Accessed more recently than FILE)
+find PATH -cnewer FILE                       # 比 FILE 状态改变时间更新的文件 (Status changed more recently than FILE)
+find PATH -mmin -N                           # N 分钟内修改的文件 (Modified in the last N minutes)
+find PATH -mmin +N                           # N 分钟前修改的文件 (Modified N minutes ago or older)
+
+# 提示:
+#   - 时间单位: mtime (修改时间), atime (访问时间), ctime (状态改变时间)
+#   - -mtime, -atime, -ctime 单位是天 (24小时)
+#   - -mmin, -amin, -cmin 单位是分钟
+#   - N 为正数时，表示小于 N;  负数时，表示大于 N;  没有符号时，表示等于 N
+
+##############################################################################
+# 按大小查找 (Finding by Size)
+##############################################################################
+
+find PATH -size +Nk                          # 大于 Nk 的文件 (Larger than Nk, k=KB, M=MB, G=GB...)
+find PATH -size -Nm                          # 小于 Nm 的文件 (Smaller than Nm)
+find PATH -size Nc                           # 大小为 Nc 的文件 (Exactly Nc bytes, c=bytes)
+find PATH -empty                             # 查找空文件或空目录 (Find empty files or directories)
+
+# 提示:
+#   - 大小单位: c (字节), w (字), k (KB), M (MB), G (GB)
+#   - 默认单位是字节 c
+#   - + 表示大于, - 表示小于, 没有符号表示等于
+
+##############################################################################
+# 按权限和所有权查找 (Finding by Permissions and Ownership)
+##############################################################################
+
+find PATH -perm MODE                         # 按权限查找 (Find by permissions, MODE in octal, e.g., 755)
+find PATH -perm -MODE                        # 权限至少包含 MODE 的文件 (Permissions include at least MODE bits)
+find PATH -perm +MODE                        # 权限位中任何一位匹配 MODE 的文件 (Any permission bit matches MODE)
+find PATH -user USERNAME                     # 按用户名查找 (Find by username)
+find PATH -uid UID                           # 按用户 ID 查找 (Find by user ID)
+find PATH -group GROUPNAME                   # 按组名查找 (Find by group name)
+find PATH -gid GID                           # 按组 ID 查找 (Find by group ID)
+find PATH -nouser                            # 查找没有有效用户的文件 (Find files without a valid user)
+find PATH -nogroup                           # 查找没有有效组的文件 (Find files without a valid group)
+
+# 提示:
+#   - MODE 使用八进制表示，例如 755, 644
+#   - -perm -MODE  所有 MODE 指定的权限位都必须设置
+#   - -perm +MODE  MODE 指定的权限位中，只要有一个被设置即可
+
+##############################################################################
+# 执行操作 (Actions - -print, -exec, -delete, ...)
+##############################################################################
+
+find PATH -print                             # 打印找到的文件路径 (Print found file paths - default action)
+find PATH -exec COMMAND {} \;                # 对每个找到的文件执行 COMMAND (Execute COMMAND for each found file)
+find PATH -ok COMMAND {} \;                  # 同 -exec, 但执行前需要确认 (Like -exec, but requires confirmation before execution)
+find PATH -delete                            # 删除找到的文件或目录 (Delete found files or directories - CAREFUL!)
+find PATH -ls                                # 以 ls -dils 格式列出文件信息 (List file information in ls -dils format)
+find PATH -fls FILE                          # 将 -ls 输出写入 FILE (Write -ls output to FILE)
+find PATH -fprint FILE                        # 将 -print 输出写入 FILE (Write -print output to FILE)
+find PATH -print0                             # 以 null 字符分隔打印结果 (Print results separated by null character - for xargs -0)
+
+# 提示:
+#   - {} 是占位符，表示当前找到的文件名
+#   - \; 是 -exec 和 -ok 的命令结束符
+#   - -exec 和 -ok 中 COMMAND 可以是任何 Shell 命令
+#   - -delete 非常危险，请谨慎使用，建议先用 -print 确认
+#   - 使用 -print0 和 xargs -0 可以安全处理文件名包含空格或特殊字符的文件
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 结合 xargs 处理大量文件:
+#   find PATH -name "*.log" -print0 | xargs -0 grep "error"  # 查找 log 文件中包含 "error" 的行
+
+# 查找并删除空目录 (小心操作!):
+#   find PATH -type d -empty -delete
+
+# 查找大于 100MB 的文件并列出:
+#   find PATH -size +100M -ls
+
+# 查找最近 3 天修改过的 PHP 文件:
+#   find PATH -name "*.php" -mtime -3
+
+# 使用 -maxdepth 限制搜索深度，提高效率:
+#   find PATH -maxdepth 2 -type f -name "*.txt"  # 只搜索 PATH 下两层目录
+
+# 使用 -mindepth 跳过起始目录本身:
+#   find PATH -mindepth 1 -type d                # 查找 PATH 下一级目录开始的所有目录
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 查找当前目录下所有 .txt 文件并打印路径:
+#   find . -name "*.txt"
+
+# 查找 /var/log 目录下最近一天修改过的 log 文件，并压缩备份:
+#   find /var/log -name "*.log" -mtime -1 -exec gzip {} \;
+
+# 查找 /home 目录下所有者为 user1 的文件，并列出详细信息:
+#   find /home -user user1 -ls
+
+# 查找当前目录及其子目录下所有目录，并修改权限为 755:
+#   find . -type d -exec chmod 755 {} \;
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# GNU findutils 官方文档: https://www.gnu.org/software/findutils/
+# find 命令 man page: man find
+# Linux find 命令详解：https://www.runoob.com/linux/linux-comm-find.html
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

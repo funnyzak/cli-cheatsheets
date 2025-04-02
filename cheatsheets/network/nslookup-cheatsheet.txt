@@ -1,110 +1,124 @@
 ##############################################################################
-# nslookup 速查表 (nslookup Cheatsheet)
-# 域名查询工具 (Domain Name Lookup Utility)
-# https://github.com/funnyzak/cli-cheatsheets
+# nslookup Command 速查表 (nslookup Command Cheatsheet)
+# 用于查询 DNS (Domain Name System) 信息，如域名对应的 IP 地址或反向查询。
+# Source: https://github.com/funnyzak/cli-cheatsheets
 ##############################################################################
 
 # 图例 (Legend):
-#   - HOSTNAME:  域名或主机名 (Domain name or Hostname, 例如: google.com, www.example.org)
-#   - SERVER:    DNS 服务器地址 (DNS Server Address, 例如: 8.8.8.8, 1.1.1.1)
-#   - TYPE:      查询类型 (Query Type, 例如: A, AAAA, MX, NS, TXT, CNAME)
+#   - DOMAIN:   域名 (Domain name, e.g., google.com)
+#   - IP_ADDRESS: IP 地址 (IP Address, e.g., 8.8.8.8)
+#   - SERVER:   要查询的 DNS 服务器地址 (DNS server address, optional)
+#   - TYPE:     查询的记录类型 (Record type, e.g., A, AAAA, MX, NS, CNAME, SOA, TXT, PTR, ANY)
 
 ##############################################################################
-# 基本查询 (Basic Lookups)
+# 基本用法 (Basic Usage - Non-Interactive Mode)
 ##############################################################################
 
-nslookup HOSTNAME                              # 查询域名的 A 记录 (IPv4 地址)
-nslookup -query=AAAA HOSTNAME                   # 查询域名的 AAAA 记录 (IPv6 地址)
-nslookup -query=MX HOSTNAME                     # 查询域名的 MX 记录 (邮件交换记录)
-nslookup -query=NS HOSTNAME                     # 查询域名的 NS 记录 (域名服务器记录)
-nslookup -query=TXT HOSTNAME                    # 查询域名的 TXT 记录 (文本记录)
-nslookup -query=CNAME HOSTNAME                  # 查询域名的 CNAME 记录 (别名记录)
-nslookup -query=SOA HOSTNAME                    # 查询域名的 SOA 记录 (起始授权机构记录)
-nslookup -query=PTR IP_ADDRESS                  # 反向查询 IP 地址的 PTR 记录 (域名)
-
-# 提示:
-#   - 默认查询类型为 A 记录
-#   - 可以使用 `-type=` 代替 `-query=` (例如: `nslookup -type=MX HOSTNAME`)
+nslookup DOMAIN [SERVER]                      # 查询域名的 A 和 AAAA 记录 (默认类型)
+nslookup IP_ADDRESS [SERVER]                  # 反向查询 IP 地址对应的域名 (PTR 记录)
+nslookup -query=TYPE DOMAIN [SERVER]          # 查询指定类型的记录
+nslookup -type=TYPE DOMAIN [SERVER]           # 同上, 查询指定类型的记录 (旧版兼容)
 
 ##############################################################################
-# 指定 DNS 服务器 (Specifying DNS Server)
+# 常用记录类型查询 (Common Record Type Queries)
 ##############################################################################
 
-nslookup HOSTNAME SERVER                       # 使用指定的 DNS 服务器查询
-nslookup HOSTNAME 8.8.8.8                       # 使用 Google Public DNS 查询
-nslookup HOSTNAME 1.1.1.1                       # 使用 Cloudflare DNS 查询
+# 查询 IPv4 地址 (A Record)
+nslookup -query=A DOMAIN [SERVER]
 
-# 提示:
-#   - SERVER 可以是 IP 地址或域名
-#   - 如果未指定 SERVER，则使用系统默认 DNS 服务器
+# 查询 IPv6 地址 (AAAA Record)
+nslookup -query=AAAA DOMAIN [SERVER]
 
-##############################################################################
-# 查询选项 (Query Options)
-##############################################################################
+# 查询邮件交换记录 (Mail Exchanger - MX Record)
+nslookup -query=MX DOMAIN [SERVER]
 
-nslookup -debug HOSTNAME                         # 启用调试模式，显示详细信息
-nslookup -recurse HOSTNAME                       # 启用递归查询 (默认启用)
-nslookup -norecurse HOSTNAME                     # 禁用递归查询
-nslookup -timeout=N HOSTNAME                     # 设置超时时间为 N 秒
-nslookup -retry=N HOSTNAME                       # 设置重试次数为 N 次
-nslookup -port=PORT HOSTNAME                     # 指定 DNS 服务器端口 (默认 53)
+# 查询域名服务器记录 (Name Server - NS Record)
+nslookup -query=NS DOMAIN [SERVER]
+
+# 查询规范名称记录 (Canonical Name - CNAME Record)
+# 通常用于查找别名指向的真实域名
+nslookup -query=CNAME www.google.com [SERVER] # 示例查询 www.google.com 的 CNAME
+
+# 查询起始授权机构记录 (Start of Authority - SOA Record)
+nslookup -query=SOA DOMAIN [SERVER]
+
+# 查询文本记录 (Text - TXT Record) - 常用于 SPF, DKIM 等验证
+nslookup -query=TXT DOMAIN [SERVER]
+
+# 查询 IP 地址对应的域名 (Pointer - PTR Record) - 反向查询
+nslookup -query=PTR IP_ADDRESS [SERVER]       # 与直接 nslookup IP_ADDRESS 效果类似
+
+# 查询所有类型的记录 (ANY Record) - 注意: 很多服务器限制 ANY 查询
+nslookup -query=ANY DOMAIN [SERVER]
 
 ##############################################################################
 # 交互模式 (Interactive Mode)
 ##############################################################################
 
-nslookup                                      # 进入交互模式
-> HOSTNAME                                    # 在交互模式下查询域名
-> set querytype=TYPE                            # 设置查询类型
-> server SERVER                                 # 切换 DNS 服务器
-> exit                                        # 退出交互模式
+# 进入交互模式 (Enter interactive mode)
+nslookup [SERVER]
+#   - 如果提供了 SERVER, 则使用该服务器进行后续查询
+#   - 进入后会显示 '>' 提示符
 
-# 提示 (交互模式常用命令):
-#   - `help` 或 `?` 显示帮助信息
-#   - `set all` 显示所有 set 命令的当前值
-#   - `set debug` 切换调试模式
-#   - `set recurse` 切换递归查询
-#   - `set timeout=N` 设置超时时间
-#   - `set retry=N` 设置重试次数
-#   - `server SERVER` 切换 DNS 服务器
-#   - `lserver SERVER` 使用初始服务器查询 SERVER 的信息 (local server)
+# 交互模式下的命令 (Commands within interactive mode):
+#   DOMAIN              # 查询域名的默认记录 (A/AAAA)
+#   IP_ADDRESS          # 反向查询 IP 地址
+#   server SERVER       # 切换到指定的 DNS 服务器进行后续查询
+#   lserver SERVER      # 使用本地默认 DNS 服务器查询 SERVER 的信息
+#   set type=TYPE       # 设置后续查询的默认记录类型 (e.g., set type=MX)
+#   set query=TYPE      # 同上 (e.g., set query=NS)
+#   set all             # 显示当前的查询设置 (服务器, 类型, 超时等)
+#   set debug           # 开启调试模式, 显示详细查询过程
+#   set nodebug         # 关闭调试模式
+#   set timeout=SECONDS # 设置查询超时时间 (默认通常是 5 秒)
+#   set retry=COUNT     # 设置重试次数
+#   exit                # 退出交互模式
+
+##############################################################################
+# 选项 (Options - 部分可在 set 命令中使用)
+##############################################################################
+
+# -query=TYPE / -type=TYPE  # 指定查询类型
+# -port=PORT                # 指定 DNS 服务器端口 (默认 53)
+# -timeout=SECONDS          # 设置超时时间
+# -retry=COUNT              # 设置重试次数
+# -debug                    # 显示详细的调试信息
 
 ##############################################################################
 # 实用技巧 (Tips and Tricks)
 ##############################################################################
 
-# 快速查询 IP 地址:
-#   nslookup google.com
-
-# 查询邮件服务器 (MX 记录):
-#   nslookup -query=MX gmail.com
-
-# 使用指定的 DNS 服务器进行查询 (例如 Google DNS):
-#   nslookup baidu.com 8.8.8.8
-
-# 反向 IP 地址查询 (PTR 记录, 查找 IP 对应的域名):
-#   nslookup -query=PTR 8.8.8.8
-
-# 调试模式查看详细查询过程:
-#   nslookup -debug google.com
+# - 默认情况下, nslookup 会查询配置在 /etc/resolv.conf 中的 DNS 服务器。
+# - 输出中的 "Non-authoritative answer" 表示结果来自缓存或其他非权威服务器。
+# - 使用 `set debug` 或命令行 `-debug` 选项可以帮助诊断 DNS 解析问题。
+# - 对于更复杂或脚本化的 DNS 查询, `dig` 命令通常是更强大和灵活的选择。
 
 ##############################################################################
 # 示例 (Examples)
 ##############################################################################
 
-# 1. 查询 google.com 的 A 记录 (默认):
-#   nslookup google.com
-#   # 返回 google.com 的 IPv4 地址
+# 1. 查询 google.com 的 IP 地址
+#    nslookup google.com
 
-# 2. 查询 google.com 的 MX 记录，并使用 1.1.1.1 作为 DNS 服务器:
-#   nslookup -query=MX google.com 1.1.1.1
-#   # 返回 google.com 的邮件服务器信息，并使用 Cloudflare DNS 查询
+# 2. 查询 google.com 的邮件服务器
+#    nslookup -query=MX google.com
+
+# 3. 使用 Google Public DNS (8.8.8.8) 查询 cloudflare.com 的 NS 记录
+#    nslookup -type=NS cloudflare.com 8.8.8.8
+
+# 4. 反向查询 1.1.1.1 对应的域名
+#    nslookup 1.1.1.1
+
+# 5. 进入交互模式, 查询 MX 记录, 然后退出
+#    nslookup
+#    > set type=MX
+#    > google.com
+#    > exit
 
 ##############################################################################
-# 鸣谢 & 更多资源 (Credit & Further Resources)
+# 更多资源 (Further Resources)
 ##############################################################################
 
-# https://linux.die.net/man/1/nslookup
-# https://www.geeksforgeeks.org/nslookup-command-in-linux-with-examples/
+# man nslookup
 
-# vim: set ts=4 sw=4 tw=0 et ft=txt :
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

@@ -1,0 +1,93 @@
+##############################################################################
+# Service Command 速查表 (service Command Cheatsheet)
+# 用于管理 System V init (SysVinit) 脚本的服务
+# 在许多现代系统上，此命令通常会重定向到 systemctl
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - <service_name>: 要管理的服务名称 (例如: ssh, apache2, httpd, network)
+#   - <action>:       要执行的操作 (例如: start, stop, status, restart, reload)
+
+##############################################################################
+# 基本服务控制 (Basic Service Control)
+##############################################################################
+# 注意: 大多数操作需要 root 权限 (使用 sudo)
+
+service <service_name> start        # 启动服务
+service <service_name> stop         # 停止服务
+service <service_name> restart      # 重启服务 (通常是先 stop 再 start)
+service <service_name> reload       # 重新加载配置 (不中断服务，如果服务支持)
+service <service_name> status       # 查看服务当前状态
+service <service_name> force-reload # 强制重新加载配置 (类似 reload，有时行为略有不同)
+
+# 示例:
+#   sudo service ssh start          # 启动 SSH 服务
+#   sudo service apache2 stop       # 停止 Apache 服务 (Debian/Ubuntu)
+#   sudo service httpd restart      # 重启 Apache 服务 (CentOS/RHEL)
+#   sudo service network status     # 查看网络服务状态
+
+##############################################################################
+# 列出服务状态 (List Service Status)
+##############################################################################
+
+service --status-all                # 列出 `/etc/init.d/` 中所有服务的状态
+                                    # 输出格式通常是:
+                                    #   [ + ] service_name  (正在运行)
+                                    #   [ - ] service_name  (已停止)
+                                    #   [ ? ] service_name  (状态未知, 通常意味着没有 status 操作)
+
+# 示例:
+#   service --status-all | less     # 分页查看所有服务状态
+#   service --status-all | grep running # (这个通常不行, + - ? 不易 grep)
+#   service --status-all | grep ssh   # 查看特定服务的状态行
+
+##############################################################################
+# 实用提示 (Tips & Tricks)
+##############################################################################
+
+# - 权限 (Permissions):
+#   绝大多数 service 命令操作都需要 root 权限，请在命令前加上 `sudo`。
+
+# - systemd 系统兼容性 (Systemd Compatibility):
+#   在现代使用 systemd 的 Linux 发行版 (如 Ubuntu 16.04+, CentOS 7+, Debian 8+) 上，`service` 命令通常是一个兼容性脚本或链接，
+#   它会将命令转发给 `systemctl`。例如，`sudo service ssh start` 最终会执行 `sudo systemctl start ssh.service`。
+#   在这种情况下，直接使用 `systemctl` 命令通常是更好的选择，因为它提供更多功能和更一致的输出。
+
+# - `reload` vs `restart`:
+#   `reload` 请求服务重新加载其配置文件，通常不会停止服务进程，适用于只需要应用配置更改的场景。
+#   `restart` 则会完全停止服务进程，然后再重新启动它，适用于需要彻底重启服务的场景（例如更新了程序本身）。
+#   并非所有服务都实现了 `reload` 操作。
+
+# - 服务脚本位置 (Service Script Location):
+#   `service` 命令通常操作位于 `/etc/init.d/` 目录下的 SysVinit 脚本。你可以查看这个目录来了解系统上有哪些传统的服务脚本。
+
+# - 自定义操作 (Custom Actions):
+#   除了标准操作 (start, stop 等)，一些服务脚本可能定义了自己特有的操作。你可以直接尝试运行 `service <service_name> <custom_action>`。
+#   查看脚本文件本身 (`/etc/init.d/<service_name>`) 可以了解它支持哪些操作。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 检查 Nginx 服务状态:
+#   sudo service nginx status
+
+# 如果 Nginx 正在运行，尝试重新加载配置:
+#   sudo service nginx reload
+
+# 如果 reload 失败或需要彻底重启，则重启 Nginx:
+#   sudo service nginx restart
+
+# 列出所有 SysVinit 服务的状态，并过滤出包含 'network' 的行:
+#   service --status-all | grep network
+
+##############################################################################
+# 更多资源 (Further Resources)
+##############################################################################
+
+# man service
+# man systemctl  (在 systemd 系统上，这个手册页通常更重要)
+# 查看 /etc/init.d/ 目录下的具体服务脚本
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

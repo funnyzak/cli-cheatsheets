@@ -1,0 +1,119 @@
+##############################################################################
+# cd Command 速查表 (Change Directory Cheatsheet)
+# 用于更改 Shell 的当前工作目录。
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - DIR:     目标目录路径 (可以是绝对路径或相对路径)
+#   - ~:       当前用户的家目录 (Home Directory)
+#   - -:       上一个工作目录 (Previous Working Directory, stored in $OLDPWD)
+#   - ..:      父目录 (Parent Directory)
+#   - .:       当前目录 (Current Directory)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+cd DIR                                # 切换到指定的目录 DIR
+                                      # DIR can be an absolute path (e.g., /var/log)
+                                      # or a relative path (e.g., ../logs, ./myfolder)
+
+##############################################################################
+# 特殊目录切换 (Special Directory Navigation)
+##############################################################################
+
+cd                                    # 切换到当前用户的家目录 (等同于 cd ~)
+cd ~                                  # 显式切换到当前用户的家目录
+cd -                                  # 切换到上一个工作目录 (并打印新的当前目录)
+cd ..                                 # 切换到上一级父目录
+cd ../..                              # 切换到上两级父目录
+cd /                                  # 切换到根目录
+cd ~username                          # 切换到指定用户的家目录 (需要相应权限)
+
+##############################################################################
+# 使用环境变量 (Using Environment Variables)
+##############################################################################
+
+cd "$HOME"                            # 切换到家目录 (HOME 变量通常指向家目录)
+cd "$OLDPWD"                          # 切换到上一个工作目录 (同 cd -，在脚本中更明确)
+# 注意: 建议使用引号 "$VAR" 来处理可能包含空格的路径
+
+##############################################################################
+# 选项 (Options - Shell Builtin Specific, common in Bash/Zsh)
+##############################################################################
+
+# cd 通常是 Shell 内建命令，选项可能因 Shell 而异
+
+cd -L DIR                             # 跟随符号链接 (Logical, 默认行为)
+                                      # If DIR is a symlink, change to the symlink itself.
+cd -P DIR                             # 使用物理目录结构，解析符号链接 (Physical)
+                                      # If DIR or any component is a symlink, resolve it
+                                      # before changing directory. Changes $PWD to physical path.
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# Tab 自动补全:
+#   - 输入 `cd partial_name` 然后按 Tab 键，Shell 会尝试自动补全目录名。
+#   - 按两次 Tab 会列出所有可能的匹配项。
+
+# 目录栈 (Directory Stack - Bash/Zsh):
+#   pushd DIR   # 将 DIR 加入目录栈顶，并切换到 DIR
+#   popd        # 移除栈顶目录，并切换到新的栈顶目录
+#   dirs -v     # 列出目录栈内容
+
+# 检查当前目录:
+#   pwd         # 打印当前工作目录 (Print Working Directory)
+
+# 使用 CDPATH 环境变量:
+#   - `export CDPATH=.:~/projects:/usr/src`
+#   - 设置后，`cd myapp` 会依次在 `.` (当前目录), `~/projects`, `/usr/src` 中查找 `myapp` 目录。
+
+# 创建别名 (Aliases):
+#   - 在你的 `.bashrc` 或 `.zshrc` 中添加别名，快速跳转到常用目录:
+#     `alias proj="cd ~/my_projects/main_project"`
+#     `alias ..="cd .."`
+#     `alias ...="cd ../.."`
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 切换到 /var/log 目录:
+#   cd /var/log
+
+# 切换到家目录:
+#   cd
+
+# 从 /home/user/documents 切换到 /home/user:
+#   cd ..
+
+# 在 /home/user/projectA 和 /var/www 之间来回切换:
+#   cd /home/user/projectA
+#   pwd  # 输出 /home/user/projectA
+#   cd /var/www
+#   pwd  # 输出 /var/www
+#   cd - # 切换回 /home/user/projectA 并打印 /home/user/projectA
+#   pwd  # 输出 /home/user/projectA
+#   cd - # 切换回 /var/www 并打印 /var/www
+#   pwd  # 输出 /var/www
+
+##############################################################################
+# 注意事项 (Notes)
+###########################################
+
+# - 如果目标目录不存在或用户没有执行 (进入) 权限，cd 命令会失败并报错。
+# - cd 是 Shell 内建命令，它改变的是当前 Shell 进程本身的环境变量 (PWD, OLDPWD)，
+#   而不是启动一个新的子进程。
+
+##############################################################################
+# 更多资源 (Further Resources)
+##############################################################################
+
+# 查看你所用 Shell 的手册页获取最准确的信息:
+#   man bash (搜索 /cd)
+#   man zshall (搜索 /cd)
+
+# vim: set ts=4 sw=4 tw=0 et ft=sh :

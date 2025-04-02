@@ -1,0 +1,92 @@
+##############################################################################
+# pwd Command 速查表 (pwd Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 描述 (Description):
+#   pwd (Print Working Directory) 命令用于显示当前工作目录的绝对路径。
+#   It prints the full filename of the current working directory.
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+pwd                       # 显示当前工作目录的绝对路径 (默认行为, 等同于 pwd -L)
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+pwd -L                    # (默认) 显示逻辑路径。如果 PWD 环境变量包含不含 '..' 或 '.' 的绝对路径，
+                          # 则直接使用该值，即使它包含符号链接。
+                          # (Default) Print the logical path. Use the value of the PWD environment
+                          # variable if it's an absolute path without '..' or '.', even if it
+                          # contains symbolic links.
+
+pwd -P                    # 显示物理路径。解析所有符号链接，不使用 PWD 环境变量。
+                          # Print the physical path. Resolve all symbolic links and avoid using
+                          # the PWD environment variable.
+
+pwd --help                # 显示帮助信息并退出
+                          # Display help message and exit
+
+pwd --version             # 显示版本信息并退出
+                          # Display version information and exit
+
+##############################################################################
+# 实用提示 (Tips & Tricks)
+##############################################################################
+
+# 1. PWD 环境变量 (PWD Environment Variable):
+#    Shell 通常会维护一个名为 `PWD` 的环境变量，它存储了当前的逻辑工作目录。
+#    `pwd -L` (或 `pwd`) 通常会直接读取这个变量的值（如果有效）。
+#    你可以通过 `echo $PWD` 来查看它。
+#    The shell typically maintains an environment variable named `PWD` which stores
+#    the current logical working directory. `pwd -L` (or just `pwd`) often reads
+#    this variable directly if valid. You can view it with `echo $PWD`.
+
+# 2. 区分逻辑路径与物理路径 (Logical vs. Physical Path):
+#    当你的当前目录是通过符号链接进入的时，`-L` 和 `-P` 的区别就很明显。
+#    - `-L` (逻辑): 显示包含符号链接本身的路径。
+#    - `-P` (物理): 显示符号链接指向的实际物理路径。
+#    The difference between `-L` and `-P` is apparent when your current directory
+#    was reached via a symbolic link.
+#    - `-L` (Logical): Shows the path including the symbolic link itself.
+#    - `-P` (Physical): Shows the actual physical path the symbolic link points to.
+
+# 3. 在脚本中使用 (Usage in Scripts):
+#    在脚本中获取当前目录时，根据需要选择 `-L` 或 `-P`。
+#    如果需要处理实际文件位置（例如，避免跨设备操作），`-P` 可能更可靠。
+#    When getting the current directory in scripts, choose `-L` or `-P` based on need.
+#    If dealing with actual file locations (e.g., avoiding cross-device operations),
+#    `-P` might be more reliable.
+#    Example: SCRIPT_DIR=$(cd -- "$(dirname -- "$0")" && pwd -P) # Get script's physical dir
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 假设存在符号链接: /home/user/link_dir -> /mnt/data/real_dir
+# Assume a symbolic link exists: /home/user/link_dir -> /mnt/data/real_dir
+
+cd /home/user/link_dir
+
+# 显示逻辑路径 (包含符号链接)
+pwd
+# 输出: /home/user/link_dir
+
+# 显示物理路径 (解析符号链接)
+pwd -P
+# 输出: /mnt/data/real_dir
+
+# 查看 PWD 环境变量 (通常是逻辑路径)
+echo $PWD
+# 输出: /home/user/link_dir
+
+##############################################################################
+# 更多资源 (Further Resources)
+##############################################################################
+
+# man pwd
+
+# vim: set ts=4 sw=4 tw=0 et ft=sh :

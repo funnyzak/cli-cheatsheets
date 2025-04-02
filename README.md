@@ -338,6 +338,23 @@ CLI 速查表按类别组织在以下目录中：
 * `watch-cheatsheet.txt`: watch 定期执行命令命令
 * `yum-cheatsheet.txt`: yum CentOS/RHEL 包管理器命令
 * `zip-cheatsheet.txt`: zip 压缩工具命令
+* `cd_cheatsheet.txt`: cd 切换当前工作目录命令
+* `clear_cheatsheet.txt`: clear 清空终端屏幕命令
+* `cp_cheatsheet.txt`: cp 复制文件和目录命令
+* `echo_cheatsheet.txt`: echo 在终端输出文本命令
+* `find_cheatsheet.txt`: find 在文件系统中搜索文件命令
+* `head_cheatsheet.txt`: head 显示文件开头的内容命令
+* `ls_cheatsheet.txt`: ls 列出目录内容命令
+* `man_cheatsheet.txt`: man 显示命令的手册页命令
+* `mkdir_cheatsheet.txt`: mkdir 创建新目录命令
+* `mv_cheatsheet.txt`: mv 移动或重命名文件和目录命令
+* `pwd_cheatsheet.txt`: pwd 显示当前工作目录的完整路径命令
+* `rm_cheatsheet.txt`: rm 删除文件或目录命令
+* `service_cheatsheet.txt`: service 控制系统服务的启动、停止和状态命令
+* `sudo_cheatsheet.txt`: sudo 以超级用户或其他用户身份执行命令
+* `uniq_cheatsheet.txt`: uniq 报告或忽略文件中的重复行命令
+* `wc_cheatsheet.txt`: wc 统计文件中的行数、单词数和字符数命令
+* `xargs_cheatsheet.txt`: xargs 从标准输入构建和执行命令行命令
 
 
 ### Package Managers

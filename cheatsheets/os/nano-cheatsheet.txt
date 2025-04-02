@@ -1,118 +1,165 @@
 ##############################################################################
-# Nano 文本编辑器速查表 (Nano Text Editor Cheatsheet)
+# nano 编辑器 速查表 (nano Editor Cheatsheet)
+# 一个简单易用的命令行文本编辑器。
 # https://github.com/funnyzak/cli-cheatsheets
 ##############################################################################
 
 # 图例 (Legend):
-#   - ^: Ctrl 键 (Control key)
-#   - M-: Meta 键 (通常是 Alt 键或 Esc 键)
-#   - RET: 回车键 (Return/Enter key)
+#   ^  代表 Ctrl 键 (e.g., ^X 表示 Ctrl+X)
+#   M- 代表 Alt 键 或 Esc 键 (e.g., M-U 表示 Alt+U 或 Esc 后按 U)
+#   [ ] 中的内容是可选的或需要替换的参数
+
+##############################################################################
+# 启动与退出 (Starting & Exiting)
+##############################################################################
+
+nano [options] [filename]       # 打开文件进行编辑 (如果文件不存在则创建)
+nano +LINE,COL [filename]       # 打开文件并跳转到指定行和列
+nano -l [filename]              # 显示行号 (或在 ~/.nanorc 中设置)
+nano -m [filename]              # 启用鼠标支持 (或在 ~/.nanorc 中设置)
+nano -i [filename]              # 启用自动缩进 (或在 ~/.nanorc 中设置)
+nano -c [filename]              # 持续显示光标位置 (或在 ~/.nanorc 中设置)
+
+^X                              # 退出 nano (会提示保存修改)
+  -> Y (Yes)                    #   确认保存
+  -> N (No)                     #   不保存退出
+  -> ^C (Cancel)                #   取消退出操作
 
 ##############################################################################
 # 文件操作 (File Operations)
 ##############################################################################
 
-^O      Write Out         # 保存当前文件 (Save current file)
-^W      Where Is          # 查找文本 (Search for text)
-^R      Read File         # 插入文件内容到当前位置 (Insert file content)
-^X      Exit              # 退出 nano (如果文件已修改会提示保存) (Exit nano, prompts to save if modified)
-M-U     Undo              # 撤销上一步操作 (Undo last action)
-M-E     Redo              # 重做上一步撤销的操作 (Redo last undone action)
+^O                              # 保存当前文件 (WriteOut)
+  -> Enter                     #   确认文件名并保存
+  -> 输入新文件名 + Enter      #   另存为新文件
+^R                              # 插入另一个文件到当前光标位置 (Read File)
+M-F                             # 切换/启用多文件缓冲区 (如果编译时支持)
+M-<                             # 切换到上一个文件缓冲区
+M->                             # 切换到下一个文件缓冲区
+
+##############################################################################
+# 导航与移动 (Navigation & Movement)
+##############################################################################
+
+# 基本移动 (Basic Movement)
+方向键                          # 上/下/左/右移动光标
+^F                              # 光标前进一个字符 (Forward)
+^B                              # 光标后退一个字符 (Backward)
+^N                              # 光标移动到下一行 (Next Line)
+^P                              # 光标移动到上一行 (Previous Line)
+^A                              # 光标移动到行首 (Start of Line)
+^E                              # 光标移动到行尾 (End of Line)
+
+# 页面滚动 (Scrolling)
+^Y                              # 向上翻页 (Page Up)
+^V                              # 向下翻页 (Page Down)
+M-\  或  Home                   # 跳转到文件开头
+M-/  或  End                    # 跳转到文件末尾
+
+# 跳转 (Jumping)
+^_  或  ^G (Get Help 菜单中选 Go to Line) # 跳转到指定行号 (或行号,列号)
+^C                              # 显示当前光标位置 (行号, 列号, 字符位置)
+M-]                             # 跳转到匹配的括号 ( ), { }, [ ]
 
 ##############################################################################
 # 编辑操作 (Editing Operations)
 ##############################################################################
 
-^K      Cut Text          # 剪切当前行或选中文本 (Cut current line or selected text)
-^U      Uncut Text        # 粘贴剪切或复制的文本 (Paste cut or copied text)
-^J      Justify           # 调整段落格式 (Wrap lines in a paragraph)
-^T      To Spell          # 拼写检查 (Spell check)
-M-^     First Screen      # 移动到第一屏 (Go to first screen)
-M-v     Last Screen       # 移动到最后一屏 (Go to last screen)
-M-]     To Bracket        # 跳转到匹配的括号 (Jump to matching bracket)
-M-3     Comment/Uncomment # 注释/取消注释当前行或选中文本 (Comment/Uncomment line or selected text)
-M-D     Describe Function # 显示光标所在位置命令的描述 (Show description of command at cursor)
+# 剪切、复制、粘贴 (Cut, Copy, Paste)
+^K                              # 剪切当前行 (或选中的文本) 到剪贴板 (Cut)
+M-^ 或 M-6                      # 复制当前行 (或选中的文本) 到剪贴板 (Copy)
+^U                              # 粘贴剪贴板内容 (Uncut / Paste)
+  (多次 ^K 会将多行累积到剪贴板)
+
+# 文本选择 (Text Selection)
+M-A                             # 开始/结束标记文本 (Mark Text)
+  (移动光标选择区域, ^K 或 M-^ 对选中区域操作)
+
+# 删除 (Deleting)
+Backspace                       # 删除光标前一个字符
+Delete                          # 删除光标处字符
+M-Backspace                     # 删除光标前一个单词
+^Delete 或 M-Delete             # 删除光标后一个单词
+^D                              # 删除光标处的字符 (同 Delete)
+
+# 撤销与重做 (Undo / Redo)
+M-U                             # 撤销上一步操作 (Undo)
+M-E                             # 重做上一步操作 (Redo)
+
+# 缩进 (Indentation)
+Tab                             # 插入 Tab 字符或空格 (根据设置)
+M-I                             # 自动缩进当前行
+M-{                             # 减少选中区域的缩进 (Unindent)
+M-}                             # 增加选中区域的缩进 (Indent)
+
+# 其他 (Others)
+^J                              # 对齐当前段落 (Justify)
+^T                              # 运行拼写检查 (需要安装 spell)
+M-J                             # 对齐整个文件 (Full Justify)
 
 ##############################################################################
-# 光标移动 (Cursor Movement)
+# 搜索与替换 (Search & Replace)
 ##############################################################################
 
-^F      Forward Char      # 向前移动一个字符 (Move forward one character)
-^B      Backward Char     # 向后移动一个字符 (Move backward one character)
-^P      Previous Line     # 移动到上一行 (Move to previous line)
-^N      Next Line         # 移动到下一行 (Move to next line)
-^A      Beginning of Line # 移动到行首 (Move to beginning of line)
-^E      End of Line       # 移动到行尾 (Move to end of line)
-^_      Go to Line        # 跳转到指定行号 (Go to line number, prompts for number)
-M-\     Beginning of Buffer # 移动到文件开头 (Move to beginning of file)
-M-/     End of Buffer     # 移动到文件末尾 (Move to end of file)
+^W                              # 搜索文本 (Where Is / Find)
+  -> 输入搜索词 + Enter         #   开始搜索
+  -> M-C                        #   切换大小写敏感 (Case Sensitive Toggle)
+  -> M-R                        #   切换正则表达式模式 (Regex Toggle)
+M-W                             # 查找下一个匹配项 (Find Next)
+
+^\  或  M-R                     # 搜索并替换 (Replace)
+  -> 输入要搜索的词 + Enter
+  -> 输入替换后的词 + Enter
+  -> A (All)                    #   替换所有匹配项
+  -> Y (Yes)                    #   替换当前匹配项并查找下一个
+  -> N (No)                     #   跳过当前匹配项并查找下一个
+  -> ^C (Cancel)                #   取消替换操作
 
 ##############################################################################
-# 查找与替换 (Search and Replace)
+# 视图与选项 (View & Options)
 ##############################################################################
 
-^W      Where Is          # 查找文本 (Search for text, same as "Find")
-M-W     Replace           # 替换文本 (Replace text, prompts for find and replace)
-M-A     Replace All       # 替换所有匹配的文本 (Replace all occurrences of text)
-
-##############################################################################
-# 其他功能 (Other Functions)
-##############################################################################
-
-^G      Get Help          # 获取帮助信息 (Display help information)
-^C      Cur Pos           # 显示当前光标位置 (Show current cursor position)
-M-G     Go to Line        # 跳转到指定行号 (Go to line number, alternative to ^_)
-M-X     Enable/Disable Help Lines # 切换帮助行显示 (Toggle help lines visibility)
-M-$     Go to Column      # 跳转到指定列号 (Go to column number)
+^G                              # 显示帮助文档 (列出常用快捷键)
+M-C                             # (在搜索提示时) 切换大小写敏感
+M-I                             # 切换自动缩进开关
+M-M                             # 切换鼠标支持开关 (如果启动时未指定)
+M-P                             # 切换显示空白字符开关 (Whitespace display)
+M-X                             # 切换帮助行显示开关 (Help line toggle)
+M-$                             # 切换软换行开关 (Soft wrap toggle)
 
 ##############################################################################
 # 实用技巧 (Tips and Tricks)
 ##############################################################################
 
-# 启用鼠标支持:
-#   nano 默认启用鼠标支持，可以在终端窗口中使用鼠标进行光标定位和选择。
+# 配置文件:
+#   用户配置文件通常位于 `~/.nanorc` 或 `~/.config/nano/nanorc`
+#   系统配置文件位于 `/etc/nanorc`
+#   可以在配置文件中设置默认选项，例如 `set autoindent`, `set mouse`, `set linenumbers`
 
-# 显示行号:
-#   使用 "-l" 或 "--linenumbers" 选项启动 nano 可以显示行号，例如: `nano -l 文件名`
+# 多次剪切:
+#   连续使用 ^K 剪切多行，它们会被合并到剪贴板中，^U 可以一次性粘贴所有剪切的行。
 
-# 使用 .nanorc 配置文件:
-#   nano 的配置文件为 ~/.nanorc，可以在其中自定义快捷键、颜色方案等。
-#   例如，设置 always show cursor 位置: `set constantshow`
-
-# 快速注释/取消注释多行 (M-3):
-#   选中多行文本后，按 M-3 可以快速注释或取消注释选中的多行。
-
-# 使用剪贴板复制粘贴:
-#   在图形界面终端中，可以使用系统剪贴板进行复制 (Ctrl+Shift+C) 和粘贴 (Ctrl+Shift+V)。
+# Esc 键替代 Alt:
+#   如果 Alt 键无效或被终端占用，可以使用 Esc 键。例如 M-U 可以按 Esc 然后再按 U。
 
 ##############################################################################
 # 示例 (Examples)
 ##############################################################################
 
-# 使用 nano 创建并编辑一个新文件:
-#   nano new_file.txt
+# 打开文件并显示行号:
+#   nano -l my_script.sh
 
-# 使用 nano 编辑一个已存在的文件:
-#   nano existing_file.txt
+# 打开配置文件并跳转到第 50 行:
+#   nano +50 /etc/nginx/nginx.conf
 
-# 使用 nano 打开文件并显示行号:
-#   nano -l another_file.txt
-
-# 在 nano 中查找关键词 "example":
-#   1. 按下 ^W (Where Is)
-#   2. 输入 "example" 并按 RET
-
-# 在 nano 中将 "old_text" 替换为 "new_text":
-#   1. 按下 M-W (Replace)
-#   2. 输入 "old_text" 并按 RET (Find what to replace)
-#   3. 输入 "new_text" 并按 RET (Replace with)
+# 不保存直接退出:
+#   ^X 然后按 N
 
 ##############################################################################
 # 鸣谢 & 更多资源 (Credit & Further Resources)
 ##############################################################################
 
 # GNU nano 官方网站: https://www.nano-editor.org/
-# nano 官方文档: https://www.nano-editor.org/docs/
-# nano 快捷键列表 (英文): https://www.nano-editor.org/dist/latest/nano.html
+# nano 手册页: man nano
 
-# vim: set ts=4 sw=4 tw=0 et ft=text :
+# vim: set ts=4 sw=4 tw=0 et ft=bash :
