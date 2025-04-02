@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
 # cheatsheet.sh - 命令行速查表工具
-# GitHub: funnyzak
+# https://github.com/funnyzak/cli-cheatsheets
+# 
+# 此脚本用于快速查询常用命令的速查表，你可以通过命令行或交互式菜单来查看不同命令的速查表。
+#
+# 代码有完整的注释，你可以根据需要进行修改和扩展，或者提交PR来贡献你的修改。
 #
 # 本地执行:
 #   chmod +x cheatsheet.sh
@@ -48,6 +52,21 @@ COMMAND_DESCRIPTIONS["gradle"]="Gradle 构建工具"
 COMMAND_CATEGORIES["mvn"]="build"
 COMMAND_DESCRIPTIONS["mvn"]="Maven 构建工具"
 
+COMMAND_CATEGORIES["vite"]="build"
+COMMAND_DESCRIPTIONS["vite"]="前端构建工具"
+
+COMMAND_CATEGORIES["webpack"]="build"
+COMMAND_DESCRIPTIONS["webpack"]="前端构建工具"
+
+COMMAND_CATEGORIES["xcodebuild"]="build"
+COMMAND_DESCRIPTIONS["xcodebuild"]="Xcode 构建工具"
+
+COMMAND_CATEGORIES["flutter"]="build"
+COMMAND_DESCRIPTIONS["flutter"]="Flutter 开发框架"
+
+COMMAND_CATEGORIES["react-native"]="build"
+COMMAND_DESCRIPTIONS["react-native"]="React Native 开发框架"
+
 # 数据库类命令
 COMMAND_CATEGORIES["mongo"]="database"
 COMMAND_DESCRIPTIONS["mongo"]="MongoDB 客户端"
@@ -85,6 +104,8 @@ COMMAND_DESCRIPTIONS["rclone"]="云存储同步工具"
 COMMAND_CATEGORIES["rsync"]="cloud"
 COMMAND_DESCRIPTIONS["rsync"]="远程文件同步工具"
 
+COMMAND_CATEGORIES["ossutil"]="cloud"
+COMMAND_DESCRIPTIONS["ossutil"]="阿里云对象存储工具"
 
 # 媒体处理类命令
 COMMAND_CATEGORIES["ffmpeg"]="media"
@@ -199,6 +220,12 @@ COMMAND_DESCRIPTIONS["php"]="PHP 运行时"
 
 COMMAND_CATEGORIES["python"]="runtime"
 COMMAND_DESCRIPTIONS["python"]="Python 运行时"
+
+COMMAND_CATEGORIES["venv"]="runtime"
+COMMAND_DESCRIPTIONS["venv"]="Python 虚拟环境"
+
+COMMAND_CATEGORIES["dotnet"]="runtime"
+COMMAND_DESCRIPTIONS["dotnet"]="DotNet 运行时"
 
 
 # 安全工具类命令
@@ -421,6 +448,14 @@ COMMAND_DESCRIPTIONS["caddy"]="Caddy Web 服务器"
 COMMAND_CATEGORIES["nginx"]="webserver"
 COMMAND_DESCRIPTIONS["nginx"]="NGINX Web 服务器"
 
+# 通知工具类命令
+COMMAND_CATEGORIES["apprise"]="notification"
+COMMAND_DESCRIPTIONS["apprise"]="通知工具"
+
+# 其他命令
+COMMAND_CATEGORIES["tldr"]="tools"
+COMMAND_DESCRIPTIONS["tldr"]="简化的命令行速查表"
+
 
 # 临时目录，用于缓存命令速查表
 CACHE_DIR="${CLI_CHEATSHEET_CACHE_DIR:-/tmp/cheatsheet_cache}"
@@ -434,7 +469,7 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m' # 无色
 
-# 函数：显示帮助信息
+# 显示帮助信息
 show_help() {
   echo -e "${CYAN}命令行速查表工具${NC} - 快速查询常用命令的速查手册"
   echo ""
@@ -458,10 +493,9 @@ show_help() {
   echo ""
 }
 
-# 函数：检测最佳URL前缀
+# 检测最佳URL前缀
 detect_best_url() {
   local timeout=3
-  # 尝试连接中国区URL
   if curl -s --connect-timeout "$timeout" "$CN_URL" >/dev/null 2>&1; then
     echo "$CN_URL"
   else
@@ -469,7 +503,7 @@ detect_best_url() {
   fi
 }
 
-# 函数：列出所有支持的命令
+# 列出所有支持的命令
 list_commands() {
   echo -e "${CYAN}支持的命令列表:${NC}"
   echo ""

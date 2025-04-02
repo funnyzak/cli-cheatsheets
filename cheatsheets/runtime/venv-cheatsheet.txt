@@ -1,0 +1,114 @@
+##############################################################################
+# Python venv 速查表 (Python venv Cheatsheet)
+# 用于创建和管理 Python 虚拟环境
+# Creating and managing Python virtual environments
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - VENV_DIR:  虚拟环境目录路径 (Virtual Environment Directory Path)
+
+##############################################################################
+# 创建虚拟环境 (Creating Virtual Environments)
+##############################################################################
+
+python3 -m venv VENV_DIR                      # 创建虚拟环境 (推荐方式)
+python -m venv VENV_DIR                       # 创建虚拟环境 (如果 python3 不可用)
+# 提示:
+#   - 推荐使用 `python3 -m venv` 确保使用正确的 Python 版本
+#   - VENV_DIR 可以是相对路径或绝对路径，例如: `my_venv` 或 `/path/to/my_venv`
+
+##############################################################################
+# 激活和停用虚拟环境 (Activating and Deactivating Virtual Environments)
+##############################################################################
+
+# Linux / macOS:
+source VENV_DIR/bin/activate                 # 激活虚拟环境 (当前 Shell)
+deactivate                                  # 停用虚拟环境
+
+# Windows (CMD):
+VENV_DIR\Scripts\activate.bat                # 激活虚拟环境 (当前 CMD)
+VENV_DIR\Scripts\deactivate.bat              # 停用虚拟环境
+
+# Windows (PowerShell):
+VENV_DIR\Scripts\Activate.ps1                # 激活虚拟环境 (当前 PowerShell)
+VENV_DIR\Scripts\Deactivate.ps1              # 停用虚拟环境
+
+# 提示:
+#   - 激活后，Shell 提示符前会显示虚拟环境名称 (VENV_DIR)
+#   - `deactivate` 命令在任何平台通用，用于停用虚拟环境
+
+##############################################################################
+# 管理虚拟环境中的包 (Managing Packages in Virtual Environment)
+##############################################################################
+
+# 确保先激活虚拟环境! (重要)
+# Make sure the virtual environment is activated first! (Important)
+
+pip install <package_name>                    # 安装包到虚拟环境
+pip install -r requirements.txt               # 从 requirements.txt 安装包
+pip uninstall <package_name>                  # 从虚拟环境卸载包
+pip list                                    # 列出虚拟环境已安装的包
+pip freeze > requirements.txt                 # 生成 requirements.txt (当前环境包列表)
+
+# 提示:
+#   - 所有 `pip` 命令需要在虚拟环境激活后执行，以隔离项目依赖
+#   - `requirements.txt` 用于记录项目依赖，方便环境复用和部署
+
+##############################################################################
+# 删除虚拟环境 (Deleting Virtual Environments)
+##############################################################################
+
+# Linux / macOS:
+rm -rf VENV_DIR                              # 彻底删除虚拟环境目录
+
+# Windows:
+rmdir /s /q VENV_DIR                         # 彻底删除虚拟环境目录 (CMD)
+# 或直接在文件管理器中删除 VENV_DIR 目录
+
+# 警告:
+#   - 删除虚拟环境是不可逆操作，请谨慎操作！
+#   - 删除后需重新创建和安装依赖
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 虚拟环境隔离性:
+#   - 虚拟环境之间相互隔离，项目依赖不会互相干扰
+#   - 系统 Python 环境不受虚拟环境影响，保持干净
+
+# requirements.txt 的使用:
+#   - 推荐使用 `requirements.txt` 管理项目依赖
+#   - 方便团队协作，环境迁移，持续集成等
+
+# 快速创建并激活虚拟环境:
+#   mkdir my_project && cd my_project && python3 -m venv venv && source venv/bin/activate
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 创建名为 "my_venv" 的虚拟环境并激活 (Linux/macOS):
+#   python3 -m venv my_venv
+#   source my_venv/bin/activate
+
+# 2. 安装 requests 包并生成 requirements.txt:
+#   pip install requests
+#   pip freeze > requirements.txt
+
+# 3. 基于 requirements.txt 重建虚拟环境 (在新机器或环境):
+#   python3 -m venv new_venv
+#   source new_venv/bin/activate
+#   pip install -r requirements.txt
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Python 官方 venv 文档:
+# https://docs.python.org/3/library/venv.html
+# pip 官方文档:
+# https://pip.pypa.io/en/stable/
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

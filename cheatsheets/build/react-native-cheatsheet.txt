@@ -1,0 +1,182 @@
+##############################################################################
+# React Native CLI 速查表 (React Native CLI Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+#
+# 适用于 React Native CLI (包括 npx react-native)
+# Note: Some commands might differ slightly between RN versions and OS.
+# Always check `react-native --help` or `react-native <command> --help`.
+##############################################################################
+
+# 图例 / 术语 (Legend / Terminology):
+#   - PROJECT_NAME:  你的项目名称 (Your project name)
+#   - PLATFORM:      目标平台 (ios or android)
+#   - DEVICE_NAME:   设备名称 (e.g., "iPhone 14 Pro", specific simulator name)
+#   - DEVICE_ID:     物理设备 UDID 或 adb 设备 ID (Physical device UDID or adb device ID)
+#   - SCHEME:        iOS 构建方案 (iOS build scheme, e.g., "Debug", "Release")
+#   - VARIANT:       Android 构建变体 (Android build variant, e.g., "debug", "release")
+#   - PORT:          Metro Bundler 端口号 (Metro Bundler port number, default: 8081)
+#   - ENTRY_FILE:    JS 入口文件路径 (JS entry file path, default: index.js)
+#   - BUNDLE_OUTPUT: JS Bundle 输出文件路径 (JS Bundle output file path)
+#   - ASSETS_DEST:   资源文件输出目录 (Assets output directory)
+#   - NPM_PKG:       NPM 包名 (NPM package name)
+
+##############################################################################
+# 项目初始化与信息 (Project Initialization & Info)
+##############################################################################
+
+# 使用 npx (推荐, 无需全局安装)
+npx react-native init PROJECT_NAME [--version X.Y.Z] [--template template-name]
+#                                             # 初始化新项目 (指定版本/模板)
+npx react-native info                         # 显示环境信息 (RN, Node, npm/yarn, OS, SDKs)
+npx react-native doctor                       # 检查环境配置问题 (非常有用!)
+npx react-native config                       # 输出项目配置信息 (JSON)
+
+# 如果全局安装 (不推荐)
+# react-native init PROJECT_NAME ... (同上)
+# react-native info
+# react-native doctor
+# react-native config
+
+##############################################################################
+# 运行应用 (Running the App)
+##############################################################################
+
+# 启动 Metro Bundler (JS 打包服务)
+npx react-native start [--port PORT] [--reset-cache]
+#                                             # 启动开发服务器 (可选: 指定端口, 清除缓存)
+
+# 运行 iOS 应用
+npx react-native run-ios [--simulator DEVICE_NAME] [--device DEVICE_NAME | --udid DEVICE_ID] [--scheme SCHEME] [--configuration Release] [--port PORT]
+#                                             # 在模拟器或设备上运行 (默认 Debug)
+#                                             # --simulator: 指定模拟器 (e.g., "iPhone 14")
+#                                             # --device: 指定设备名 或 --udid: 指定设备ID
+#                                             # --configuration Release: 构建并运行 Release 版本
+#                                             # --scheme: 指定 Xcode scheme
+
+# 运行 Android 应用
+npx react-native run-android [--variant VARIANT] [--deviceId DEVICE_ID] [--port PORT] [--main-activity MainActivity]
+#                                             # 在模拟器或设备上运行 (默认 Debug)
+#                                             # --variant: 指定构建变体 (e.g., "release")
+#                                             # --deviceId: 指定 adb 设备 ID
+#                                             # --main-activity: 指定启动的 Activity
+
+##############################################################################
+# 构建应用 (Building the App - Often done via run-* with release flags)
+##############################################################################
+
+# 注意: 'build' 命令本身不存在于核心 CLI, 构建通常通过 run-* 或原生工具链完成
+# Note: A dedicated 'build' command isn't standard. Builds are often triggered
+#       via `run-ios --configuration Release` or `run-android --variant release`,
+#       or directly using Xcode / Android Studio / Gradle.
+
+# (参考 '运行应用' 部分的 Release/Variant 选项)
+# (Refer to Release/Variant options in the 'Running the App' section)
+
+# 手动打包 JS 和资源 (Manual Bundling)
+npx react-native bundle --platform PLATFORM --dev [true|false] --entry-file ENTRY_FILE --bundle-output BUNDLE_OUTPUT --assets-dest ASSETS_DEST
+#                                             # 创建 JS Bundle 和资源文件
+#                                             # --platform: ios 或 android
+#                                             # --dev false: 创建生产环境 bundle (重要!)
+#                                             # --entry-file: 指定入口 JS (默认 index.js)
+#                                             # --bundle-output: JS bundle 输出路径
+#                                             # --assets-dest: 资源文件输出目录
+
+##############################################################################
+# 依赖管理 (Dependency Management)
+##############################################################################
+
+# 对于 >= 0.60 版本, 自动链接是默认行为 (Autolinking is default for >= 0.60)
+# 对于 < 0.60 或需要手动链接的库 (For < 0.60 or libs needing manual linking)
+npx react-native link [NPM_PKG]               # 链接原生依赖 (全部或指定包)
+npx react-native unlink [NPM_PKG]             # 取消链接原生依赖 (全部或指定包)
+
+# 添加/删除 JS 依赖通常使用 npm 或 yarn
+# Adding/Removing JS dependencies is typically done via npm or yarn:
+#   npm install NPM_PKG / yarn add NPM_PKG
+#   npm uninstall NPM_PKG / yarn remove NPM_PKG
+
+##############################################################################
+# 调试与日志 (Debugging & Logging)
+##############################################################################
+
+npx react-native log-ios                      # 显示 iOS 设备/模拟器日志
+npx react-native log-android                  # 显示 Android 设备/模拟器日志 (adb logcat)
+
+# 调试菜单 (Debug Menu):
+#   - iOS Simulator: Cmd + D
+#   - iOS Device: Shake device
+#   - Android Emulator: Cmd + M (macOS) / Ctrl + M (Windows/Linux)
+#   - Android Device: Shake device or run `adb shell input keyevent 82`
+
+# 常用调试操作 (Common Debug Actions):
+#   - Reload: R R (iOS Sim), Double tap R (Android)
+#   - Enable/Disable Fast Refresh
+#   - Debug JS Remotely (Opens Chrome Debugger)
+#   - Show Element Inspector
+
+# 使用 Flipper (推荐的调试平台): https://fbflipper.com/
+
+##############################################################################
+# 项目升级 (Project Upgrading)
+##############################################################################
+
+npx react-native upgrade [--legacy]           # 尝试自动升级项目文件到最新 RN 版本
+#                                             # --legacy: 使用旧版升级流程
+# (升级后务必检查和解决冲突 / Review and resolve conflicts after upgrading)
+# RN Upgrade Helper Tool: https://react-native-community.github.io/upgrade-helper/
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 清除缓存并重启 Bundler:
+#   npx react-native start --reset-cache
+
+# 清除 iOS 构建缓存:
+#   cd ios && xcodebuild clean && cd ..
+#   rm -rf ~/Library/Developer/Xcode/DerivedData
+
+# 清除 Android 构建缓存:
+#   cd android && ./gradlew clean && cd ..
+#   rm -rf ~/.gradle/caches/
+
+# 强制重新安装 Pods (iOS):
+#   cd ios && rm -rf Pods Podfile.lock && pod install && cd ..
+
+# 检查连接的 Android 设备:
+#   adb devices
+
+# 运行特定 Android 任务:
+#   cd android && ./gradlew <taskName>
+
+# 使用 npx 避免全局安装冲突:
+#   总是使用 `npx react-native <command>`
+
+# 快速检查环境:
+#   npx react-native doctor
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 创建新项目并运行在 iOS 模拟器上:
+#    npx react-native init MyNewApp
+#    cd MyNewApp
+#    npx react-native run-ios --simulator="iPhone 14"
+
+# 2. 运行现有项目在连接的 Android 设备上 (Release 模式):
+#    cd ExistingApp
+#    npx react-native run-android --variant release --deviceId <your-device-id>
+#    # (确保 Metro bundler 在另一个终端运行: npx react-native start)
+
+# 3. 为 Android 生成生产环境 JS Bundle:
+#    npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output ./android/app/src/main/assets/index.android.bundle --assets-dest ./android/app/src/main/res/
+
+##############################################################################
+# 更多资源 (Further Resources)
+##############################################################################
+
+# React Native CLI 文档: https://reactnative.dev/docs/environment-setup (选择 React Native CLI Quickstart)
+# React Native 核心组件和 API: https://reactnative.dev/docs/getting-started
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

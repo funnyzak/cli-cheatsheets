@@ -1,0 +1,154 @@
+##############################################################################
+# xcodebuild 命令速查表 (xcodebuild Cheatsheet)
+# 用于构建、测试、分析和归档 Xcode 项目和工作空间的命令行工具。
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 / 术语 (Legend / Terminology):
+#   PROJECT:     Xcode 项目文件 (.xcodeproj)
+#   TARGET:      项目中要构建的特定产品
+#   WORKSPACE:   Xcode 工作空间文件 (.xcworkspace)
+#   SCHEME:      定义项目/工作空间中目标的构建/测试/分析/归档配置
+#   CONFIGURATION: 构建配置 (例如: Debug, Release)
+#   SDK:         目标 SDK (例如: macosx, iphonesimulator, iphoneos)
+#   DESTINATION: 指定用于构建或测试的设备/模拟器/Mac。格式: 'key=value,...'
+#                键: platform, name, id, OS
+#   ACTION:      要执行的任务 (build, test, clean, archive 等)
+#   SETTING=VALUE: 覆盖构建设置
+
+##############################################################################
+# 基本操作 (Basic Actions)
+##############################################################################
+
+xcodebuild build                              # 构建默认方案/目标
+xcodebuild clean                              # 清理构建产物
+xcodebuild test                               # 为默认方案构建并运行测试
+xcodebuild analyze                            # 执行静态分析
+xcodebuild archive                            # 创建归档 (.xcarchive)
+xcodebuild build-for-testing                  # 构建产品和测试包，但不运行测试
+xcodebuild test-without-building              # 使用之前构建的产品运行测试
+
+# 提示: 操作通常可以组合使用，例如 `xcodebuild clean build`
+
+##############################################################################
+# 指定目标 (Specifying Targets)
+##############################################################################
+
+# --- 使用项目/目标 (对于具有依赖项的现代项目不太常用) ---
+xcodebuild -project PROJECT.xcodeproj -target TARGET build
+xcodebuild -project PROJECT.xcodeproj -list   # 列出项目中的目标、构建配置和方案
+
+# --- 使用工作空间/方案 (推荐用于使用 CocoaPods, SPM 等的项目) ---
+xcodebuild -workspace WORKSPACE.xcworkspace -scheme SCHEME build
+xcodebuild -workspace WORKSPACE.xcworkspace -list # 列出工作空间中的方案
+
+# 提示: 如果目录中只存在一个工作空间/项目，可以省略 -workspace/-project。
+# 提示: -scheme 通常是指定要构建/测试内容的首选方式。
+
+##############################################################################
+# 配置和 SDK (Configuration and SDK)
+##############################################################################
+
+xcodebuild -scheme SCHEME -configuration Release build  # 使用"Release"配置进行构建
+xcodebuild -scheme SCHEME -sdk iphonesimulator build    # 使用 iOS 模拟器 SDK 进行构建
+xcodebuild -showsdks                          # 列出可用的 SDK
+
+##############################################################################
+# 指定目标设备/模拟器 (Specifying Destination)
+##############################################################################
+
+# 格式: -destination 'key1=value1,key2=value2,...'
+# 常用键: platform, name, id, OS
+
+xcodebuild test -scheme SCHEME -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=latest'
+xcodebuild test -scheme SCHEME -destination 'platform=macOS,arch=x86_64'
+xcodebuild test -scheme SCHEME -destination 'id=DEVICE_UDID'  # 在特定连接的设备上测试
+xcodebuild build -scheme SCHEME -destination 'generic/platform=iOS' # 为通用 iOS 设备构建
+
+xcodebuild -showdestinations -scheme SCHEME  # 列出方案的可用目标设备
+
+##############################################################################
+# 构建设置覆盖 (Build Settings Override)
+##############################################################################
+
+# 在命令行末尾附加 SETTING=VALUE 对
+
+xcodebuild build -scheme SCHEME CONFIGURATION_BUILD_DIR=./my_build_output
+xcodebuild build -scheme SCHEME GCC_PREPROCESSOR_DEFINITIONS='DEBUG=1 COCOAPODS=1'
+xcodebuild build -scheme SCHEME SWIFT_ACTIVE_COMPILATION_CONDITIONS=MYFLAG
+
+##############################################################################
+# 测试选项 (Testing Options)
+##############################################################################
+
+xcodebuild test -scheme SCHEME -destination DESTINATION -enableCodeCoverage YES
+xcodebuild test -scheme SCHEME -destination DESTINATION -testPlan MyTestPlan
+xcodebuild test -scheme SCHEME -destination DESTINATION -only-testing Target/TestSuite/TestCase
+xcodebuild test -scheme SCHEME -destination DESTINATION -skip-testing Target/TestSuite/TestCase
+
+##############################################################################
+# 归档选项 (Archiving Options)
+##############################################################################
+
+xcodebuild archive -scheme SCHEME -archivePath ./MyOutput/MyApp.xcarchive
+
+# 导出归档 (创建后):
+# xcodebuild -exportArchive -archivePath ./MyOutput/MyApp.xcarchive -exportPath ./MyOutput/ExportedApp -exportOptionsPlist ExportOptions.plist
+# (需要一个 ExportOptions.plist 文件指定签名、方法等)
+
+##############################################################################
+# 输出控制 (Output Control)
+##############################################################################
+
+xcodebuild ... -quiet                         # 禁止状态消息，只显示警告/错误
+xcodebuild ... -verbose                       # 提供额外的状态输出
+xcodebuild ... -resultBundlePath ./TestResults # 指定测试结果包的保存位置
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 美化输出 (需要 xcpretty: gem install xcpretty)
+#   xcodebuild ... | xcpretty
+#   xcodebuild ... | xcpretty -s               # 简化输出
+#   xcodebuild ... | xcpretty -c               # 彩色输出
+#   set -o pipefail && xcodebuild ... | xcpretty # 确保捕获构建失败
+
+# 查找方案:
+#   xcodebuild -list -project YourApp.xcodeproj
+#   xcodebuild -list -workspace YourApp.xcworkspace
+
+# 查找 SDK:
+#   xcodebuild -showsdks
+
+# 查找方案的目标设备:
+#   xcodebuild -showdestinations -scheme YourScheme
+
+# 传递包含空格的设置:
+#   xcodebuild ... "MY_SETTING=Value with spaces"
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 清理并在 Release 配置下为 macOS 构建 'MyApp' 方案
+#    xcodebuild clean build -workspace MyApp.xcworkspace -scheme MyApp -configuration Release -sdk macosx
+
+# 2. 在最新的 iPhone 14 模拟器上运行 'MyAppTests' 方案的测试
+#    xcodebuild test -workspace MyApp.xcworkspace -scheme MyAppTests -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
+
+# 3. 归档 'MyApp' 方案并保存到特定路径
+#    xcodebuild archive -workspace MyApp.xcworkspace -scheme MyApp -archivePath ./build/MyApp.xcarchive
+
+# 4. 构建 'MyFramework' 方案并覆盖 Swift 版本
+#    xcodebuild build -scheme MyFramework SWIFT_VERSION=5.0
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Apple 开发者文档: 在终端中输入 `man xcodebuild`
+# Xcode 构建设置参考: https://developer.apple.com/documentation/xcode/build-settings-reference
+# xcpretty: https://github.com/xcpretty/xcpretty
+
+# vim: set ts=4 sw=4 tw=0 et ft=sh :

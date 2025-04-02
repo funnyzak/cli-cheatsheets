@@ -1,0 +1,228 @@
+##############################################################################
+# .NET CLI 速查表 (dotnet Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+#
+# 适用于 .NET Core / .NET 5+ 的命令行接口工具。
+# Command-line interface (CLI) toolset for .NET Core / .NET 5+.
+##############################################################################
+
+# 图例 (Legend):
+#   - PROJECT:    项目文件路径 (.csproj, .fsproj, .vbproj) 或包含项目的目录
+#                 (Path to project file or directory containing one)
+#   - SOLUTION:   解决方案文件路径 (.sln) 或包含解决方案的目录
+#                 (Path to solution file or directory containing one)
+#   - TEMPLATE:   项目模板的短名称 (e.g., console, webapi, classlib)
+#                 (Short name of the project template)
+#   - PACKAGE_ID: NuGet 包的 ID (e.g., Newtonsoft.Json)
+#                 (ID of the NuGet package)
+#   - VERSION:    NuGet 包的版本号 (e.g., 13.0.1)
+#                 (Version of the NuGet package)
+#   - FRAMEWORK:  目标框架名字对象 (TFM) (e.g., net8.0, netstandard2.0)
+#                 (Target Framework Moniker)
+#   - RUNTIME:    运行时标识符 (RID) (e.g., linux-x64, win-x64, osx-arm64)
+#                 (Runtime Identifier)
+#   - OUTPUT_DIR: 输出目录路径
+#                 (Output directory path)
+#   - CONFIG:     构建配置 (e.g., Debug, Release)
+#                 (Build configuration)
+#   - TOOL_ID:    .NET 工具的包 ID
+#                 (Package ID of the .NET tool)
+#   - [arg]:      可选参数 (Optional argument)
+
+##############################################################################
+# 核心命令 (Core Commands)
+##############################################################################
+
+dotnet --version                              # 显示 .NET SDK 版本
+dotnet --info                                 # 显示 .NET 环境信息 (SDKs, Runtimes)
+dotnet --list-sdks                            # 列出已安装的 SDK
+dotnet --list-runtimes                        # 列出已安装的运行时
+dotnet help [command]                         # 显示帮助信息 (全局或特定命令)
+
+##############################################################################
+# 项目创建与管理 (Project Creation & Management)
+##############################################################################
+
+dotnet new list                               # 列出所有可用的项目模板
+dotnet new search <SEARCH_STRING>             # 搜索在线模板
+dotnet new <TEMPLATE> -n <NAME> -o <DIR>      # 创建新项目 (指定模板, 名称, 输出目录)
+dotnet new <TEMPLATE> --use-program-main      # (ASP.NET Core) 使用 Program.Main 而非 top-level statements
+dotnet new globaljson [--sdk-version <VER>]   # 创建 global.json 文件以固定 SDK 版本
+
+dotnet restore [PROJECT|SOLUTION]             # 还原项目/解决方案的依赖项 (NuGet 包)
+dotnet build [PROJECT|SOLUTION]               # 构建项目/解决方案
+dotnet run [--project PROJECT]                # 运行项目 (通常需要指定 --project)
+dotnet watch run [--project PROJECT]          # 运行项目并在文件更改时自动重新加载
+dotnet clean [PROJECT|SOLUTION]               # 清理构建输出
+
+# 常用构建/运行选项 (Common Build/Run Options):
+#   -c, --configuration <CONFIG>              # 指定构建配置 (Debug/Release)
+#   -f, --framework <FRAMEWORK>               # 针对特定框架构建/运行
+#   --no-restore                              # 构建/运行时不隐式执行还原
+#   --runtime <RUNTIME>                       # (配合 publish 或 self-contained run) 指定目标运行时
+
+##############################################################################
+# 包管理 (Package Management - NuGet)
+##############################################################################
+
+# 在指定项目中操作 (Operate within the specified project)
+dotnet add <PROJECT> package <PACKAGE_ID>     # 添加 NuGet 包
+dotnet add <PROJECT> package <PACKAGE_ID> -v <VERSION> # 添加指定版本的 NuGet 包
+dotnet remove <PROJECT> package <PACKAGE_ID>  # 移除 NuGet 包
+dotnet list <PROJECT> package                 # 列出项目引用的 NuGet 包
+dotnet list <PROJECT> package --outdated      # 列出可更新的包
+dotnet list <PROJECT> package --vulnerable    # 列出包含已知漏洞的包
+
+##############################################################################
+# 项目引用管理 (Project Reference Management)
+##############################################################################
+
+# 在指定项目中操作 (Operate within the specified project)
+dotnet add <PROJECT> reference <OTHER_PROJECT> # 添加项目引用
+dotnet remove <PROJECT> reference <OTHER_PROJECT> # 移除项目引用
+dotnet list <PROJECT> reference               # 列出项目引用
+
+##############################################################################
+# 解决方案管理 (Solution Management)
+##############################################################################
+
+dotnet new sln -n <SOLUTION_NAME>             # 创建新的解决方案文件
+dotnet sln list                               # 列出解决方案中的项目
+dotnet sln add <PROJECT_PATH(s)>              # 将一个或多个项目添加到解决方案
+dotnet sln remove <PROJECT_PATH(s)>           # 从解决方案中移除一个或多个项目
+
+##############################################################################
+# 发布应用程序 (Publishing Applications)
+##############################################################################
+
+dotnet publish [PROJECT|SOLUTION]             # 发布应用程序
+# 常用发布选项 (Common Publish Options):
+#   -c, --configuration <CONFIG>              # 指定配置 (通常是 Release)
+#   -f, --framework <FRAMEWORK>               # 指定目标框架
+#   -r, --runtime <RUNTIME>                   # 发布特定运行时的自包含应用或框架依赖应用
+#   -o, --output <OUTPUT_DIR>                 # 指定输出目录
+#   --self-contained [true|false]             # 是否发布为自包含应用 (包含 .NET 运行时)
+#   --no-build                                # 不执行构建，直接发布 (需先 build)
+#   --no-restore                              # 不执行还原
+#   -p:PublishSingleFile=true                 # 发布为单文件可执行程序
+#   -p:PublishTrimmed=true                    # 裁剪未使用的程序集 (需要小心测试)
+#   -p:PublishAot=true                        # (需要 .NET 7+) 启用 Native AOT 发布
+
+##############################################################################
+# 测试 (Testing)
+##############################################################################
+
+dotnet test [PROJECT|SOLUTION|TEST_DLL]       # 运行测试项目中的测试
+# 常用测试选项 (Common Test Options):
+#   -c, --configuration <CONFIG>
+#   -f, --framework <FRAMEWORK>
+#   --no-build                                # 不构建，直接运行测试 (需先 build)
+#   --no-restore
+#   --filter <EXPRESSION>                     # 筛选要运行的测试 (e.g., "FullyQualifiedName~MyNamespace")
+#   --logger <LOGGER>                         # 指定测试记录器 (e.g., "trx;LogFileName=test_results.trx")
+#   --collect:"XPlat Code Coverage"           # 收集代码覆盖率 (需要 coverlet.collector 包)
+
+##############################################################################
+# .NET 工具管理 (Tool Management)
+##############################################################################
+
+dotnet tool install <TOOL_ID> -g              # 安装全局工具
+dotnet tool install <TOOL_ID> --local         # 安装本地工具 (需要 manifest 文件)
+dotnet tool install <TOOL_ID> --tool-path <PATH> # 安装到指定路径
+
+dotnet tool update <TOOL_ID> -g               # 更新全局工具
+dotnet tool update <TOOL_ID> --local          # 更新本地工具
+
+dotnet tool list -g                           # 列出已安装的全局工具
+dotnet tool list --local                      # 列出本地工具
+
+dotnet tool uninstall <TOOL_ID> -g            # 卸载全局工具
+dotnet tool uninstall <TOOL_ID> --local       # 卸载本地工具
+
+dotnet tool run <TOOL_COMMAND> --local        # 运行本地工具
+
+# 本地工具清单 (Local Tool Manifest)
+dotnet new tool-manifest                      # 在当前目录创建本地工具清单文件 (.config/dotnet-tools.json)
+
+##############################################################################
+# Entity Framework Core 工具 (EF Core Tools)
+# 需要安装 dotnet-ef 工具: dotnet tool install --global dotnet-ef
+##############################################################################
+
+dotnet ef migrations add <MIGRATION_NAME>     # 添加新的数据库迁移
+dotnet ef migrations list                     # 列出可用的迁移
+dotnet ef migrations remove                   # 移除最后一次添加的迁移
+dotnet ef database update [<TARGET_MIGRATION>] # 将数据库更新到最新或指定迁移
+dotnet ef database drop                       # 删除数据库 (危险操作!)
+dotnet ef dbcontext info                      # 显示 DbContext 类型信息
+dotnet ef dbcontext scaffold "<CONN_STR>" <PROVIDER> -o <DIR> # 从现有数据库生成代码
+
+# 常用 EF Core 选项 (Common EF Core Options):
+#   --project <PROJECT>                       # 包含 DbContext 的项目
+#   --startup-project <PROJECT>               # 用于构建和运行的项目 (通常是 Web/API 项目)
+#   --context <DBCONTEXT_CLASS>               # 如果有多个 DbContext，指定一个
+#   -v, --verbose                             # 显示详细输出
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 global.json 文件锁定项目使用的 .NET SDK 版本
+#   dotnet new globaljson --sdk-version 8.0.100 --roll-forward latestFeature
+
+# 许多命令 (run, test, publish) 会隐式执行 restore 和 build。
+#   使用 --no-restore 或 --no-build 跳过这些步骤。
+
+# 几乎所有命令都支持 -h 或 --help 获取详细用法。
+#   dotnet build -h
+#   dotnet publish --help
+
+# 在 Linux/macOS 上为 dotnet CLI 命令启用 Tab 自动补全。
+#   (具体方法依赖于你的 Shell, 通常涉及注册脚本)
+
+# 组合使用命令和选项进行复杂操作。
+#   dotnet publish -c Release -r linux-x64 --self-contained true -o ./publish/linux
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 创建、构建和运行一个新的控制台应用程序
+#   dotnet new console -n MyConsoleApp -o ./MyConsoleApp
+#   cd MyConsoleApp
+#   dotnet build
+#   dotnet run
+
+# 2. 在解决方案中添加类库和 Web API 项目，并添加引用
+#   dotnet new sln -n MySolution
+#   dotnet new classlib -n MyLibrary -o ./MyLibrary
+#   dotnet new webapi -n MyApi -o ./MyApi
+#   dotnet sln add ./MyLibrary/MyLibrary.csproj ./MyApi/MyApi.csproj
+#   dotnet add ./MyApi/MyApi.csproj reference ./MyLibrary/MyLibrary.csproj
+#   dotnet build MySolution.sln
+
+# 3. 发布一个自包含的 Linux x64 应用
+#   dotnet publish ./MyApi/MyApi.csproj -c Release -r linux-x64 --self-contained true -o ./publish_output
+
+# 4. 为 EF Core 添加迁移并更新数据库
+#   # (假设已安装 dotnet-ef 且项目配置正确)
+#   dotnet ef migrations add InitialCreate --project ./MyDataLayer --startup-project ./MyApi
+#   dotnet ef database update --project ./MyDataLayer --startup-project ./MyApi
+
+##############################################################################
+# 更多资源 (Further Resources)
+##############################################################################
+
+# .NET CLI 官方文档 (Official .NET CLI Documentation):
+# https://docs.microsoft.com/en-us/dotnet/core/tools/
+
+# .NET CLI 模板 (Templates):
+# https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new
+
+# .NET CLI 发布选项 (Publishing Options):
+# https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish
+
+# EF Core Tools Reference (.NET CLI):
+# https://docs.microsoft.com/en-us/ef/core/cli/dotnet
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :
