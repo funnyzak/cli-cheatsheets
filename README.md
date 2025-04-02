@@ -69,27 +69,28 @@ cs -l
 cs -h
 ```
 
+
 <details>
 <summary>让别名支持交互式菜单</summary>
-如果你希望别名支持交互式菜单，可以使用以下命令：
+  如果你希望别名支持交互式菜单，可以使用以下命令：
 
-```bash
-alias cs='() {
-  local tmpfile=$(mktemp)
-  curl -sSL "https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh" -o "$tmpfile" && chmod +x "$tmpfile" && "$tmpfile" "$@" && rm -f "$tmpfile"
-}'
-```
-配置完成后，然后执行 `source ~/.bashrc` 或 `source ~/.zshrc` 使配置生效。
+  ```bash
+  alias cs='() {
+    local tmpfile=$(mktemp)
+    curl -sSL "https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh" -o "$tmpfile" && chmod +x "$tmpfile" && "$tmpfile" "$@" && rm -f "$tmpfile"
+  }'
+  ```
+  配置完成后，然后执行 `source ~/.bashrc` 或 `source ~/.zshrc` 使配置生效。
 
 
-如果不方便访问 `raw.githubusercontent.com`，可以使用以下命令，使用 `Gitee` 的镜像地址：
+  如果不方便访问 `raw.githubusercontent.com`，可以使用以下命令，使用 `Gitee` 的镜像地址：
 
-```bash
-alias cs='() {
-  local tmpfile=$(mktemp)
-  curl -sSL "https://gitee.com/funnyzak/cli-cheatsheets/raw/main/cheatsheet.sh" -o "$tmpfile" && chmod +x "$tmpfile" && CLI_CHEATSHEET_REGION=cn "$tmpfile" "$@" && rm -f "$tmpfile"
-}'
-```
+  ```bash
+  alias cs='() {
+    local tmpfile=$(mktemp)
+    curl -sSL "https://gitee.com/funnyzak/cli-cheatsheets/raw/main/cheatsheet.sh" -o "$tmpfile" && chmod +x "$tmpfile" && CLI_CHEATSHEET_REGION=cn "$tmpfile" "$@" && rm -f "$tmpfile"
+  }'
+  ```
 </details>
 
 #### Fish
