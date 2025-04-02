@@ -1,0 +1,103 @@
+##############################################################################
+# mkdir Command 速查表 (mkdir Command Cheatsheet)
+# 用于创建目录 (Used to create directories)
+# Source: https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - DIRNAME: 目录名称 (Directory name)
+#   - MODE:    权限模式 (Permission mode, e.g., 755, u=rwx,g=rx,o=rx)
+#              可以使用八进制数字 (octal) 或符号表示法 (symbolic notation).
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+mkdir DIRNAME                             # 创建一个名为 DIRNAME 的目录
+                                          # Create a single directory named DIRNAME
+
+mkdir DIR1 DIR2 DIR3                      # 同时创建多个目录
+                                          # Create multiple directories at once
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+mkdir -p PARENT/CHILD/GRANDCHILD          # 递归创建目录 (如果父目录不存在则自动创建)
+                                          # Create parent directories as needed (no error if exists)
+                                          # Example: mkdir -p project/src/utils
+
+mkdir -m MODE DIRNAME                     # 创建目录并设置指定的权限模式
+                                          # Set the file mode (permissions) for the created directory
+                                          # Example: mkdir -m 700 private_stuff
+                                          # Example: mkdir -m u=rwx,g=rx,o= private_dir
+
+mkdir -v DIRNAME                          # 显示创建的每个目录的详细信息 (Verbose)
+                                          # Print a message for each created directory
+
+# 组合选项 (Combining Options):
+mkdir -pv project/{src,docs,tests}        # 递归创建目录并显示过程 (使用花括号展开)
+                                          # Create nested directories verbosely (using brace expansion)
+
+mkdir -m 755 -v public_html               # 创建目录, 设置权限为 755 并显示信息
+                                          # Create directory, set mode to 755, and be verbose
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用花括号展开创建结构化目录 (Use Brace Expansion for Structured Dirs):
+#   mkdir -p project/{src/{main,test},resources,docs,scripts}
+#   这将创建:
+#   project/src/main
+#   project/src/test
+#   project/resources
+#   project/docs
+#   project/scripts
+
+# 结合 `cd` 命令 (Combine with `cd`):
+#   mkdir my_new_dir && cd $_
+#   创建目录后立即进入该目录 (`$_` 通常代表上一个命令的最后一个参数)
+#   Create directory and immediately change into it (`$_` often represents the last argument of the previous command)
+
+# 注意权限掩码 (Be Aware of `umask`):
+#   新创建目录的默认权限会受到当前 `umask` 值的影响。
+#   The default permissions of newly created directories are affected by the current `umask` value.
+#   使用 `umask` 命令查看或设置当前掩码。
+#   Use the `umask` command to view or set the current mask.
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 创建一个名为 'data' 的目录:
+#    mkdir data
+
+# 2. 创建 'archive' 目录及其子目录 '2023' 和 '2024':
+#    mkdir -p archive/2023 archive/2024
+
+# 3. 创建一个名为 'shared' 的目录，权限设置为 775 (所有者和组可读写执行，其他人可读执行):
+#    mkdir -m 775 shared
+
+# 4. 使用花括号展开创建多个相关目录并显示过程:
+#    mkdir -v images/{thumbnails,fullsize,raw}
+#    # 可能的输出:
+#    # mkdir: created directory 'images'
+#    # mkdir: created directory 'images/thumbnails'
+#    # mkdir: created directory 'images/fullsize'
+#    # mkdir: created directory 'images/raw'
+
+##############################################################################
+# 更多资源 (Further Resources)
+##############################################################################
+
+# 查看 mkdir 的手册页获取最详细的信息:
+# See the manual page for the most detailed information:
+#   man mkdir
+
+# 查看 GNU Coreutils 的 info 文档:
+# See the GNU Coreutils info documentation:
+#   info coreutils 'mkdir invocation'
+
+##############################################################################
+# vim: set ts=4 sw=4 tw=0 et ft=sh :

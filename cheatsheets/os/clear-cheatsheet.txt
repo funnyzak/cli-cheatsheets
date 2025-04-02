@@ -1,0 +1,87 @@
+##############################################################################
+# Clear Command 速查表 (Clear Command Cheatsheet)
+# 清除终端屏幕内容 (Clears the terminal screen)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - 本速查表涉及的命令非常简单，不需要特殊图例。
+#   - (This command is very simple and does not require a special legend.)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+clear                                         # 清除当前终端屏幕上的所有内容。
+                                              # 将光标移动到屏幕的左上角。
+                                              # (Clears all content on the current terminal screen.)
+                                              # (Moves the cursor to the top-left corner of the screen.)
+                                              # 注意: 通常不会清除终端的回滚缓冲区 (scrollback buffer)。
+                                              # (Note: Usually does not clear the terminal's scrollback buffer.)
+
+##############################################################################
+# 选项 (Options)
+##############################################################################
+
+# `clear` 命令本身选项很少且不常用，核心功能就是清除屏幕。
+
+clear -x                                      # 清除屏幕, 但不尝试清除滚动回看缓冲区。
+                                              # (这在某些终端上可能表现不同)
+                                              # (Clears the screen without attempting to clear the scrollback buffer.)
+                                              # (Behavior might differ on some terminals.)
+
+# clear -V                                    # 显示版本信息 (Show version information) - 不常用
+# clear -T <term>                             # 使用指定的终端类型代替 TERM 环境变量的值 - 不常用
+                                              # (Use the specified terminal type instead of TERM environment variable) - Rarely used
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 快捷键 (Shortcut):
+#   - Ctrl + L: 在大多数现代 Shell (Bash, Zsh 等) 和终端模拟器中，
+#              按下 `Ctrl + L` 组合键通常具有与执行 `clear` 命令完全相同的效果。
+#              这是清除屏幕最快、最常用的方法。
+#              (In most modern shells (Bash, Zsh, etc.) and terminal emulators,
+#               pressing the `Ctrl + L` key combination usually has the exact same
+#               effect as running the `clear` command. This is the fastest and
+#               most common way to clear the screen.)
+
+# 何时使用 (When to Use):
+#   - 当屏幕输出变得混乱或过长时，使用 `clear` 或 `Ctrl+L` 来获得一个干净的界面。
+#     (Use `clear` or `Ctrl+L` to get a clean interface when the screen output
+#      becomes cluttered or too long.)
+#   - 在演示或录屏时，清除屏幕以专注于接下来的命令。
+#     (Clear the screen to focus on the next commands during demos or screen recordings.)
+
+# 关于滚动回看 (About Scrollback):
+#   - `clear` 的主要目的是重绘屏幕，使其看起来是空的。
+#     它通常不会删除你可以向上滚动查看的历史输出（滚动回看缓冲区）。
+#     清除滚动回看缓冲区的能力和方法取决于你使用的具体终端模拟器。
+#     (The main purpose of `clear` is to redraw the screen to appear empty.
+#      It usually doesn't delete the history output you can scroll up to see (the scrollback buffer).
+#      The ability and method to clear the scrollback buffer depend on the specific terminal emulator you are using.)
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 清除屏幕的最常用方法 (The most common way to clear the screen):
+clear
+
+# 或者更快的 (Or faster):
+# 按下 Ctrl + L 组合键 (Press Ctrl + L keys)
+
+
+# 2. 清除屏幕但不尝试清除回滚区 (Clear screen without trying to clear scrollback):
+#    (效果取决于终端) (Effect depends on the terminal)
+clear -x
+
+##############################################################################
+# 更多资源 (Further Resources)
+##############################################################################
+
+# man clear                                     # 查看 `clear` 的手册页获取最详细信息
+                                              # (View the man page for `clear` for the most detailed information)
+
+# vim: set ts=4 sw=4 tw=0 et ft=sh :

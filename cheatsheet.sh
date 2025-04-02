@@ -334,6 +334,58 @@ COMMAND_DESCRIPTIONS["yum"]="CentOS/RHEL 包管理器"
 COMMAND_CATEGORIES["zip"]="os"
 COMMAND_DESCRIPTIONS["zip"]="压缩工具"
 
+# 文件操作命令
+COMMAND_CATEGORIES["cd"]="os"
+COMMAND_DESCRIPTIONS["cd"]="切换当前工作目录"
+
+COMMAND_CATEGORIES["cp"]="os"
+COMMAND_DESCRIPTIONS["cp"]="复制文件和目录"
+
+COMMAND_CATEGORIES["find"]="os"
+COMMAND_DESCRIPTIONS["find"]="在文件系统中搜索文件"
+
+COMMAND_CATEGORIES["ls"]="os"
+COMMAND_DESCRIPTIONS["ls"]="列出目录内容"
+
+COMMAND_CATEGORIES["mkdir"]="os"
+COMMAND_DESCRIPTIONS["mkdir"]="创建新目录"
+
+COMMAND_CATEGORIES["mv"]="os"
+COMMAND_DESCRIPTIONS["mv"]="移动或重命名文件和目录"
+
+COMMAND_CATEGORIES["pwd"]="os"
+COMMAND_DESCRIPTIONS["pwd"]="显示当前工作目录的完整路径"
+
+COMMAND_CATEGORIES["rm"]="os"
+COMMAND_DESCRIPTIONS["rm"]="删除文件或目录"
+
+COMMAND_CATEGORIES["clear"]="os"
+COMMAND_DESCRIPTIONS["clear"]="清空终端屏幕"
+
+COMMAND_CATEGORIES["man"]="os"
+COMMAND_DESCRIPTIONS["man"]="显示命令的手册页"
+
+COMMAND_CATEGORIES["service"]="os"
+COMMAND_DESCRIPTIONS["service"]="控制系统服务的启动、停止和状态"
+
+COMMAND_CATEGORIES["sudo"]="os"
+COMMAND_DESCRIPTIONS["sudo"]="以超级用户或其他用户身份执行命令"
+
+COMMAND_CATEGORIES["xargs"]="os"
+COMMAND_DESCRIPTIONS["xargs"]="从标准输入构建和执行命令行"
+
+# 文本处理命令
+COMMAND_CATEGORIES["echo"]="os"
+COMMAND_DESCRIPTIONS["echo"]="在终端输出文本"
+
+COMMAND_CATEGORIES["head"]="os"
+COMMAND_DESCRIPTIONS["head"]="显示文件开头的内容"
+
+COMMAND_CATEGORIES["uniq"]="os"
+COMMAND_DESCRIPTIONS["uniq"]="报告或忽略文件中的重复行"
+
+COMMAND_CATEGORIES["wc"]="os"
+COMMAND_DESCRIPTIONS["wc"]="统计文件中的行数、单词数和字符数"
 
 # 数据处理工具类命令
 COMMAND_CATEGORIES["jq"]="data-process"

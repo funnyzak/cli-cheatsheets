@@ -1,0 +1,142 @@
+##############################################################################
+# Echo Command 速查表 (Echo Command Cheatsheet)
+# 显示一行文本或变量. 通常是 Shell 内建命令.
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例/术语 (Legend/Terms):
+#   - STRING: 要打印的一个或多个字符串参数.
+#             One or more string arguments to be printed.
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+echo [OPTIONS] [STRING ...]          # 打印 STRING 到标准输出, 默认带换行符
+                                     # Prints STRING(s) to standard output, with a trailing newline by default.
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+echo -n STRING ...                    # 不输出末尾的换行符
+                                     # Do not output the trailing newline.
+                                     # 示例: echo -n "Prompt: "
+
+echo -e STRING ...                    # 启用反斜杠转义字符的解释 (见下文)
+                                     # Enable interpretation of backslash escapes (see below).
+                                     # 注意: 并非所有 Shell 或 /bin/echo 版本都支持 -e
+                                     # Note: Not all shells or /bin/echo versions support -e reliably.
+                                     #       Bash's builtin echo usually does.
+
+echo -E STRING ...                    # 显式禁用反斜杠转义 (通常是默认行为, 或覆盖 shell 设置)
+                                     # Explicitly disable interpretation of backslash escapes (often default, or overrides shell options).
+
+##############################################################################
+# 反斜杠转义序列 (Backslash Escapes - requires -e option with Bash/some echos)
+##############################################################################
+
+# \n   换行 (Newline)
+# \t   水平制表符 (Horizontal Tab)
+# \r   回车 (Carriage Return)
+# \b   退格 (Backspace) - 效果可能取决于终端
+# \a   响铃 (Alert/Bell)
+# \v   垂直制表符 (Vertical Tab)
+# \f   换页符 (Form Feed)
+# \\   反斜杠本身 (Backslash)
+# \c   抑制后续输出 (包括换行符, 效果类似 -n)
+#      Suppress further output (including newline, similar to -n)
+# \0NNN 字符的八进制值 NNN (0 到 3 个八进制数字)
+#       Byte with octal value NNN (0 to 3 octal digits)
+# \xHH  字符的十六进制值 HH (1 到 2 个十六进制数字)
+#       Byte with hexadecimal value HH (1 to 2 hex digits)
+
+# 示例 (Example with -e):
+# echo -e "First line\nSecond line\tIndented"
+
+##############################################################################
+# 输出重定向 (Output Redirection)
+##############################################################################
+
+echo "Some text" > file.txt           # 将输出写入文件 (覆盖)
+                                     # Write output to a file (overwrite).
+
+echo "More text" >> file.txt          # 将输出追加到文件末尾
+                                     # Append output to the end of a file.
+
+echo "Error message" >&2              # 将输出重定向到标准错误 (stderr)
+                                     # Redirect output to standard error (stderr).
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 打印变量值 (Printing variable values):
+MY_VAR="Hello World"
+echo "$MY_VAR"                        # 使用双引号保留空格和特殊字符 (推荐)
+                                     # Use double quotes to preserve spaces and special chars (Recommended).
+echo $MY_VAR                          # 不带引号可能导致单词分割和通配符扩展 (小心!)
+                                     # Without quotes can lead to word splitting and glob expansion (Be careful!).
+
+# 结合命令替换 (Combining with command substitution):
+echo "Current directory: $(pwd)"      # 打印命令的输出
+                                     # Print the output of a command.
+echo "Files: `ls -A`"                 # 使用反引号 (旧式)
+                                     # Using backticks (old style).
+
+# 创建空文件 (Creating an empty file - though `touch` is standard):
+echo -n > empty_file.txt              # 使用 -n 和重定向
+                                     # Using -n and redirection.
+# 或者更简洁 (Or more simply):
+> empty_file.txt
+
+# 打印包含引号的字符串 (Printing strings with quotes):
+echo "She said, \"Hello!\""           # 使用反斜杠转义双引号
+                                     # Use backslash to escape double quotes inside double quotes.
+echo 'He replied, "Okay."'            # 使用单引号包围包含双引号的字符串
+                                     # Use single quotes to enclose strings containing double quotes.
+echo "It's simple."                   # 双引号内可以直接用单引号
+                                     # Single quotes are literal inside double quotes.
+
+# 注意 Shell 内建 vs /bin/echo (Note Shell Builtin vs /bin/echo):
+# `echo` 通常是 Shell 内建命令. 其行为 (特别是对 -e, -n) 可能与 /bin/echo 不同.
+# `echo` is usually a shell builtin. Its behavior (esp. regarding -e, -n) might differ from /bin/echo.
+# 使用 `type echo` 查看是内建还是外部命令.
+# Use `type echo` to see if it's builtin or external.
+# 使用 `\echo` 或 `command echo` 或 `/bin/echo` 强制使用非内建版本 (如果需要特定行为).
+# Use `\echo` or `command echo` or `/bin/echo` to force the non-builtin version if needed.
+# 为了可移植性, `printf` 命令通常是更可靠的选择, 特别是处理转义序列时.
+# For portability, `printf` command is often a more reliable choice, especially for escapes.
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 打印简单消息
+echo "Script starting..."
+
+# 2. 打印消息但不换行, 后跟其他内容
+echo -n "Enter password: "
+# (假设后面有 read 命令)
+
+# 3. 使用转义字符创建格式化输出 (需要 -e 且 shell 支持)
+echo -e "Error:\tFile not found.\nPlease check the path."
+
+# 4. 将变量内容和固定文本追加到日志文件
+LOGFILE="app.log"
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+echo "$TIMESTAMP - User $USER logged in." >> "$LOGFILE"
+
+# 5. 打印特殊字符 (例如美元符号)
+echo "The price is \$10."             # 在双引号内转义 $
+echo 'The variable is $VAR'           # 在单引号内 $ 是字面量
+
+##############################################################################
+# 更多资源 (Further Resources)
+##############################################################################
+
+# bash(1) man page (内置 echo 的信息)
+# echo(1) man page (/bin/echo 的信息)
+# printf(1) man page (更可靠的替代方案)
+
+# vim: set ts=4 sw=4 tw=0 et ft=sh :

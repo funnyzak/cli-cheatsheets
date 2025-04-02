@@ -1,0 +1,147 @@
+##############################################################################
+# man Command 速查表 (man Command Cheatsheet)
+# 用于显示系统手册页 (manual pages)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PAGE:    手册页的名称 (例如: ls, ssh, printf)
+#   - SECTION: 手册页的章节号 (例如: 1, 3, 5)
+#   - KEYWORD: 用于搜索的关键词
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+man PAGE                              # 显示指定 PAGE 的手册页
+man SECTION PAGE                      # 显示指定章节 SECTION 中的 PAGE 手册页
+
+##############################################################################
+# 在手册页中导航 (Navigating within a Man Page - using 'less' by default)
+##############################################################################
+
+# 向下滚动 (Scroll Down)
+<Space>                               # 向下翻一页 (Page down)
+<Enter> or j or <DownArrow>           # 向下滚动一行 (Line down)
+d                                     # 向下滚动半页 (Scroll down half screen)
+
+# 向上滚动 (Scroll Up)
+b or <PageUp>                         # 向上翻一页 (Page up)
+k or <UpArrow>                        # 向上滚动一行 (Line up)
+u                                     # 向上滚动半页 (Scroll up half screen)
+
+# 搜索 (Searching)
+/PATTERN                              # 向下搜索 PATTERN (Search forward for PATTERN)
+?PATTERN                              # 向上搜索 PATTERN (Search backward for PATTERN)
+n                                     # 重复上一次搜索 (向下) (Repeat last search forward)
+N                                     # 重复上一次搜索 (向上) (Repeat last search backward)
+
+# 跳转 (Jumping)
+g or <Home>                           # 跳转到文件开头 (Go to beginning of file)
+G or <End>                            # 跳转到文件末尾 (Go to end of file)
+<number>g                             # 跳转到指定行号 (Go to line number)
+
+# 退出与帮助 (Quitting & Help)
+q                                     # 退出 man (Quit man)
+h                                     # 显示 less 的帮助信息 (Display help for less)
+
+##############################################################################
+# 搜索手册页 (Searching for Man Pages)
+##############################################################################
+
+man -k KEYWORD                        # 搜索手册页名称和简短描述 (同 apropos)
+# (Search man page names and short descriptions, same as 'apropos')
+apropos KEYWORD                       # 同 man -k
+
+man -f PAGE                           # 显示 PAGE 的简短描述 (同 whatis)
+# (Display short description of PAGE, same as 'whatis')
+whatis PAGE                           # 同 man -f
+
+man -K KEYWORD                        # 在所有手册页的 *内容* 中搜索 KEYWORD (可能很慢)
+# (Search for KEYWORD within the *content* of all man pages - can be slow)
+
+man -w PAGE                           # 显示 PAGE 手册页文件的路径，不显示内容
+# (Show the path to the man page file for PAGE, don't display it)
+man -wa PAGE                          # 显示所有匹配 PAGE 的手册页文件路径
+# (Show paths for all matching man pages for PAGE)
+
+##############################################################################
+# 指定章节和显示所有章节 (Specifying Sections & Showing All)
+##############################################################################
+
+man SECTION PAGE                      # 显示特定章节的手册页 (例如: man 1 printf, man 3 printf)
+# (Display man page from a specific section)
+
+man -a PAGE                           # 显示所有章节中名为 PAGE 的手册页 (按章节顺序)
+# (Display man pages for PAGE from all sections, sequentially)
+
+##############################################################################
+# 手册页章节说明 (Man Page Sections Explained)
+##############################################################################
+
+# 1 - 用户命令 (Executable programs or shell commands)
+# 2 - 系统调用 (System calls - functions provided by the kernel)
+# 3 - 库调用 (Library calls - functions within program libraries, e.g., libc)
+# 4 - 特殊文件 (Special files, usually found in /dev)
+# 5 - 文件格式和约定 (File formats and conventions, e.g., /etc/passwd format)
+# 6 - 游戏 (Games)
+# 7 - 杂项 (Miscellaneous - macro packages, conventions, e.g., man(7), groff(7))
+# 8 - 系统管理命令 (System administration commands - usually for root)
+# 9 - 内核例程 [非标准] (Kernel routines [Non standard])
+# n - Tcl/Tk 命令 [非标准] (Tcl/Tk commands [Non standard])
+# l - 本地文档 [非标准] (Local documentation [Non standard])
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 查看 man 命令本身的手册页
+man man
+
+# 如果不确定命令属于哪个章节，直接使用 `man PAGE` 通常会找到最常用的那个 (通常是第 1 节)
+# If unsure about the section, `man PAGE` usually finds the most common one (often section 1).
+
+# 使用 `MANSECT` 环境变量设置默认搜索的章节顺序
+# Use `MANSECT` environment variable to set default section search order.
+# Example: export MANSECT=1:8:3:2:5:4:6:7:9:n:l
+
+# 使用 `MANPATH` 环境变量指定手册页的搜索路径
+# Use `MANPATH` environment variable to specify search paths for man pages.
+
+# 使用 `PAGER` 或 `MANPAGER` 环境变量指定不同的分页器 (如 most, bat)
+# Use `PAGER` or `MANPAGER` environment variables to specify a different pager (e.g., most, bat).
+# Example: export PAGER=most
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 查看 ls 命令的手册页
+man ls
+
+# 查看 C 库函数 printf 的手册页 (第 3 节)
+man 3 printf
+
+# 查找与 "network interface" 相关的手册页
+man -k "network interface"
+apropos "network interface"
+
+# 查看 passwd 文件格式的手册页 (第 5 节)
+man 5 passwd
+
+# 显示 printf 的所有手册页 (命令和库函数)
+man -a printf
+
+# 找出 ssh 手册页文件的位置
+man -w ssh
+
+##############################################################################
+# 相关命令 (Related Commands)
+##############################################################################
+
+# apropos : Search man page names and descriptions
+# whatis  : Display one-line manual page descriptions
+# less    : The default pager used by man
+# info    : An alternative documentation system (GNU Info)
+
+# vim: set ts=4 sw=4 tw=0 et ft=sh :

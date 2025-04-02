@@ -1,0 +1,145 @@
+##############################################################################
+# xargs 命令速查表 (xargs Command Cheatsheet)
+# 用于构建和执行命令行，从标准输入读取参数
+# (Build and execute command lines from standard input arguments)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - COMMAND:  要执行的命令 (Command to execute)
+#   - INPUT:    来自标准输入的参数 (Input arguments from stdin)
+#   - OPTIONS:  xargs 命令选项 (xargs command options)
+#   - MAX_ARGS:  每次传递给命令的最大参数数量 (Maximum number of arguments per command)
+#   - REPLACE_STR: 替换字符串，用于 -I 选项 (Replacement string for -I option)
+#   - DELIMITER:  输入分隔符 (Input delimiter)
+#   - FILE:     文件名 (Filename)
+#   - EOF_STR:  文件结束字符串 (End-of-file string)
+#   - MAX_PROCESSES: 最大并行进程数 (Maximum number of parallel processes)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+xargs [OPTIONS] [COMMAND [initial-arguments]]   # 从 stdin 读取参数并执行 COMMAND
+                                                # (默认 COMMAND 是 echo) (Default COMMAND is echo)
+
+# 常用选项 (Common Options):
+#   - COMMAND:  指定要执行的命令 (Specify the command to execute)
+#   - initial-arguments: 传递给 COMMAND 的初始参数 (Initial arguments passed to COMMAND)
+
+# 示例 (Examples):
+ls *.txt | xargs rm                             # 删除所有 .txt 文件
+find . -name "*.jpg" | xargs -n 2 convert      # 每次处理 2 个 jpg 文件并转换
+
+##############################################################################
+# 参数数量控制 (-n) (Argument Count Control -n)
+##############################################################################
+
+xargs -n MAX_ARGS [COMMAND]                     # 每次调用 COMMAND 时，最多传递 MAX_ARGS 个参数
+                                                # (Useful for avoiding "Argument list too long")
+
+# 示例 (Examples):
+seq 1 100 | xargs -n 10 echo                    # 每次 echo 10 个数字
+ls -l *.log | xargs -n 5 grep "error"           # 每次 grep 5 个 log 文件
+
+##############################################################################
+# 替换字符串 (-I) (Replace String -I)
+##############################################################################
+
+xargs -I REPLACE_STR [COMMAND] REPLACE_STR ...   # 使用替换字符串 REPLACE_STR，将输入行替换到 COMMAND 中
+                                                # (For more complex command structures)
+
+# 示例 (Examples):
+ls *.jpg | xargs -I {} convert {} -resize 50% {}-small.jpg # 为每个 jpg 创建缩略图
+find . -type f -name "*.txt" | xargs -I FILE cp FILE FILE.bak  # 为每个 txt 文件创建备份
+
+##############################################################################
+# 详细输出和交互 (-t, -p) (Verbose Output and Interactive -t, -p)
+##############################################################################
+
+xargs -t [COMMAND]                              # 执行前打印要执行的完整命令到 stderr
+xargs -p [COMMAND]                              # 执行前提示用户确认，输入 y/Y 执行
+
+# 示例 (Examples):
+find . -name "*.tmp" | xargs -t rm -f          # 显示要删除的命令
+find . -name "*.conf" | xargs -p chmod 600     # 交互式修改权限
+
+##############################################################################
+# 分隔符和输入控制 (-d, -0, -a, -E) (Delimiter and Input Control -d, -0, -a, -E)
+##############################################################################
+
+xargs -d DELIMITER [COMMAND]                    # 使用 DELIMITER 作为输入项的分隔符 (默认空格/换行)
+xargs -0 [COMMAND]                              # 输入项以 null 字符分隔 (常用于 find -print0)
+xargs -a FILE [COMMAND]                         # 从文件 FILE 读取输入项，而不是 stdin
+xargs -E EOF_STR [COMMAND]                      # 当输入行匹配 EOF_STR 时停止读取
+
+# 示例 (Examples):
+echo "file1;file2;file3" | xargs -d ';' -n 1 cat  # 使用 ; 分隔符
+find . -name "*.mp3" -print0 | xargs -0 -n 1 mp3info # 处理文件名包含空格的 mp3 文件
+xargs -a files.txt grep "pattern"                # 从 files.txt 读取文件名进行 grep
+echo "line1\nSTOP\nline2" | xargs -E "STOP" echo  # 遇到 STOP 停止处理
+
+##############################################################################
+# 并行执行 (-P) (Parallel Execution -P)
+##############################################################################
+
+xargs -P MAX_PROCESSES [COMMAND]                # 并行执行 COMMAND，最多 MAX_PROCESSES 个进程
+
+# 示例 (Examples):
+ls *.jpg | xargs -P 4 -n 1 convert -resize 50% {} {}-small.jpg # 4 个进程并行处理图片
+find . -type f -print0 | xargs -0 -P 2 -n 1 md5sum # 2 个进程并行计算 md5
+
+##############################################################################
+# 其他实用选项 (Other Useful Options)
+##############################################################################
+
+xargs -s MAX_CHARS [COMMAND]                    # 限制每次命令行最大字符数 (防止 "Argument list too long")
+xargs -x [COMMAND]                              # 如果任何命令行超出大小限制则退出
+xargs --process-slot-var=NAME [COMMAND]         # 设置环境变量 NAME 为进程槽 ID (用于并行任务)
+xargs --max-lines[=MAXL] [-l[MAXL]] [COMMAND]   # 限制每行输入的最大行数
+xargs --max-procs=MAXP [-P MAXP] [COMMAND]      # 设置最大并行进程数 (与 -P 相同)
+xargs --open-tty                               # 在子进程中打开一个新的 tty
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 结合 find 命令处理文件列表：
+#   find . -name "*.txt" -print0 | xargs -0 grep "keyword"  # 处理文件名包含特殊字符的文件
+
+# 使用 -n 选项分批处理，避免参数列表过长：
+#   ls * | xargs -n 10 rm -f                     # 每次删除 10 个文件
+
+# 利用 -I 选项进行更复杂的命令构建和参数替换：
+#   ls *.mp4 | xargs -I '{}' ffmpeg -i '{}' -vn '{}.mp3' # 批量将 mp4 转为 mp3
+
+# 使用 -P 实现并行处理，加速任务执行 (注意资源消耗)：
+#   ls large_files* | xargs -P 8 -n 1 gzip        # 8 个进程并行压缩文件
+
+# 谨慎处理用户输入，避免命令注入风险。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 查找当前目录及其子目录下的所有 .txt 文件，并统计行数：
+#   find . -name "*.txt" | xargs wc -l
+
+# 将当前目录下所有 jpg 文件转换为 png 格式 (并行 2 个进程)：
+#   ls *.jpg | xargs -P 2 -n 1 convert {} {}.png
+
+# 递归查找并删除所有空的目录：
+#   find . -depth -type d -empty | xargs rmdir
+
+# 重命名所有文件名中的空格为下划线 (使用 rename 命令，可能需要安装)：
+#   find . -depth -name "* *" -print0 | xargs -0 -I {} rename 's/ /_/g' {}
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# GNU xargs 手册: https://www.gnu.org/software/findutils/manual/html_node/xargs_002dinvocation.html
+# man xargs 命令 (在终端中输入 `man xargs` 查看)
+# 更多 xargs 用法示例: https://www.cyberciti.biz/faq/linux-unix-bsd-xargs-command-examples/
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

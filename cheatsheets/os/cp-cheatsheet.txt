@@ -1,0 +1,116 @@
+##############################################################################
+# cp 命令速查表 (cp Command Cheatsheet)
+# 用于复制文件和目录。
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - SOURCE:       源文件或目录 (Source file or directory)
+#   - DESTINATION:  目标文件或目录 (Destination file or directory)
+#   - DIRECTORY:    目录路径 (Directory path)
+#   - FILE:         文件路径 (File path)
+#   - ATTR_LIST:    属性列表 (e.g., mode,ownership,timestamps,links,all)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+cp SOURCE DESTINATION              # 复制单个文件 SOURCE 到 DESTINATION
+cp SOURCE1 SOURCE2 ... DIRECTORY   # 复制多个文件到目标 DIRECTORY
+cp FILE1 FILE2                     # 复制 FILE1 并命名为 FILE2
+cp FILE DIRECTORY/                 # 复制 FILE 到 DIRECTORY (保持原文件名)
+
+##############################################################################
+# 复制目录 (Copying Directories)
+##############################################################################
+
+cp -r SOURCE_DIR DESTINATION_DIR   # 递归复制目录 SOURCE_DIR 及其内容到 DESTINATION_DIR
+cp -R SOURCE_DIR DESTINATION_DIR   # 同 -r, 递归复制
+cp -a SOURCE_DIR DESTINATION_DIR   # 归档模式复制 (等效于 -dR --preserve=all), 推荐用于完整备份
+
+# 提示 (Tip):
+#   - 如果 DESTINATION_DIR 不存在, 它将被创建。
+#   - 如果 DESTINATION_DIR 已存在, SOURCE_DIR 会被复制 *到* 该目录下。
+#   - `cp -r source/. destination/` 复制 source 目录的 *内容* 到 destination 目录。
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+# --- 交互与覆盖 (Interaction & Overwriting) ---
+cp -i SOURCE DESTINATION           # 覆盖前提示 (interactive)
+cp -n SOURCE DESTINATION           # 不覆盖已存在的文件 (no-clobber)
+cp -f SOURCE DESTINATION           # 强制覆盖, 移除已存在的目标文件 (force, use with caution)
+cp -b SOURCE DESTINATION           # 覆盖前备份已存在的目标文件 (backup)
+cp --backup=numbered SOURCE DEST   # 使用编号备份 (e.g., file.~1~)
+cp --backup=simple SOURCE DEST     # 使用简单备份 (e.g., file~)
+
+# --- 属性保留 (Preserving Attributes) ---
+cp -p SOURCE DESTINATION           # 保留模式、所有权和时间戳 (preserve)
+cp -a SOURCE DESTINATION           # 归档模式, 保留所有属性并递归复制 (-dR --preserve=all)
+cp --preserve=ATTR_LIST SOURCE DEST # 保留指定属性 (mode,ownership,timestamps,links,context,xattr,all)
+
+# --- 链接处理 (Link Handling) ---
+cp -L SOURCE DESTINATION           # 跟随源文件中的所有符号链接 (dereference)
+cp -P SOURCE DESTINATION           # 不跟随源文件中的符号链接 (no-dereference, 默认行为)
+cp -d SOURCE DESTINATION           # 等同于 --no-dereference --preserve=links, 复制符号链接本身
+
+# --- 创建链接而非复制 (Creating Links Instead of Copying) ---
+cp -l SOURCE DESTINATION           # 创建硬链接而非复制文件 (link)
+cp -s SOURCE DESTINATION           # 创建符号链接而非复制文件 (symbolic-link)
+
+# --- 其他 (Others) ---
+cp -u SOURCE DESTINATION           # 仅当 SOURCE 比 DESTINATION 新, 或 DESTINATION 不存在时才复制 (update)
+cp -v SOURCE DESTINATION           # 显示详细的复制过程 (verbose)
+cp -t DIRECTORY SOURCE1 SOURCE2 ... # 指定目标目录在前 (target-directory)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 组合选项:
+#   cp -rv sourcedir/ destdir/         # 递归并显示详细过程
+#   cp -av sourcedir/ destdir/         # 归档模式递归复制并显示详细过程 (常用)
+#   cp -iv file1 file2 destdir/      # 交互式复制多个文件并显示过程
+
+# 复制到当前目录:
+#   cp /path/to/some/file .          # 将文件复制到当前目录
+
+# 备份配置文件:
+#   cp -v /etc/nginx/nginx.conf{,.bak} # 创建 nginx.conf.bak 备份 (Bash Brace Expansion)
+#   cp -v /etc/ssh/sshd_config /etc/ssh/sshd_config_$(date +%Y%m%d) # 带日期备份
+
+# 注意尾部斜杠:
+#   `cp -r dir1 dir2`  -> 如果 dir2 存在, 结果是 dir2/dir1/...
+#   `cp -r dir1/ dir2` -> 如果 dir2 存在, 结果是 dir2/... (复制 dir1 的内容)
+
+# 使用 rsync:
+#   对于更复杂的同步、网络复制或需要增量传输的场景, `rsync` 通常是更好的选择。
+#   rsync -avh SOURCE DESTINATION
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 复制文件 'myfile.txt' 到 '/tmp' 目录:
+#    cp myfile.txt /tmp/
+
+# 2. 复制文件 'config.ini' 为 'config.ini.backup' 在同一目录下:
+#    cp config.ini config.ini.backup
+
+# 3. 递归复制目录 'project_files' 到 'backup_location', 保留所有属性并显示过程:
+#    cp -av project_files/ backup_location/
+
+# 4. 复制所有 '.log' 文件到 'log_archive' 目录, 覆盖前提示:
+#    cp -i *.log log_archive/
+
+# 5. 创建 'important_data' 的符号链接 'data_link':
+#    cp -s important_data data_link
+
+##############################################################################
+# 更多资源 (Further Resources)
+##############################################################################
+
+# 在终端运行 `man cp` 或 `info coreutils 'cp invocation'` 获取完整文档。
+
+# vim: set ts=4 sw=4 tw=0 et ft=sh :

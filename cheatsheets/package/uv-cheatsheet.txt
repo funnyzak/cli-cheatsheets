@@ -1,7 +1,7 @@
 ##############################################################################
 # uv - Python Package Manager 速查表 (uv Cheatsheet)
 # 一个极其快速的 Python 包安装程序和解析器，旨在替代 pip 和 venv。
-# https://github.com/funnyzak/cli-cheatsheets (Cheatsheet Repo)
+# https://github.com/funnyzak/cli-cheatsheets
 ##############################################################################
 
 # 图例 (Legend):

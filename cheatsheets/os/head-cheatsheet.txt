@@ -1,0 +1,117 @@
+##############################################################################
+# head Command 速查表 (head Command Cheatsheet)
+# 从文件或标准输入显示开头部分 (Displays the beginning portion of files or stdin)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - [FILE]...:  一个或多个输入文件名 (One or more input file names)
+#   - N:          一个数字 (A number)
+#   - K:          后缀 K=k=KiB=1024, KB=1000 (Suffix K=k=KiB=1024, KB=1000)
+#   - M:          后缀 M=MiB=1024*1024, MB=1000*1000 (Suffix M=MiB=1024*1024, MB=1000*1000)
+#   - Other suffixes (G, T, P, E, Z, Y) follow similar patterns (kilo vs kibi).
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+head [FILE]...              # 显示每个文件的前 10 行 (Show first 10 lines of each file)
+head < [FILE]               # 从重定向的文件显示前 10 行 (Show first 10 lines from redirected file)
+command | head              # 从管道读取标准输入，显示前 10 行 (Read stdin from pipe, show first 10 lines)
+
+##############################################################################
+# 按行数显示 (Show by Number of Lines)
+##############################################################################
+
+head -n N [FILE]...         # 显示每个文件的前 N 行 (Show first N lines of each file)
+head -<N> [FILE]...         # 同上，是 -n N 的简写 (Same as above, shorthand for -n N)
+                            # 例如: head -5 file.txt 等同于 head -n 5 file.txt
+
+##############################################################################
+# 按字节数显示 (Show by Number of Bytes)
+##############################################################################
+
+head -c N [FILE]...         # 显示每个文件的前 N 字节 (Show first N bytes of each file)
+                            # 可以使用后缀 K, M, G 等 (Suffixes K, M, G etc. can be used)
+                            # 例如: head -c 1K file.log  (显示前 1024 字节)
+                            # 例如: head -c 1MB file.dat (显示前 1,000,000 字节)
+
+##############################################################################
+# 处理多个文件 (Handling Multiple Files)
+##############################################################################
+
+head file1.txt file2.txt    # 显示多个文件时，默认会打印文件名头
+                            # (When showing multiple files, prints filename headers by default)
+                            # ==> file1.txt <==
+                            # ... (content) ...
+                            # ==> file2.txt <==
+                            # ... (content) ...
+
+head -q [FILE]...           # 静默模式，不打印文件名头 (Quiet mode, never print filename headers)
+head --quiet [FILE]...      # 同上 (Same as above)
+
+head -v [FILE]...           # 详细模式，总是打印文件名头 (Verbose mode, always print filename headers)
+head --verbose [FILE]...    # 同上 (Same as above)
+
+##############################################################################
+# 显示除末尾部分外的所有内容 (Show All Except the Last Part)
+# 注意：N 必须为负数 (Note: N must be negative)
+##############################################################################
+
+head -n -N [FILE]...        # 显示除最后 N 行外的所有行 (Show all lines except the last N lines)
+                            # 例如: head -n -5 file.txt (不显示最后 5 行)
+
+head -c -N [FILE]...        # 显示除最后 N 字节外的所有字节 (Show all bytes except the last N bytes)
+                            # 例如: head -c -1K file.log (不显示最后 1024 字节)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 快速查看大文件的开头，判断文件类型或内容
+# Quickly view the beginning of large files to determine type or content
+#   head large_log_file.log
+
+# 结合 `tail` 获取文件中间部分 (例如，获取第 11 到 20 行)
+# Combine with `tail` to get middle parts of a file (e.g., get lines 11 to 20)
+#   head -n 20 file.txt | tail -n 10
+
+# 查看 CSV 文件的标题行和前几行数据
+# View header row and first few data lines of a CSV file
+#   head -n 5 data.csv
+
+# 预览脚本的前几行注释或代码
+# Preview the first few comment or code lines of a script
+#   head -n 15 script.sh
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 显示 /etc/passwd 的前 5 行
+# Show the first 5 lines of /etc/passwd
+head -n 5 /etc/passwd
+
+# 显示 access.log 的前 500 字节
+# Show the first 500 bytes of access.log
+head -c 500 access.log
+
+# 显示当前目录下所有 .conf 文件的前 3 行，不显示文件名
+# Show the first 3 lines of all .conf files in the current directory, without headers
+head -q -n 3 *.conf
+
+# 显示 file.txt，但不显示最后 10 行
+# Show file.txt, but omit the last 10 lines
+head -n -10 file.txt
+
+# 显示 `ls -l` 输出的前 5 行 (通常是总用量和前 4 个文件/目录)
+# Show the first 5 lines of `ls -l` output (usually total usage and first 4 files/dirs)
+ls -l | head -n 5
+
+##############################################################################
+# 更多资源 (Further Resources)
+##############################################################################
+
+# man head
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

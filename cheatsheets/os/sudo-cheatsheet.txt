@@ -1,0 +1,118 @@
+##############################################################################
+# Sudo 命令速查表 (Sudo Command Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+#
+# 以其他用户身份 (通常是 root) 执行命令。
+# Description: Execute commands as another user (typically root).
+##############################################################################
+
+# 图例 / 术语 (Legend / Terminology):
+#   - COMMAND: 要执行的命令及其参数 (The command and its arguments to execute)
+#   - USER:    目标用户名 (Target username, default is root)
+#   - GROUP:   目标组名 (Target group name)
+#   - FILE:    文件路径 (File path)
+#   - SHELL:   要启动的 Shell (e.g., /bin/bash, /bin/sh)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+sudo COMMAND                            # 以 root 用户身份执行命令
+sudo -u USER COMMAND                    # 以指定 USER 身份执行命令
+sudo -g GROUP COMMAND                   # 以指定 GROUP 主要组身份执行命令 (较少用)
+sudo -i                                 # 启动一个 root 的交互式登录 Shell (加载 root 的环境)
+sudo -s                                 # 启动一个 root 的交互式非登录 Shell (保留当前用户部分环境)
+sudo su -                              # 切换到 root 用户 (类似 `sudo -i`)
+sudo su                                # 切换到 root 用户 (类似 `sudo -s`)
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+sudo -l                                 # 列出当前用户可以执行的 sudo 命令 (List allowed commands)
+sudo -v                                 # 验证并刷新 sudo 凭证 (延长 sudo 免密时间)
+sudo -k                                 # 使当前的 sudo 凭证失效 (下次 sudo 需要密码)
+sudo -K                                 # 彻底移除当前的 sudo 凭证 (类似 -k, 但更强制)
+sudo -b COMMAND                         # 在后台执行命令
+sudo -E COMMAND                         # 执行命令时保留当前用户的环境变量
+sudo -H COMMAND                         # 执行命令时设置 HOME 环境变量为目标用户的家目录 (通常是 root)
+sudo -p '自定义提示符 ' COMMAND        # 使用自定义密码提示符
+sudo -n COMMAND                         # 非交互模式，如果需要密码则报错退出 (用于脚本)
+
+##############################################################################
+# 编辑文件 (Editing Files - sudoedit / sudo -e)
+##############################################################################
+
+# 推荐使用 sudoedit 或 sudo -e 编辑文件，更安全。
+# It's recommended and safer to use sudoedit or sudo -e for editing files.
+# 它会将文件复制到临时位置，用你的编辑器打开，保存后再覆盖回去。
+# It copies the file temporarily, opens it with your editor, and copies back on save.
+
+sudoedit FILE                           # 使用默认编辑器编辑文件 (由 SUDO_EDITOR, VISUAL, EDITOR 环境变量决定)
+sudo -e FILE                            # 同 sudoedit
+VISUAL=vim sudoedit FILE                # 指定使用 vim 编辑器
+
+# 避免使用 `sudo vim FILE`，除非你明确知道你在做什么，因为它会以 root 权限运行整个编辑器。
+# Avoid `sudo vim FILE` unless necessary, as it runs the entire editor as root.
+
+##############################################################################
+# 权限管理和检查 (Privilege Management & Checking)
+##############################################################################
+
+sudo -l                                 # 检查当前用户拥有的 sudo 权限
+sudo -v                                 # 保持 sudo 会话活跃 (避免重复输入密码)
+sudo -k                                 # 立即结束当前的 sudo 免密会话
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 以 root 身份执行多个命令
+sudo sh -c 'command1; command2'         # 使用 sh 执行多个命令
+sudo bash -c 'cmd1 && cmd2 || cmd3'     # 使用 bash 执行更复杂的命令串
+
+# 将输出重定向到需要 root 权限的文件
+echo "some text" | sudo tee /path/to/privileged/file       # 正确方式
+echo "some text" | sudo tee -a /path/to/privileged/file    # 追加模式
+# 注意: `sudo echo "text" > /path/file` 不会工作，因为重定向是由当前 Shell (非 root) 处理的。
+# Note: `sudo echo "text" > /path/file` won't work as redirection is handled by the current (non-root) shell.
+
+# 在脚本中检查是否通过 sudo 运行
+if [ -n "$SUDO_USER" ]; then
+  echo "Running with sudo as user: $SUDO_USER"
+else
+  echo "Not running with sudo"
+fi
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 更新系统包 (Debian/Ubuntu)
+sudo apt update && sudo apt upgrade -y
+
+# 更新系统包 (CentOS/RHEL/Fedora)
+sudo yum update -y  # 或者 sudo dnf update -y
+
+# 编辑 hosts 文件
+sudoedit /etc/hosts
+
+# 重启 ssh 服务
+sudo systemctl restart sshd
+
+# 以 www-data 用户身份运行 php 命令
+sudo -u www-data php /var/www/html/script.php
+
+# 强制下次使用 sudo 时输入密码
+sudo -k
+
+##############################################################################
+# 更多资源 (Further Resources)
+##############################################################################
+
+# Sudo 官方手册页:
+# man sudo
+# man sudoers
+# man sudoedit
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

@@ -1,7 +1,7 @@
 ##############################################################################
 # chmod Command 速查表 (chmod Command Cheatsheet)
-# 描述: 修改文件或目录的访问权限 (Change file/directory access permissions)
-# 来源: https://github.com/funnyzak/cli-cheatsheets
+# 修改文件或目录的访问权限 (Change file/directory access permissions)
+# https://github.com/funnyzak/cli-cheatsheets
 ##############################################################################
 
 # 图例 / 术语解释 (Legend / Terminology):

@@ -1,0 +1,109 @@
+##############################################################################
+# mv 命令速查表 (mv Command Cheatsheet)
+# 用于移动或重命名文件和目录 (Used to move or rename files and directories)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - SOURCE:      源文件或目录 (Source file or directory)
+#   - DESTINATION: 目标文件或目录 (Destination file or directory)
+#   - DIRECTORY:   目标目录 (Target directory)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+# 重命名文件或目录 (Rename a file or directory)
+# 如果 DESTINATION 不存在，或者是一个已存在的文件 (且 SOURCE 也是文件)，则执行重命名操作。
+# If DESTINATION does not exist, or is an existing file (and SOURCE is also a file), it performs a rename.
+mv SOURCE DESTINATION
+
+# 移动文件或目录到指定目录 (Move file(s) or directory(ies) into a directory)
+# 如果 DESTINATION 是一个已存在的目录，则将 SOURCE (或多个 SOURCE) 移动到该目录下。
+# If DESTINATION is an existing directory, moves SOURCE (or multiple SOURCEs) into it.
+mv SOURCE DIRECTORY
+mv SOURCE1 SOURCE2 SOURCE3 DIRECTORY
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+mv -i SOURCE DESTINATION    # 交互模式: 覆盖前提示 (Interactive: Prompt before overwriting)
+mv -f SOURCE DESTINATION    # 强制模式: 覆盖时不提示 (Force: Do not prompt before overwriting)
+mv -v SOURCE DESTINATION    # 详细模式: 显示移动过程 (Verbose: Show what is being done)
+mv -n SOURCE DESTINATION    # 不覆盖: 不覆盖任何已存在的文件 (No-clobber: Do not overwrite existing files)
+mv -u SOURCE DESTINATION    # 更新模式: 仅当 SOURCE 比 DESTINATION 新，或 DESTINATION 不存在时移动
+                            # (Update: Move only when SOURCE is newer than DESTINATION or DESTINATION is missing)
+mv -b SOURCE DESTINATION    # 备份模式: 覆盖前创建备份 (默认后缀 ~)
+                            # (Backup: Create a backup before overwriting, default suffix is ~)
+mv --backup=numbered SOURCE DESTINATION # 备份模式: 使用数字后缀创建备份 (e.g., file.txt.~1~)
+mv -S SUFFIX SOURCE DESTINATION # 备份模式: 使用指定后缀创建备份 (e.g., -S .bak)
+                            # (Backup: Create a backup with specified SUFFIX)
+mv -t DIRECTORY SOURCE...   # 目标目录优先: 先指定目标目录，再指定源文件 (方便与 xargs 等配合)
+                            # (Target directory first: Specify target DIRECTORY before SOURCEs)
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 1. 安全第一: 推荐在 .bashrc 或 .zshrc 中设置别名，避免误覆盖
+#    alias mv='mv -i'
+
+# 2. 结合 find 使用 -t 选项移动文件:
+#    find . -name "*.log" -exec mv -t /path/to/archive/ {} +
+
+# 3. 区分移动和重命名:
+#    - 如果最后一个参数是已存在的目录，则为移动操作。
+#    - 否则，通常是重命名操作 (除非目标已存在且不是目录，此时会覆盖)。
+
+# 4. 跨文件系统移动:
+#    - 在同一文件系统内移动通常非常快，因为只修改元数据。
+#    - 跨文件系统移动相当于先复制再删除，会改变 inode，可能需要更长时间并影响权限/时间戳。
+
+# 5. 小心使用通配符:
+#    - 执行 `mv * target_dir/` 前，最好用 `ls *` 确认匹配的文件。
+
+# 6. 创建备份:
+#    - `mv -b file.txt old_file.txt` 会将 `old_file.txt` 重命名为 `old_file.txt~` (如果存在)，然后将 `file.txt` 重命名为 `old_file.txt`。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 重命名文件:
+mv old_name.txt new_name.txt
+
+# 移动文件到目录:
+mv report.doc /home/user/documents/
+
+# 移动多个文件到目录:
+mv image1.jpg image2.png data.zip /home/user/media/
+
+# 移动目录:
+mv project_alpha/ project_beta/   # 将 project_alpha 重命名为 project_beta
+mv old_project/ /archives/        # 将 old_project 目录移动到 archives 目录下
+
+# 移动时提示覆盖:
+mv -i config.ini /etc/
+
+# 移动并显示过程:
+mv -v *.tmp /tmp/
+
+# 移动文件，但不覆盖已存在的文件:
+mv -n downloaded_file.zip archives/
+
+# 使用 -t 移动找到的文件:
+find . -maxdepth 1 -name "*.pdf" -print0 | xargs -0 mv -t ./pdf_files/
+
+# 移动文件并创建简单备份:
+mv -b important_data.db backup/
+
+##############################################################################
+# 更多资源 (Further Resources)
+##############################################################################
+
+# 查看 `mv` 的手册页获取最全面的信息:
+# man mv
+# info coreutils 'mv invocation'
+
+# vim: set ts=4 sw=4 tw=0 et ft=sh :

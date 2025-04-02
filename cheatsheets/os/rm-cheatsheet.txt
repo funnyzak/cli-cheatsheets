@@ -1,0 +1,153 @@
+##############################################################################
+# rm Command 速查表 (rm Command Cheatsheet)
+# 删除文件和目录 (Remove files and directories)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - FILE: 文件名 (Filename)
+#   - DIR:  目录名 (Directory name)
+#   - ...:  一个或多个文件/目录 (One or more files/directories)
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+rm FILE ...           # 删除一个或多个文件
+                      # WARNING: This is PERMANENT! Files are NOT sent to Trash.
+
+##############################################################################
+# 常用选项 (Common Options)
+##############################################################################
+
+rm -f, --force FILE ...
+                      # 强制删除 (Force removal)
+                      # - 忽略不存在的文件，不提示错误
+                      # - 覆盖写保护文件的删除提示 (需要有权限)
+                      # - USE WITH CAUTION!
+
+rm -i, --interactive FILE ...
+                      # 交互式删除 (Interactive removal)
+                      # - 在删除每个文件前进行提示确认 (y/n)
+                      # - Safer for manual use.
+
+rm -I FILE ...        # 一次性交互式删除 (Prompt once before removing more than three files)
+                      # - 当删除超过 3 个文件或递归删除时进行一次确认
+                      # - 比 -i 干扰少，比无选项安全
+
+rm -r, -R, --recursive DIR ...
+                      # 递归删除目录及其内容 (Recursively remove directories and their contents)
+                      # - WARNING: EXTREMELY DANGEROUS if used improperly (e.g., `rm -rf /`)
+                      # - Usually combined with -f (`rm -rf DIR`) for non-interactive deletion.
+
+rm -d, --dir DIR ...
+                      # 删除空目录 (Remove empty directories)
+                      # - 等同于 `rmdir` 命令
+
+rm -v, --verbose
+                      # 显示详细操作信息 (Explain what is being done)
+                      # - 列出每个被删除的文件名
+
+--                  # 标记选项结束 (Signal end of options)
+                      # - 用于删除名称以 `-` 开头的文件
+                      # - Example: `rm -- -problematic-file`
+
+##############################################################################
+# 重要安全选项 (Important Safety Options)
+##############################################################################
+
+# --preserve-root (默认通常启用 on modern systems)
+                      # 特殊处理根目录 `/` (Do not remove '/' recursively)
+                      # - 防止意外执行 `rm -rf /`
+                      # - It's usually the default behavior, but good to be aware of.
+
+# --preserve-root=all (更严格)
+                      # 对每个命令行参数都执行根目录保护
+                      # Protect each specified target, not just '/' itself.
+
+# --one-file-system
+                      # 递归删除时，跳过挂载在不同文件系统上的目录
+                      # When removing a hierarchy recursively, skip any directory
+                      # that is on a different file system from the one specified.
+
+##############################################################################
+# 警告和注意事项 (Warnings & Important Considerations)
+##############################################################################
+
+# 1. **不可恢复 (Irreversible):** `rm` 删除的文件通常无法轻易恢复。没有回收站！
+#    Files removed with `rm` are generally gone forever. There is NO Trash Bin!
+
+# 2. **谨慎使用通配符 (Use Wildcards Carefully):** `*`, `?`, `[]` 等通配符可能匹配到意想不到的文件。
+#    Always double-check what files `*` will expand to before running `rm`.
+#    Consider using `ls FILE*` first to see what will be deleted.
+
+# 3. **强制递归删除 (`rm -rf`) 非常危险 (Force Recursive is Very Dangerous):**
+#    `rm -rf` 会无提示地删除目录及其所有内容。在错误的目录下执行可能导致灾难性数据丢失。
+#    DOUBLE-CHECK the current directory (`pwd`) and the target directory before running `rm -rf`.
+
+# 4. **权限 (Permissions):** 你需要对包含文件的目录有写权限才能删除该文件，即使文件本身不属于你或你没有写权限。
+
+# 5. **文件名包含特殊字符 (Special Characters in Filenames):**
+#    - 以 `-` 开头的文件: 使用 `rm -- -filename` 或 `rm ./-filename`.
+#    - 包含空格或特殊符号的文件: 使用引号 `rm "file name with spaces"` 或反斜杠转义 `rm file\ name\ with\ spaces`.
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 删除除某个文件外的所有文件 (需要 `extglob` shell option in bash):
+#   shopt -s extglob
+#   rm !(file_to_keep.txt)
+#   shopt -u extglob  # Disable after use
+
+# 结合 `find` 删除文件 (更灵活的条件):
+#   find . -name "*.tmp" -type f -print -delete  # 查找并删除当前目录下所有 .tmp 文件
+#   find . -name "*.log" -mtime +7 -delete       # 查找并删除7天前的 .log 文件
+#   # Always run `find` without `-delete` first to check the list!
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 删除单个文件:
+#   rm report.txt
+
+# 删除多个文件:
+#   rm data1.csv data2.csv results.txt
+
+# 删除文件前确认:
+#   rm -i important_document.pdf
+
+# 强制删除文件 (忽略不存在和写保护):
+#   rm -f temporary_file.tmp
+
+# 删除一个空目录:
+#   rm -d empty_folder
+
+# 递归删除目录 'old_project' 及其所有内容 (交互式):
+#   rm -ri old_project
+
+# **危险操作** - 强制递归删除目录 'junk' (无提示):
+#   # !! DOUBLE CHECK YOUR CURRENT DIRECTORY AND 'junk' !!
+#   rm -rf junk
+
+# 删除名为 '-output.log' 的文件:
+#   rm -- -output.log
+#   # 或者:
+#   rm ./-output.log
+
+##############################################################################
+# 替代方案 (Alternatives)
+##############################################################################
+
+# 对于更安全的文件删除，考虑使用 `trash-cli` 或类似的工具，它们将文件移动到回收站。
+# Consider using tools like `trash-cli` which move files to a trash bin instead of permanent deletion.
+#   pip install trash-cli
+#   trash put file.txt  # Move to trash
+#   trash list          # List trashed items
+#   trash restore       # Restore from trash
+#   trash empty         # Empty the trash
+
+##############################################################################
+
+# vim: set ts=4 sw=4 tw=0 et ft=sh :
