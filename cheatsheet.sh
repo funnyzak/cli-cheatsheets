@@ -17,6 +17,8 @@
 #
 # 环境变量:
 #   CLI_CHEATSHEET_PATH: 自定义速查表存放路径
+#   CLI_CHEATSHEET_CACHE_DIR: 临时目录，用于缓存命令速查表(默认: /tmp/cheatsheet_cache)
+#   CLI_CHEATSHEET_REGION: 设置为 "cn" 使用中国区URL(默认：自动检测)
 
 # 脚本错误处理
 set -euo pipefail
@@ -202,6 +204,12 @@ COMMAND_DESCRIPTIONS["python"]="Python 运行时"
 # 安全工具类命令
 COMMAND_CATEGORIES["nmap"]="security"
 COMMAND_DESCRIPTIONS["nmap"]="网络扫描工具"
+
+COMMAND_CATEGORIES["acme.sh"]="security"
+COMMAND_DESCRIPTIONS["acme.sh"]="获取和续订 Let's Encrypt 证书"
+
+COMMAND_CATEGORIES["certbot"]="security"
+COMMAND_DESCRIPTIONS["certbot"]="Let's Encrypt 证书管理工具"
 
 
 # 操作系统命令 (OS Commands)
@@ -446,6 +454,7 @@ show_help() {
   echo "环境变量:"
   echo "  CLI_CHEATSHEET_PATH: 自定义速查表存放路径"
   echo "  CLI_CHEATSHEET_CACHE_DIR: 临时目录，用于缓存命令速查表(默认: /tmp/cheatsheet_cache)"
+  echo "  CLI_CHEATSHEET_REGION: 设置为 'cn' 使用中国区URL(默认：自动检测)"
   echo ""
 }
 
@@ -673,6 +682,8 @@ main() {
   # 确定使用哪个URL前缀
   if [[ -n "$custom_url" ]]; then
     base_url="$custom_url"
+  elif [[ "${CLI_CHEATSHEET_REGION:-}" =~ ^[cC][nN]$ ]]; then
+    base_url="$CN_URL"
   else
     base_url=$(detect_best_url)
   fi

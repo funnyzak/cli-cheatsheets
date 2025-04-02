@@ -1,0 +1,139 @@
+##############################################################################
+# Certbot 速查表 (Certbot Cheatsheet)
+# Let's Encrypt 证书管理工具
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - DOMAIN:   域名 (Domain Name, 例如: example.com, www.example.com)
+#   - EMAIL:    邮箱地址 (Email Address, 用于紧急通知和账户恢复)
+#   - PLUGIN:   Certbot 插件 (Plugin, 例如: webroot, nginx, apache, standalone)
+#   - PATH:     文件路径 (File Path, 例如: /var/www/html, /etc/nginx/conf.d)
+#   - CERTNAME: 证书名称 (Certificate Name, 默认为域名)
+
+##############################################################################
+# 获取证书 (Obtain Certificates)
+##############################################################################
+
+# 自动模式 (Automatic Configuration - 推荐)
+#  - Certbot 尝试自动配置 Web 服务器 (Nginx/Apache)
+
+certbot                                       # 交互式自动配置 (根据提示操作)
+certbot --nginx                               # 自动配置 Nginx (推荐)
+certbot --apache                              # 自动配置 Apache
+
+# 手动模式 (Manual Configuration - 灵活)
+#  - 需要手动配置 Web 服务器，Certbot 仅负责验证和获取证书
+
+certbot certonly                                # 仅获取证书，不自动配置
+certbot certonly --webroot -w PATH -d DOMAIN     # Webroot 插件 (常用)
+certbot certonly --standalone -d DOMAIN        # Standalone 插件 (独立服务器)
+certbot certonly --manual -d DOMAIN             # Manual 插件 (手动 DNS 记录)
+
+# 常用选项 (Common Options for Obtain)
+#   --email EMAIL                             # 注册/恢复邮箱 (重要!)
+#   --agree-tos                               # 同意 Let's Encrypt 服务条款
+#   --no-eff-email                            # 不共享邮箱给 EFF (电子前哨基金会)
+#   --dry-run                                 # 测试模式，不颁发真实证书
+
+# 示例 (Examples for Obtain)
+#   certbot --nginx -d example.com -d www.example.com    # Nginx, 多域名
+#   certbot certonly --webroot -w /var/www/example -d example.com  # Webroot
+
+##############################################################################
+# 续订证书 (Renew Certificates)
+##############################################################################
+
+certbot renew                                 # 续订所有快要过期的证书 (推荐)
+certbot renew --dry-run                         # 续订测试，不实际续订
+certbot renew --force                           # 强制续订所有证书 (慎用)
+certbot renew --cert-name CERTNAME              # 续订指定证书
+
+# 自动续订 (Automatic Renewal - 通过 Cron/Systemd Timer)
+#  - 建议配置系统定时任务 (Cron job 或 Systemd Timer) 每天运行 `certbot renew`
+
+# 提示 (Tips for Renewal)
+#   - Let's Encrypt 证书有效期为 90 天，建议 60 天左右续订
+#   - `certbot renew` 会自动检查并续订快要过期的证书 (默认 30 天内)
+#   - 续订成功后，Web 服务器通常需要重启或重新加载配置才能生效
+
+##############################################################################
+# 撤销证书 (Revoke Certificates)
+##############################################################################
+
+certbot revoke --cert-path PATH                # 撤销指定证书 (根据证书路径)
+certbot revoke --cert-name CERTNAME              # 撤销指定证书 (根据证书名称)
+certbot revoke                                  # 交互式选择证书撤销
+
+# 常用选项 (Common Options for Revoke)
+#   --reason REASON                             # 撤销原因 (可选，例如: keycompromise)
+
+# 注意 (Caution for Revoke)
+#   - 证书撤销操作不可逆，请谨慎操作
+#   - 撤销后需要重新申请证书才能恢复 HTTPS 服务
+
+##############################################################################
+# 管理证书 (Manage Certificates)
+##############################################################################
+
+certbot certificates                            # 列出所有已安装证书
+certbot delete --cert-name CERTNAME              # 删除指定证书 (及其配置)
+certbot update-symlinks                         # 更新证书软链接 (如果手动修改过配置)
+
+# 证书文件路径 (Certificate File Paths)
+#   /etc/letsencrypt/live/CERTNAME/fullchain.pem  # 完整证书链 (服务器证书 + 中间证书)
+#   /etc/letsencrypt/live/CERTNAME/privkey.pem    # 私钥
+#   /etc/letsencrypt/live/CERTNAME/cert.pem       # 服务器证书 (不含中间证书)
+#   /etc/letsencrypt/archive/CERTNAME/            # 证书历史版本归档
+
+##############################################################################
+# 常用选项 (General Options)
+##############################################################################
+
+certbot --version                               # 显示 Certbot 版本
+certbot --help                                  # 显示帮助信息
+certbot --verbose                               # 详细输出
+certbot --quiet                                 # 静默输出
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 测试配置 (Dry Run):
+#   certbot --dry-run --nginx -d example.com        # 测试 Nginx 自动配置
+#   certbot renew --dry-run                         # 测试证书续订
+
+# 指定配置文件目录 (非标准环境):
+#   certbot --config-dir /path/to/config --work-dir /path/to/work --logs-dir /path/to/logs ...
+
+#  强制使用 IPv4 或 IPv6 (特定网络环境):
+#   certbot --preferred-challenges http-01 --ipv4 ...  # 强制 IPv4 HTTP 验证
+#   certbot --preferred-challenges http-01 --ipv6 ...  # 强制 IPv6 HTTP 验证
+
+#  使用 DNS 挑战 (适用于无法使用 HTTP 验证的场景):
+#   certbot certonly --manual --preferred-challenges dns -d example.com  # 手动 DNS 验证
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 使用 Nginx 插件获取 example.com 和 www.example.com 的证书:
+#    certbot --nginx -d example.com -d www.example.com
+
+# 2. 使用 Webroot 插件获取 example.net 的证书，网站根目录为 /var/www/example.net:
+#    certbot certonly --webroot -w /var/www/example.net -d example.net
+
+# 3. 续订所有证书 (建议每天定时运行):
+#    certbot renew
+
+# 4. 查看已安装证书列表:
+#    certbot certificates
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Certbot 官方文档: https://eff-certbot.readthedocs.io/en/stable/
+# Let's Encrypt 官网: https://letsencrypt.org/
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :
