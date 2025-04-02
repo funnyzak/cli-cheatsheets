@@ -425,6 +425,10 @@ CLI 速查表按类别组织在以下目录中：
 * `caddy-cheatsheet.txt`: caddy Caddy Web 服务器命令
 * `nginx-cheatsheet.txt`: nginx NGINX Web 服务器命令
 
+
+> 以上列的可能不是最新的，具体请查看 [`cheatsheets/`](cheatsheets/) 目录下的文件。
+> 速查表文件名格式为 `[命令]-cheatsheet.txt`，其中 `-cheatsheet` 是固定后缀。
+
 ---
 
 ## 贡献
@@ -434,7 +438,7 @@ CLI 速查表按类别组织在以下目录中：
 **贡献速查表:**
 
 1. 在 `cheatsheets/` 目录下找到或创建相应的类别子目录。
-2. 创建 `[工具名]-cheatsheet.txt` 文件，并按照清晰易读的格式编写速查表内容。
+2. 创建 `[命令]-cheatsheet.txt` 文件，并按照清晰易读的格式编写速查表内容。
 3. 提交 Pull Request (PR) 到 `main` 分支。
 
 **其他贡献:**
