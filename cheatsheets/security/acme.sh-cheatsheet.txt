@@ -1,0 +1,164 @@
+##############################################################################
+# acme.sh 速查表 (acme.sh Cheatsheet)
+# 用于获取和续订 Let's Encrypt (及其他 ACME CA) 证书的 Shell 脚本
+# https://github.com/funnyzak/cli-cheatsheets
+# https://github.com/acmesh-official/acme.sh
+##############################################################################
+
+# 图例 (Legend):
+#   - DOMAIN:      你的域名 (Your domain name, e.g., example.com, www.example.com)
+#   - WEBROOT:     网站的根目录路径 (Web root path, e.g., /var/www/html)
+#   - DNS_API_HOOK: DNS 提供商的 API 钩子名称 (e.g., dns_cf, dns_ali, dns_dp)
+#   - CERT_PATH:   证书文件路径 (Certificate file path)
+#   - KEY_PATH:    私钥文件路径 (Private key file path)
+#   - CA_PATH:     中间证书文件路径 (Intermediate CA certificate file path)
+#   - FULLCHAIN_PATH: 包含证书和中间证书的文件路径 (Full chain certificate path)
+#   - RELOAD_CMD:  重载 Web 服务器配置的命令 (Command to reload web server)
+#   - EMAIL:       你的邮箱地址 (Your email address for registration/notifications)
+
+##############################################################################
+# 安装与设置 (Installation & Setup)
+##############################################################################
+
+# 从 GitHub 安装 (推荐)
+# curl https://get.acme.sh | sh -s email=EMAIL
+# wget -O - https://get.acme.sh | sh -s email=EMAIL
+
+acme.sh --upgrade                             # 升级 acme.sh 到最新版本
+acme.sh --uninstall                           # 卸载 acme.sh
+acme.sh --register-account -m EMAIL           # 注册 ACME 账户 (通常安装时自动完成)
+acme.sh --update-account -m NEW_EMAIL         # 更新账户邮箱
+acme.sh --set-default-ca --server letsencrypt # 设置默认 CA 为 Let's Encrypt
+acme.sh --set-default-ca --server zerossl     # 设置默认 CA 为 ZeroSSL (可能需要 EAB 凭证)
+
+# 提示:
+#   - 安装后会自动添加一个 cron 任务用于自动续订证书。使用 `crontab -l` 查看。
+#   - 配置文件位于 ~/.acme.sh/account.conf
+
+##############################################################################
+# 证书颁发 (Issuing Certificates)
+##############################################################################
+
+# --- 通用选项 ---
+acme.sh --issue -d DOMAIN ...                 # 颁发证书的基本命令
+acme.sh --issue -d d1.com -d d2.com ...       # 颁发 SAN (多域名) 证书
+acme.sh --issue ... --test                    # 使用 Let's Encrypt Staging 环境测试 (强烈推荐首次使用)
+acme.sh --issue ... --keylength 4096          # 指定密钥长度 (默认 2048)
+acme.sh --issue ... --keylength ec-256        # 使用 ECDSA 证书 (可选 ec-384)
+
+# --- HTTP-01 验证 (需要 80 端口) ---
+acme.sh --issue -d DOMAIN -w WEBROOT          # 使用 Webroot 模式 (推荐用于运行中的 Web 服务器)
+acme.sh --issue -d DOMAIN --standalone        # 使用 Standalone 模式 (acme.sh 会临时监听 80 端口)
+acme.sh --issue -d DOMAIN --standalone --httpport 88 # Standalone 模式使用指定端口
+
+# --- DNS-01 验证 (推荐用于通配符证书或无法使用 HTTP 验证的场景) ---
+acme.sh --issue -d DOMAIN --dns DNS_API_HOOK  # 使用 DNS API 自动验证 (推荐)
+#   (需要先设置 API 凭证, 例如 Cloudflare: export CF_Key="..."; export CF_Email="...")
+acme.sh --issue -d DOMAIN -d '*.DOMAIN' --dns DNS_API_HOOK # 颁发通配符证书 (*.example.com)
+acme.sh --issue -d DOMAIN --dns --yes-I-know-dns-manual-mode-enough-to-kill-myself # 手动 DNS 模式 (不推荐, 无法自动续订)
+#   (脚本会提示需要添加的 TXT 记录, 添加后再执行 --renew)
+
+# 提示:
+#   - 查看支持的 DNS API: https://github.com/acmesh-official/acme.sh/wiki/dnsapi
+#   - 证书文件默认保存在 ~/.acme.sh/DOMAIN/
+
+##############################################################################
+# 证书续订 (Renewing Certificates)
+##############################################################################
+
+acme.sh --renew -d DOMAIN                     # 手动续订指定域名的证书
+acme.sh --renew -d DOMAIN --force             # 强制续订 (即使未到期)
+acme.sh --renew-all                           # 续订所有已颁发的证书 (由 cron 自动调用)
+acme.sh --renew-all --force                   # 强制续订所有证书
+
+# 提示:
+#   - 自动续订由 cron 任务处理, 通常无需手动操作。
+#   - 证书默认在到期前 30 天尝试续订。
+
+##############################################################################
+# 证书管理 (Managing Certificates)
+##############################################################################
+
+acme.sh --list                                # 列出所有已颁发的证书及其信息
+acme.sh --info -d DOMAIN                      # 显示指定域名的证书详细信息
+acme.sh --revoke -d DOMAIN                    # 吊销指定域名的证书
+acme.sh --remove -d DOMAIN                    # 从 acme.sh 记录中移除证书 (不删除文件, 不吊销)
+
+##############################################################################
+# 安装证书到服务 (Installing Certificates to Services)
+##############################################################################
+
+# --- 通用安装 ---
+acme.sh --install-cert -d DOMAIN \
+        --key-file       KEY_PATH \
+        --fullchain-file FULLCHAIN_PATH \
+        --cert-file      CERT_PATH \
+        --ca-file        CA_PATH \
+        --reloadcmd      "RELOAD_CMD"
+
+# --- Nginx 示例 ---
+acme.sh --install-cert -d DOMAIN \
+        --key-file       /etc/nginx/ssl/DOMAIN.key \
+        --fullchain-file /etc/nginx/ssl/DOMAIN.cer \
+        --reloadcmd      "service nginx force-reload"
+
+# --- Apache 示例 ---
+acme.sh --install-cert -d DOMAIN \
+        --cert-file      /etc/apache2/ssl/DOMAIN.crt \
+        --key-file       /etc/apache2/ssl/DOMAIN.key \
+        --fullchain-file /etc/apache2/ssl/DOMAIN.fullchain.crt \
+        --reloadcmd      "service apache2 force-reload"
+
+# 提示:
+#   - **重要:** 不要直接使用 ~/.acme.sh/ 目录下的证书文件, 该目录结构可能变化。务必使用 --install-cert 将证书复制到稳定位置。
+#   - --install-cert 会在每次成功续订后自动执行 --reloadcmd。
+
+##############################################################################
+# 调试与日志 (Debugging & Logging)
+##############################################################################
+
+acme.sh --issue ... --log                     # 显示详细日志到 stdout
+acme.sh --issue ... --log /path/to/acme.log   # 将日志保存到文件
+acme.sh --cron --home /path/to/.acme.sh       # 查看 cron 执行的日志 (默认在 ~/.acme.sh/acme.sh.log)
+
+# 默认日志文件: ~/.acme.sh/acme.sh.log
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# - 始终先用 `--test` 在 Staging 环境测试，避免触发 Let's Encrypt 的速率限制。
+# - 使用 DNS API 验证是获取通配符证书的唯一方式，且通常更稳定。
+# - 保护好你的 DNS API 凭证。
+# - 确保 `--reloadcmd` 能正确无误地重载你的 Web 服务器配置。
+# - 定期检查 `crontab -l` 确保自动续订任务存在。
+# - 检查 `~/.acme.sh/acme.sh.log` 排查续订失败问题。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 为 example.com 颁发证书 (使用 Nginx 的 webroot) 并安装
+#    acme.sh --issue -d example.com -w /var/www/html
+#    acme.sh --install-cert -d example.com \
+#            --key-file       /etc/nginx/ssl/example.com.key \
+#            --fullchain-file /etc/nginx/ssl/example.com.cer \
+#            --reloadcmd      "service nginx force-reload"
+
+# 2. 为 example.com 及其通配符域名颁发证书 (使用 Cloudflare DNS API)
+#    export CF_Key="YOUR_CLOUDFLARE_API_KEY"
+#    export CF_Email="YOUR_CLOUDFLARE_EMAIL"
+#    acme.sh --issue --dns dns_cf -d example.com -d '*.example.com' --server letsencrypt
+#    # (后续安装步骤同上)
+
+# 3. 使用 Staging 环境测试颁发
+#    acme.sh --issue -d test.example.com -w /var/www/test --test
+
+##############################################################################
+# 更多资源 (Further Resources)
+##############################################################################
+
+# 官方 Wiki: https://github.com/acmesh-official/acme.sh/wiki
+# DNS API 列表: https://github.com/acmesh-official/acme.sh/wiki/dnsapi
+
+# vim: set ts=4 sw=4 tw=0 et ft=sh :

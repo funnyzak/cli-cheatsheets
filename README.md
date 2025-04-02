@@ -70,10 +70,20 @@ cs
 ```bash
 alias cs='() {
   local tmpfile=$(mktemp)
-  curl -sSL "https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/${REPO_BRANCH:-main}/cheatsheet.sh" -o "$tmpfile" && chmod +x "$tmpfile" && "$tmpfile" "$@" && rm -f "$tmpfile"
+  curl -sSL "https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh" -o "$tmpfile" && chmod +x "$tmpfile" && "$tmpfile" "$@" && rm -f "$tmpfile"
 }'
 ```
 配置完成后，然后执行 `source ~/.bashrc` 或 `source ~/.zshrc` 使配置生效。
+
+
+如果不方便访问 `raw.githubusercontent.com`，可以使用以下命令，使用 `Gitee` 的镜像地址：
+
+```bash
+alias cs='() {
+  local tmpfile=$(mktemp)
+  curl -sSL "https://gitee.com/funnyzak/cli-cheatsheets/raw/main/cheatsheet.sh" -o "$tmpfile" && chmod +x "$tmpfile" && CLI_CHEATSHEET_REGION=cn "$tmpfile" "$@" && rm -f "$tmpfile"
+}'
+```
 
 #### Fish
 
@@ -390,6 +400,8 @@ CLI 速查表按类别组织在以下目录中：
 (`cheatsheets/security/`) 安全工具
 
 * `nmap-cheatsheet.txt`: nmap 网络扫描工具命令
+* `certbot-cheatsheet.txt`: certbot Let's Encrypt 证书管理工具命令
+* `acme.sh-cheatsheet.txt`: acme.sh Let's Encrypt 证书管理工具命令
 
 ### Version Control
 
