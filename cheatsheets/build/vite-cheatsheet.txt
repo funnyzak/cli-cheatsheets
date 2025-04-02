@@ -1,0 +1,162 @@
+##############################################################################
+# Vite 速查表 (Vite Cheatsheet)
+# 快速上手和常用 Vite 命令参考
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - <project-name>:  项目名称 (Project name)
+#   - <template>:      项目模板 (Template, 例如: vanilla, vue, react, vue-ts, react-ts)
+#   - <port>:          端口号 (Port number, 例如: 3000, 8080)
+#   - <config-file>:   配置文件路径 (Config file path, 例如: vite.config.js, my.config.mjs)
+#   - [options]:       可选参数 (Optional options)
+
+##############################################################################
+# 项目初始化 (Project Initialization)
+##############################################################################
+
+npm create vite <project-name>              # 创建新项目 (交互式选择模板)
+npm create vite <project-name> -- --template <template> # 使用指定模板创建项目
+
+# 提示:
+#   -  yarn create vite <project-name>  (使用 Yarn)
+#   -  pnpm create vite <project-name>  (使用 pnpm)
+#   -  支持的模板: vanilla, vue, react, preact, lit, svelte, solid, qwik, others (社区模板)
+
+##############################################################################
+# 开发服务器 (Development Server)
+##############################################################################
+
+npm run dev                                 # 启动开发服务器 (默认端口)
+vite dev                                    # 启动开发服务器 (等同于 npm run dev)
+vite                                        # 启动开发服务器 (等同于 npm run dev)
+vite --port <port>                          # 指定端口启动服务器
+vite --host                                 # 监听所有地址 (局域网访问)
+vite --open                                 # 启动后自动在浏览器打开
+vite --config <config-file>                 # 指定配置文件
+vite --https                                # 启用 HTTPS
+vite --force                                # 强制依赖预构建 (清除缓存)
+vite --clearScreen=false                    # 启动时不清除终端屏幕
+
+# 提示:
+#   -  可以使用 `vite serve` 代替 `vite dev`
+#   -  热模块替换 (HMR) 默认启用，无需额外配置
+
+##############################################################################
+# 构建 (Build)
+##############################################################################
+
+npm run build                               # 构建生产版本 (默认配置)
+vite build                                  # 构建生产版本 (等同于 npm run build)
+vite build --config <config-file>          # 使用指定配置文件构建
+vite build --mode <mode>                     # 指定构建模式 (development/production)
+vite build --watch                           # 监听文件变化并重新构建 (开发环境构建)
+vite build --emptyOutDir                     # 构建前清空输出目录 (默认行为)
+vite build --outDir <dir>                     # 指定输出目录 (默认: dist)
+vite build --assetsDir <dir>                   # 指定静态资源输出目录 (默认: assets)
+vite build --sourcemap                        # 生成 sourcemap 文件 (方便调试)
+
+# 提示:
+#   -  构建产物默认输出到 `dist` 目录
+#   -  生产环境构建会自动进行代码压缩、优化等
+
+##############################################################################
+# 预览 (Preview)
+##############################################################################
+
+npm run preview                             # 启动本地预览服务器 (模拟生产环境)
+vite preview                                # 启动本地预览服务器 (等同于 npm run preview)
+vite preview --port <port>                   # 指定预览服务器端口
+vite preview --host                          # 预览服务器监听所有地址
+vite preview --open                          # 启动后自动在浏览器打开
+vite preview --config <config-file>         # 指定配置文件
+
+# 提示:
+#   -  预览服务器用于本地测试构建后的生产版本
+#   -  需要先执行 `npm run build` 构建项目
+
+##############################################################################
+# 配置 (Configuration - vite.config.js / vite.config.ts)
+##############################################################################
+
+#  vite.config.js 或 vite.config.ts 文件位于项目根目录
+#  导出一个配置对象或使用 defineConfig 函数 (推荐)
+
+#  示例 vite.config.js:
+#  ----------------------------------------
+#  import { defineConfig } from 'vite'
+#  import vue from '@vitejs/plugin-vue'
+#
+#  export default defineConfig({
+#    plugins: [vue()],
+#    server: {
+#      port: 3000,
+#      proxy: {
+#        '/api': 'http://localhost:8080'
+#      }
+#    },
+#    build: {
+#      outDir: 'build'
+#    }
+#  })
+#  ----------------------------------------
+
+# 常用配置项 (Common Configuration Options):
+#   -  plugins:  [ ...plugins ]              # 插件列表
+#   -  root:     'src'                      # 项目根目录 (默认: 项目根目录)
+#   -  publicDir: 'public'                    # 静态资源目录 (默认: public)
+#   -  cacheDir: 'node_modules/.vite'         # Vite 缓存目录 (默认: node_modules/.vite)
+#   -  resolve:  { alias: { ... } }          # 路径别名配置
+#   -  server:   { port, proxy, ... }         # 开发服务器配置
+#   -  build:    { outDir, assetsDir, ... }    # 构建配置
+#   -  css:      { modules, preprocessorOptions } # CSS 相关配置
+
+# 提示:
+#   -  详细配置项请参考 Vite 官方文档: https://cn.vitejs.dev/config/
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用别名简化模块导入:
+#   在 vite.config.js 中配置 resolve.alias:
+#   resolve: {
+#     alias: {
+#       '@': '/src',
+#       '~': '/node_modules'
+#     }
+#   }
+#   然后在代码中可以使用:
+#   import MyComponent from '@/components/MyComponent.vue'
+#   import lodash from '~/lodash'
+
+# 使用环境变量:
+#   Vite 默认支持 .env 文件加载环境变量
+#   在代码中使用 import.meta.env.VITE_XXX 访问 (需要在 .env 文件中以 VITE_ 开头)
+
+# 使用插件扩展 Vite 功能:
+#   Vite 插件生态丰富，可以扩展构建、优化、功能集成等
+#   例如 @vitejs/plugin-vue, vite-plugin-react, vite-plugin-compression 等
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 创建一个 Vue TypeScript 项目并启动开发服务器:
+#   npm create vite my-vue-ts-app -- --template vue-ts
+#   cd my-vue-ts-app
+#   npm install
+#   npm run dev
+
+# 构建生产版本并本地预览:
+#   npm run build
+#   npm run preview
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Vite 官方文档: https://cn.vitejs.dev/
+# Vite GitHub 仓库: https://github.com/vitejs/vite
+
+# vim: set ts=4 sw=4 tw=0 et ft=txt :

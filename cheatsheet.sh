@@ -52,6 +52,12 @@ COMMAND_DESCRIPTIONS["gradle"]="Gradle 构建工具"
 COMMAND_CATEGORIES["mvn"]="build"
 COMMAND_DESCRIPTIONS["mvn"]="Maven 构建工具"
 
+COMMAND_CATEGORIES["vite"]="build"
+COMMAND_DESCRIPTIONS["vite"]="前端构建工具"
+
+COMMAND_CATEGORIES["webpack"]="build"
+COMMAND_DESCRIPTIONS["webpack"]="前端构建工具"
+
 # 数据库类命令
 COMMAND_CATEGORIES["mongo"]="database"
 COMMAND_DESCRIPTIONS["mongo"]="MongoDB 客户端"

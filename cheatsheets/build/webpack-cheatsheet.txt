@@ -1,0 +1,227 @@
+##############################################################################
+# Webpack 速查表 (Webpack Cheatsheet)
+# 前端资源模块打包工具 (Frontend Asset Bundler)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - <ENTRY>:  入口文件路径 (Entry file path, 例如: ./src/index.js)
+#   - <OUTPUT>: 输出目录和文件名 (Output directory and filename, 例如: ./dist/bundle.js)
+#   - <LOADER>:  Loader 名称 (Loader name, 例如: babel-loader, css-loader)
+#   - <PLUGIN>:  Plugin 名称 (Plugin name, 例如: HtmlWebpackPlugin, MiniCssExtractPlugin)
+#   - <CONFIG_FILE>: 配置文件路径 (Configuration file path, 例如: webpack.config.js)
+
+##############################################################################
+# 核心概念 (Core Concepts)
+##############################################################################
+
+# Entry (入口):   Webpack 构建的入口起点，从这里开始解析依赖图谱。
+# Output (输出):  Webpack 打包后的文件输出目录和文件名。
+# Loader (加载器):  用于转换处理各种类型的模块文件 (例如：JS, CSS, 图片等)。
+# Plugin (插件):   用于扩展 Webpack 功能，执行各种构建任务 (例如：代码优化, HTML 生成等)。
+# Mode (模式):     Webpack 运行模式，影响默认配置 (development, production, none)。
+# webpack.config.js:  Webpack 配置文件，定义构建规则和选项。
+
+##############################################################################
+# 基本用法 (Basic Usage)
+##############################################################################
+
+npx webpack                                     # 使用默认配置构建 (需安装 webpack 和 webpack-cli)
+npx webpack <ENTRY> <OUTPUT>                     # 指定入口和输出 (简单场景)
+npx webpack --config <CONFIG_FILE>                # 使用指定配置文件构建
+npx webpack --mode <MODE>                       # 指定构建模式 (development/production/none)
+npx webpack --watch                             # 监听文件变化，自动重新构建
+npx webpack --help                              # 查看 Webpack 命令行帮助
+
+##############################################################################
+# 开发服务器 (Webpack Dev Server)
+##############################################################################
+
+npx webpack serve                                 # 启动开发服务器 (需安装 webpack-dev-server)
+npx webpack serve --port <PORT>                   # 指定端口号
+npx webpack serve --open                          # 自动打开浏览器
+npx webpack serve --hot                           # 启用热模块替换 (HMR)
+npx webpack serve --proxy <PROXY_RULE>            # 配置代理 (例如: --proxy '{ "/api": "http://localhost:3000" }')
+npx webpack serve --help                          # 查看 Dev Server 帮助
+
+##############################################################################
+# 配置文件 (webpack.config.js) 常用配置
+##############################################################################
+
+# mode: 'development' | 'production' | 'none',   # 指定模式，影响默认优化和插件
+# entry: '<ENTRY_POINT>',                         # 入口文件路径 (可以是字符串或对象)
+# output: {
+#   path: '<OUTPUT_DIR>',                        # 输出目录 (绝对路径)
+#   filename: '<BUNDLE_FILENAME>',               # 输出文件名
+# },
+# module: {
+#   rules: [                                     # 定义模块处理规则 (Loaders)
+#     {
+#       test: /\.js$/,                           # 匹配文件类型 (正则表达式)
+#       use: '<LOADER_NAME>',                     # 使用的 Loader
+#       exclude: /node_modules/,                  # 排除目录
+#     },
+#     # ... more rules
+#   ],
+# },
+# plugins: [                                    # 插件列表
+#   new <PLUGIN_NAME>({ /* options */ }),        # 实例化插件
+#   // ... more plugins
+# ],
+# devServer: {                                  # 开发服务器配置
+#   port: 8080,
+#   open: true,
+#   hot: true,
+#   proxy: {},
+# },
+# devtool: 'source-map',                           # Source Map 类型 (方便调试)
+# resolve: {                                    # 模块解析配置
+#   extensions: ['.js', '.jsx', '.json'],         # 自动解析的文件扩展名
+#   alias: {                                     # 别名，简化模块路径
+#     '@': path.resolve(__dirname, 'src'),
+#   },
+# },
+
+##############################################################################
+# 常用 Loaders (Common Loaders)
+##############################################################################
+
+# babel-loader:     转换 ES6+ 代码为向后兼容的 JavaScript。
+# style-loader:     将 CSS 样式通过 <style> 标签注入到 DOM。
+# css-loader:       解析 CSS 文件，处理 @import 和 url()。
+# file-loader:      处理文件资源 (图片, 字体等)，输出到指定目录并返回 URL。
+# url-loader:       类似 file-loader，但可以将小文件转换为 Data URL 内联。
+# sass-loader:      编译 Sass/SCSS 文件为 CSS。
+# less-loader:      编译 Less 文件为 CSS。
+
+# Loader 配置示例 (Example Loader Configuration):
+# module: {
+#   rules: [
+#     {
+#       test: /\.css$/,
+#       use: ['style-loader', 'css-loader'],      # Loader 执行顺序: 从后向前
+#     },
+#     {
+#       test: /\.(png|jpe?g|gif)$/i,
+#       use: [
+#         {
+#           loader: 'url-loader',
+#           options: {
+#             limit: 8192,                       # 小于 8KB 的图片转为 Data URL
+#             name: '[name].[ext]',              # 输出文件名格式
+#             outputPath: 'images/',             # 输出路径
+#           },
+#         },
+#       ],
+#     },
+#   ],
+# },
+
+##############################################################################
+# 常用 Plugins (Common Plugins)
+##############################################################################
+
+# HtmlWebpackPlugin:      自动生成 HTML 文件，并注入打包后的 JS/CSS。
+# MiniCssExtractPlugin:  将 CSS 从 JavaScript 中分离出来，生成独立的 CSS 文件。
+# CleanWebpackPlugin:     清理输出目录 (dist) 。
+# DefinePlugin:           定义全局常量，方便在代码中使用。
+# CopyWebpackPlugin:      复制静态资源到输出目录。
+
+# Plugin 配置示例 (Example Plugin Configuration):
+# plugins: [
+#   new HtmlWebpackPlugin({
+#     template: './src/index.html',             # HTML 模板文件
+#     filename: 'index.html',                  # 输出 HTML 文件名
+#   }),
+#   new MiniCssExtractPlugin({
+#     filename: 'css/[name].[contenthash].css', # CSS 文件输出路径和文件名
+#   }),
+#   new CleanWebpackPlugin(),
+# ],
+
+##############################################################################
+# Mode 模式 (Development vs Production)
+##############################################################################
+
+# Development (开发模式):
+#   - 默认启用 NamedChunksPlugin 和 NamedModulesPlugin，方便调试。
+#   - 不会进行代码压缩和优化，构建速度更快。
+#   - 适用于本地开发环境。
+
+# Production (生产模式):
+#   - 默认启用 FlagDependencyUsagePlugin, FlagIncludedChunksPlugin, ModuleConcatenationPlugin, NoEmitOnErrorsPlugin, OccurrenceOrderPlugin, SideEffectsFlagPlugin 和 TerserPlugin (代码压缩)。
+#   - 代码体积更小，性能更优。
+#   - 适用于生产环境部署。
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 使用 --watch 监听文件变化自动构建，提升开发效率。
+# 使用 --config 指定不同的配置文件，例如 webpack.config.dev.js 和 webpack.config.prod.js。
+# 使用 npx webpack serve 快速启动开发服务器进行本地调试。
+# 在配置文件中使用 process.env.NODE_ENV 区分开发和生产环境，进行不同配置。
+# 利用 Source Map 方便调试，推荐 devtool: 'cheap-module-source-map' (开发环境) 或 'source-map' (生产环境)。
+# 使用 Code Splitting (代码分割) 优化首屏加载速度。
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 基本 Webpack 构建命令 (Basic Webpack Build):
+#   npx webpack --mode production --entry ./src/index.js --output-path ./dist --output-filename bundle.js
+
+# 常用配置文件 webpack.config.js 示例 (Example webpack.config.js):
+# const path = require('path');
+# const HtmlWebpackPlugin = require('html-webpack-plugin');
+# const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+#
+# module.exports = {
+#   mode: 'development', // 或 'production'
+#   entry: './src/index.js',
+#   output: {
+#     path: path.resolve(__dirname, 'dist'),
+#     filename: 'bundle.js',
+#   },
+#   devtool: 'cheap-module-source-map',
+#   devServer: {
+#     port: 8080,
+#     open: true,
+#     hot: true,
+#   },
+#   module: {
+#     rules: [
+#       {
+#         test: /\.js$/,
+#         exclude: /node_modules/,
+#         use: 'babel-loader',
+#       },
+#       {
+#         test: /\.css$/,
+#         use: [MiniCssExtractPlugin.loader, 'css-loader'],
+#       },
+#       {
+#         test: /\.(png|svg|jpg|gif)$/,
+#         use: ['file-loader'],
+#       },
+#     ],
+#   },
+#   plugins: [
+#     new HtmlWebpackPlugin({
+#       template: './src/index.html',
+#     }),
+#     new MiniCssExtractPlugin({
+#       filename: 'css/bundle.css',
+#     }),
+#   ],
+# };
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# Webpack 官方文档: https://webpack.js.org/
+# Webpack 中文文档: https://www.webpackjs.com/
+# Awesome Webpack: https://github.com/webpack-contrib/awesome-webpack
+
+# vim: set ts=4 sw=4 tw=0 et ft=text :
