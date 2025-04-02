@@ -49,10 +49,13 @@ wget -qO- https://cs.yycc.dev | bash -s -- git
 
 将以下代码添加到你的 `~/.bashrc` 或 `~/.zshrc` 文件中：
 
-**简化版本：**
-
 ```bash
 alias cs='() { curl -s https://raw.githubusercontent.com/funnyzak/cli-cheatsheets/refs/heads/main/cheatsheet.sh | bash -s -- "$@" }'
+```
+
+`Gitee` 镜像地址：
+```bash
+alias cs='() { curl -s https://gitee.com/funnyzak/cli-cheatsheets/raw/main/cheatsheet.sh | CLI_CHEATSHEET_REGION=cn bash -s -- "$@" }'
 ```
 
 使用如下命令查看速查表：
@@ -61,12 +64,15 @@ alias cs='() { curl -s https://raw.githubusercontent.com/funnyzak/cli-cheatsheet
 # 显示GIT速查表
 cs git
 # 显示所有支持的命令速查表
-cs
+cs -l
+# 帮助
+cs -h
 ```
 
-**完整版本：** 此方式包含交互式菜单。
+<details>
+<summary>让别名支持交互式菜单</summary>
+如果你希望别名支持交互式菜单，可以使用以下命令：
 
-在 `~/.zshrc` 中添加以下代码：
 ```bash
 alias cs='() {
   local tmpfile=$(mktemp)
@@ -84,6 +90,7 @@ alias cs='() {
   curl -sSL "https://gitee.com/funnyzak/cli-cheatsheets/raw/main/cheatsheet.sh" -o "$tmpfile" && chmod +x "$tmpfile" && CLI_CHEATSHEET_REGION=cn "$tmpfile" "$@" && rm -f "$tmpfile"
 }'
 ```
+</details>
 
 #### Fish
 
