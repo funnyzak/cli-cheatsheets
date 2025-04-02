@@ -1,232 +1,373 @@
 ##############################################################################
-# Git 速查表 (Git Cheatsheet)
+# Git 命令速查表 (Git Command Cheatsheet)
 # https://github.com/funnyzak/cli-cheatsheets
 ##############################################################################
 
 # 图例 (Legend):
-#   - <commit>:  Commit SHA 或引用 (例如: HEAD, branch-name, tag-name)
-#   - <branch>:  分支名 (Branch name, 例如: main, develop, feature/xyz)
-#   - <remote>:  远程仓库名 (Remote name, 例如: origin, upstream)
-#   - <file>:    文件名或路径 (File name or path, 例如: README.md, src/app.js)
-#   - <path>:    目录路径 (Directory path, 例如: docs, src)
-#   - <message>:  提交信息 (Commit message)
+#   <branch>       : 分支名称 (e.g., main, feature/login)
+#   <commit>       : 提交哈希值、分支名或标签名 (e.g., HEAD, 1a2b3c4, v1.0)
+#   <remote>       : 远程仓库名称 (e.g., origin, upstream)
+#   <file>         : 文件或目录路径
+#   <tag>          : 标签名称 (e.g., v1.0, release-2023)
+#   <revision>     : 修订版本，可以是 commit hash, branch, tag, HEAD~N 等
+#   <url>          : 远程仓库 URL
+#   <message>      : 提交信息
+#   [...]          : 可选参数
 
 ##############################################################################
-# 配置 (Configuration, git config)
+# 配置 & 初始化 (Configuration & Initialization)
 ##############################################################################
 
-git config --global user.name "Your Name"       # 设置全局用户名
-git config --global user.email "email@example.com" # 设置全局用户邮箱
-git config --global core.editor "vim"           # 设置全局默认编辑器
-git config --global alias.<alias-name> "<command>" # 设置 Git 命令别名 (例如: git config --global alias.co checkout)
-git config --list                               # 列出所有配置
+git config --global user.name "Your Name"      # 设置全局用户名
+git config --global user.email "your.email@example.com" # 设置全局邮箱
+git config --global core.editor "vim"          # 设置默认编辑器 (常用: vim, nano, code --wait)
+git config --global init.defaultBranch main    # (Git >= 2.28) 设置新仓库默认分支名为 main
+git config --global alias.co checkout          # 创建别名 (示例: git co 代替 git checkout)
+git config --global alias.st status            # 常用别名: st, br, ci, lg 等
+git config --list [--show-origin]              # 显示当前配置 (可显示来源)
+git init [directory]                           # 初始化新的 Git 仓库
+git clone <url> [directory]                    # 克隆远程仓库到本地
 
 # 提示:
-#   - 使用 `--local` 选项配置本地仓库设置 (当前仓库)
-#   - 使用 `--system` 选项配置系统级设置 (不常用)
-#   - 配置文件位置:
-#     - 全局: ~/.gitconfig
+#   - 使用 `--local` 选项配置本地仓库设置 (当前仓库, 优先级最高)
+#   - 使用 `--system` 选项配置系统级设置 (所有用户, 优先级最低, 不常用)
+#   - 配置文件位置 (优先级从高到低):
 #     - 本地: .git/config
+#     - 全局: ~/.gitconfig
+#     - 系统: /etc/gitconfig (或 Git 安装目录下的 etc/gitconfig)
 
 ##############################################################################
-# 初始化与克隆 (Initialize & Clone, git init & git clone)
+# 基本工作流 (Basic Workflow - 最常用)
 ##############################################################################
 
-git init                                        # 初始化当前目录为 Git 仓库
-git init <directory>                            # 初始化指定目录为 Git 仓库
-git clone <repository_url>                      # 克隆远程仓库到当前目录
-git clone <repository_url> <directory>          # 克隆远程仓库到指定目录
+git status                                     # 显示工作区和暂存区的状态 (最常用)
+git add <file>                                 # 将文件更改添加到暂存区
+git add .                                      # 添加当前目录下所有更改到暂存区 (常用)
+git add -p [<file>]                            # 交互式地添加文件块到暂存区 (精准控制)
+git commit -m "<message>"                      # 提交暂存区的更改 (最常用)
+git commit -a -m "<message>"                   # 添加所有已跟踪文件的更改并提交 (-a = --all)
+git commit --amend [--no-edit]                 # 修改最后一次提交 (修正注释或补充更改)
+git diff                                       # 显示工作区与暂存区的差异
+git diff --staged                              # 显示暂存区与上次提交的差异 (同 --cached)
+git diff <commit>..<commit>                    # 显示两次提交之间的差异
+git diff <branch>..<branch>                    # 显示两个分支之间的差异
 
 ##############################################################################
-# 基本工作流程 (Basic Workflow, add, commit, status, log)
+# 分支管理 (Branching)
 ##############################################################################
 
-git status                                      # 查看工作区状态 (已修改, 未暂存等)
-git add <file>                                  # 添加文件到暂存区
-git add <directory>                             # 添加目录到暂存区
-git add .                                       # 添加所有修改和新增文件到暂存区
-git commit -m "<message>"                       # 提交暂存区文件到本地仓库 (附带提交信息)
-git commit                                      # 提交暂存区文件到本地仓库 (打开编辑器填写提交信息)
-git commit --amend -m "<message>"               # 修改最近一次提交 (修改提交信息)
-git commit --amend --no-edit                    # 修改最近一次提交 (不修改提交信息，常用于补充暂存区内容)
-git log                                         # 查看提交历史 (详细)
-git log --oneline                               # 查看提交历史 (简洁单行)
-git log --graph --oneline --decorate --all       # 查看分支图、单行、装饰和所有分支的提交历史
-
-# 提示:
-#   - 提交信息应简洁明了，说明本次提交的目的和修改内容
-#   - 养成频繁提交的习惯，保持提交粒度小而完整
-
-##############################################################################
-# 分支管理 (Branch Management, branch, checkout, merge, branch -d)
-##############################################################################
-
-git branch                                      # 列出本地分支
-git branch -r                                   # 列出远程分支
-git branch -a                                   # 列出所有分支 (本地和远程)
-git branch <branch_name>                        # 创建新分支
-git checkout <branch_name>                      # 切换到指定分支
-git checkout -b <branch_name>                   # 创建并切换到新分支 (相当于 `git branch <branch_name>` + `git checkout <branch_name>`)
-git checkout -                                  # 切换到上一个分支
-git merge <branch_name>                         # 合并指定分支到当前分支
-git branch -d <branch_name>                      # 删除本地分支 (已合并到当前分支)
-git branch -D <branch_name>                      # 强制删除本地分支 (即使未合并)
-git branch -m <old_branch_name> <new_branch_name> # 重命名本地分支
-
-# 提示:
-#   - 保持主分支 (通常是 `main` 或 `master`) 的清洁和稳定
-#   - 在特性分支上进行开发，完成后合并到主分支
-#   - 删除分支前，确保已合并到其他分支或不再需要
+git branch                                     # 列出本地所有分支 (* 表示当前分支)
+git branch -r                                  # 列出所有远程分支
+git branch -a                                  # 列出所有本地和远程分支 (常用)
+git branch <branch>                            # 创建新分支 (基于当前 HEAD)
+git branch <new-branch> <start-point>          # 基于指定点创建新分支
+git checkout <branch>                          # 切换到指定分支 (Git < 2.23, 仍广泛使用)
+git switch <branch>                            # 切换到指定分支 (Git >= 2.23, 推荐)
+git switch -c <branch>                         # 创建并切换到新分支 (Git >= 2.23, 推荐)
+git checkout -b <branch>                       # 创建并切换到新分支 (Git < 2.23, 极常用)
+git branch -d <branch>                         # 删除已合并的分支 (安全删除)
+git branch -D <branch>                         # 强制删除分支 (即使未合并, 慎用)
+git branch -m <old-name> <new-name>            # 重命名分支
+git branch --merged                            # 列出已合并到当前分支的分支
+git branch --no-merged                         # 列出未合并到当前分支的分支
 
 ##############################################################################
-# 远程仓库 (Remote Repositories, remote, push, pull, fetch)
+# 合并 & 变基 (Merging & Rebasing)
 ##############################################################################
 
-git remote -v                                   # 查看远程仓库列表 (verbose)
-git remote add <remote_name> <repository_url>   # 添加远程仓库
-git remote remove <remote_name>                  # 删除远程仓库
-git remote rename <old_remote_name> <new_remote_name> # 重命名远程仓库
-git fetch <remote_name>                         # 从远程仓库拉取更新 (不合并)
-git pull <remote_name> <branch_name>             # 从远程仓库拉取更新并合并 (相当于 `git fetch` + `git merge`)
-git pull                                        # 拉取当前分支关联的远程分支更新
-git push <remote_name> <branch_name>             # 推送本地分支到远程仓库
-git push                                        # 推送当前分支到关联的远程分支
-git push -u <remote_name> <branch_name>          # 推送并设置本地分支跟踪远程分支 (首次推送建议使用)
-git push --force <remote_name> <branch_name>      # 强制推送 (慎用，可能覆盖远程仓库内容)
-git push --delete <remote_name> <branch_name>     # 删除远程分支
+git merge <branch>                             # 将指定分支合并到当前分支 (常用)
+git merge --no-ff <branch>                     # 禁用 Fast-forward 合并，创建合并提交 (保留分支历史)
+git merge --squash <branch>                    # 合并指定分支的更改，但不自动提交 (合并多个提交)
+git merge --abort                              # 中止当前的合并操作 (处理冲突时)
+git rebase <basebranch>                        # 将当前分支的提交变基到 <basebranch> 上 (使历史线性)
+git rebase -i <commit>                         # 交互式变基 (修改、合并、删除提交, 强大但需谨慎)
+git rebase --continue                          # 解决冲突后继续变基
+git rebase --abort                             # 中止当前的变基操作
+git rebase --skip                              # 跳过当前导致冲突的提交 (变基时)
 
-# 提示:
-#   - 常用远程仓库名: `origin` (默认), `upstream` (上游仓库)
-#   - `fetch` 用于获取远程更新，`pull` 用于获取并合并更新，`push` 用于推送本地更新
-#   - 避免强制推送，除非明确知道后果
+# 变基警告 (Rebase Warning):
+#   - 不要对已经推送到公共/共享仓库的分支执行变基，除非你非常清楚后果。
+#   - 变基会改写提交历史。
 
 ##############################################################################
-# 查看与比较 (Inspect & Compare, show, diff)
+# 远程仓库操作 (Working with Remotes - 核心协作)
 ##############################################################################
 
-git show <commit>                               # 查看指定提交的详细信息 (修改内容)
-git show <commit>:<file>                        # 查看指定提交中某个文件的内容
-git diff                                        # 查看工作区与暂存区的差异
-git diff --staged                               # 查看暂存区与最近一次提交的差异
-git diff <branch1> <branch2>                    # 比较两个分支的差异
-git diff <commit1> <commit2>                    # 比较两个提交的差异
-git diff <commit> <file>                        # 查看指定提交与工作区某个文件的差异
-
-# 提示:
-#   - `diff` 命令默认输出 unified diff 格式
-#   - 可以使用 `git diff --name-status` 查看修改文件名和状态 (A/M/D)
-
-##############################################################################
-# 撤销更改 (Undoing Changes, reset, revert, checkout --)
-##############################################################################
-
-git reset --soft <commit>                       # 回退到指定提交 (保留工作区和暂存区更改)
-git reset --mixed <commit>                      # 回退到指定提交 (保留工作区更改，暂存区重置) (默认 reset 模式)
-git reset --hard <commit>                       # 回退到指定提交 (工作区和暂存区都重置，慎用)
-git revert <commit>                             # 撤销指定提交 (创建一个新的提交来撤销更改)
-git checkout -- <file>                          # 撤销工作区对指定文件的修改 (恢复到暂存区或最近一次提交状态)
-git clean -fd                                   # 删除工作区未跟踪的文件和目录 (慎用)
-
-# 提示:
-#   - `reset` 用于回退提交历史，`revert` 用于撤销某个提交的更改 (保留历史)
-#   - `checkout -- <file>` 用于撤销对单个文件的修改，`clean` 用于清理未跟踪文件
+git remote -v                                  # 显示所有远程仓库及其 URL (常用)
+git remote add <remote> <url>                  # 添加新的远程仓库
+git remote remove <remote>                     # 删除指定的远程仓库
+git remote rename <old-name> <new-name>        # 重命名远程仓库
+git remote set-url <remote> <new-url>          # 修改远程仓库的 URL (常用, 切换 HTTPS/SSH 或迁移)
+git remote show <remote>                       # 显示远程仓库的详细信息 (查看跟踪分支等)
+git fetch <remote>                             # 从远程仓库下载对象和引用，但不合并 (常用, 更新远程状态)
+git fetch --all                                # 从所有远程仓库 fetch
+git fetch --prune                              # Fetch 前删除远程不存在的本地跟踪分支 (清理)
+git pull <remote> <branch>                     # Fetch 并合并远程分支到当前本地分支 (最常用, 等同于 fetch + merge)
+git pull --rebase <remote> <branch>            # Fetch 并变基当前分支到远程分支之上 (保持线性历史)
+git pull --ff-only <remote> <branch>           # Fetch 并只在可以 Fast-forward 时合并 (更安全的主分支更新方式)
+git push <remote> <branch>                     # 推送本地分支到远程仓库 (最常用)
+git push -u <remote> <branch>                  # 推送并设置上游跟踪关系 (首次推送常用)
+git push <remote> --tags                       # 推送所有本地标签到远程仓库
+git push <remote> <tag>                        # 推送指定标签到远程仓库
+git push <remote> :<branch>                    # 删除远程分支 (旧语法, 推送空引用)
+git push <remote> --delete <branch>            # 删除远程分支 (推荐, 更直观)
+git push --force <remote> <branch>             # 强制推送 (危险! 会覆盖远程历史, 仅在确知后果时用)
+git push --force-with-lease <remote> <branch>  # 安全的强制推送 (推荐! 检查远程是否更新过)
 
 ##############################################################################
-# 储藏 (Stashing, stash)
+# 历史记录 & 检查 (History & Inspection)
 ##############################################################################
 
-git stash                                       # 储藏当前工作区和暂存区的更改
-git stash save "<message>"                      # 储藏并添加描述信息
-git stash list                                      # 查看储藏列表
-git stash show                                      # 查看最近一次储藏的摘要信息
-git stash show -p                                   # 查看最近一次储藏的详细补丁
-git stash apply                                     # 应用最近一次储藏 (不删除储藏)
-git stash apply stash@\{<index>\}                  # 应用指定索引的储藏
-git stash pop                                       # 应用最近一次储藏并删除储藏
-git stash pop stash@\{<index>\}                    # 应用指定索引的储藏并删除储藏
-git stash drop stash@\{<index>\}                   # 删除指定索引的储藏
-git stash clear                                     # 清空所有储藏
-
-# 提示:
-#   - `stash` 用于临时保存工作区和暂存区的更改，以便切换分支或处理紧急任务
-#   - 使用 `stash list` 查看储藏列表，并使用索引操作指定储藏
-
-##############################################################################
-# 标签 (Tagging, tag)
-##############################################################################
-
-git tag                                         # 列出所有标签
-git tag -l "<pattern>"                          # 按模式列出标签 (例如: git tag -l "v1.*")
-git tag -a <tag_name> -m "<message>" <commit>     # 创建带注解的标签 (需要提交信息)
-git tag <tag_name> <commit>                       # 创建轻量标签 (不需要提交信息)
-git tag -d <tag_name>                             # 删除本地标签
-git push --tags                                   # 推送所有本地标签到远程仓库
-git push <remote_name> --tags                      # 推送所有本地标签到指定远程仓库
-git push <remote_name> --delete tag <tag_name>   # 删除远程标签
-git show <tag_name>                               # 查看标签信息和关联的提交
-
-# 提示:
-#   - 标签常用于标记发布版本 (例如: v1.0.0, v2.1.3)
-#   - 推荐使用带注解的标签，方便查看标签信息
+git log                                        # 显示提交历史 (基础)
+git log --oneline                              # 单行简洁显示提交历史 (常用)
+git log --graph                                # 图形化显示提交历史 (查看分支合并情况)
+git log --decorate                             # 显示分支和标签指向
+git log --stat                                 # 显示每次提交的文件变更统计
+git log -p [<file>]                            # 显示每次提交的详细变更内容 (patch)
+git log -n <count>                             # 限制显示提交数量 (e.g., git log -n 5)
+git log --since="<date>" --until="<date>"      # 按时间范围筛选
+git log -S"<string>"                           # 搜索提交内容中包含指定字符串的提交 (代码搜索)
+git log -G"<regex>"                            # 搜索提交内容匹配正则表达式的提交
+git log --author="<name>"                      # 按作者筛选提交
+git log --grep="<pattern>"                     # 按提交信息筛选提交
+git log <branch1>..<branch2>                   # 显示 branch2 有但 branch1 没有的提交 (分支比较)
+git log <file>                                 # 显示指定文件的修改历史
+git show <commit>                              # 显示指定提交的详细信息和变更 (常用)
+git blame <file>                               # 逐行显示文件的修改者和提交信息 (追溯代码负责人)
+git shortlog [-s] [-n]                         # 汇总作者的提交信息 (s: 数量, n: 排序)
 
 ##############################################################################
-# 子模块 (Submodules, submodule)
+# 撤销更改 (Undoing Changes)
 ##############################################################################
 
-git submodule add <repository_url> <path>       # 添加子模块
-git submodule init                                  # 初始化子模块 (在克隆包含子模块的仓库后执行)
-git submodule update                                # 更新子模块 (拉取子模块代码)
-git submodule status                                # 查看子模块状态
+git checkout -- <file>                         # 丢弃工作区的指定文件修改 (危险! 未暂存的修改将丢失)
+git restore <file>                             # (Git >= 2.23) 丢弃工作区修改 (推荐替代 checkout --)
+git restore --staged <file>                    # (Git >= 2.23) 将文件从暂存区撤出 (推荐替代 reset HEAD)
+git reset HEAD <file>                          # 将文件从暂存区撤出，但不修改工作区 (常用)
+git reset --soft <commit>                      # 回退到指定提交，保留工作区和暂存区更改 (用于合并提交)
+git reset --mixed <commit>                     # 回退到指定提交，保留工作区更改，重置暂存区 (默认)
+git reset --hard <commit>                      # 回退到指定提交，丢弃工作区和暂存区更改 (危险! 彻底回滚)
+git revert <commit>                            # 创建一个新的提交来撤销指定提交的更改 (安全, 推荐用于公共历史)
+git clean -n                                   # 预览将要被删除的未跟踪文件
+git clean -f                                   # 删除未跟踪的文件 (危险!)
+git clean -fd                                  # 删除未跟踪的文件和目录 (危险!)
+git clean -fX                                  # 删除 .gitignore 中指定的忽略文件 (危险!)
 
-# 提示:
-#   - 子模块用于在 Git 仓库中管理依赖的其他 Git 仓库
-#   - 克隆包含子模块的仓库后，需要执行 `git submodule init` 和 `git submodule update` 初始化和更新子模块
+##############################################################################
+# 暂存 (Stashing)
+##############################################################################
+
+git stash save ["message"]                     # 将未提交的更改 (工作区+暂存区) 保存到 stash (常用)
+git stash                                      # `git stash save` 的简写
+git stash list                                 # 列出所有 stash
+git stash apply [stash@{N}]                    # 应用最新的 (或指定的) stash，但不删除它
+git stash pop [stash@{N}]                      # 应用最新的 (或指定的) stash，并删除它 (常用)
+git stash drop [stash@{N}]                     # 删除最新的 (或指定的) stash
+git stash clear                                # 删除所有 stash
+git stash show [-p] [stash@{N}]                # 显示 stash 的内容 (p: 显示 patch)
+git stash branch <branch> [stash@{N}]          # 基于 stash 创建新分支并应用
+
+##############################################################################
+# 标签 (Tagging)
+##############################################################################
+
+git tag                                        # 列出所有标签
+git tag <tag> [<commit>]                       # 创建轻量标签 (指向指定提交，默认为 HEAD)
+git tag -a <tag> -m "<message>" [<commit>]     # 创建带附注的标签 (推荐, 包含作者、日期、消息)
+git tag -d <tag>                               # 删除本地标签
+git push <remote> --delete <tag>               # 删除远程标签
+git show <tag>                                 # 显示标签信息及对应的提交
+
+##############################################################################
+# 高级技巧 & 子模块 (Advanced & Submodules)
+##############################################################################
+
+# --- Reflog: 恢复丢失的提交或分支 (救命稻草) ---
+git reflog                                     # 显示 HEAD 的移动历史 (包括已删除的分支/重置)
+git reset --hard HEAD@{N}                      # 恢复到 reflog 中的某个状态 (谨慎使用 --hard)
+
+# --- Cherry-pick: 选取单个提交 ---
+git cherry-pick <commit>                       # 将指定提交应用到当前分支 (跨分支应用补丁)
+
+# --- Bisect: 二分查找引入 Bug 的提交 ---
+git bisect start                               # 开始二分查找
+git bisect bad [<commit>]                      # 标记当前 (或指定) 提交为 "有问题"
+git bisect good [<commit>]                     # 标记当前 (或指定) 提交为 "没问题"
+git bisect reset                               # 结束二分查找，返回原始分支
+
+# --- Submodules: 管理子项目 ---
+git submodule add <url> <path>                 # 添加子模块
+git submodule init                             # 初始化子模块 (首次克隆后)
+git submodule update                           # 更新子模块到父仓库记录的提交
+git submodule update --remote                  # 更新子模块到其远程分支的最新提交
+git submodule update --init --recursive        # 初始化并递归更新所有子模块
+git clone --recurse-submodules <url>           # 克隆仓库并自动初始化和更新子模块
+
+# --- Worktree: 同时检出多个工作区 ---
+git worktree add <path> [<branch>]             # 在指定路径创建新的工作区 (可基于新分支)
+git worktree list                              # 列出所有工作区
+git worktree remove <path>                     # 移除工作区 (需先删除相关分支)
+
+# --- Git LFS (Large File Storage): 处理大文件 ---
+# 安装 LFS: https://git-lfs.github.com/
+# git lfs install                            # 初始化 LFS (每个用户只需一次)
+# git lfs track "*.psd"                      # 跟踪指定类型的大文件 (会修改 .gitattributes)
+# git add .gitattributes                     # 将 .gitattributes 加入版本控制
+# # 之后正常 add, commit, push 即可
+
+##############################################################################
+# 最佳实践 (Best Practices)
+##############################################################################
+
+# --- 提交 (Commits) ---
+# - 编写清晰、一致的提交信息:
+#   - 使用祈使句现在时态 (e.g., "Add feature" not "Added feature" or "Adds feature").
+#   - 遵循团队规范 (e.g., Conventional Commits: feat:, fix:, chore:, docs: 等).
+#   - 简短的标题行 (<= 50 字符), 可选的详细描述体.
+# - 原子化提交 (Atomic Commits):
+#   - 每个提交只包含一个逻辑更改单元。
+#   - 便于代码审查、回滚、变基和 cherry-pick。
+# - 经常提交:
+#   - 不要在本地堆积大量未提交的更改。
+#   - 小步快跑，降低丢失工作的风险。
+
+# --- 分支 (Branches) ---
+# - 使用特性分支 (Feature Branches):
+#   - 为每个新功能、修复或实验创建独立分支。
+#   - 保持主分支 (main/master) 的稳定和可部署。
+# - 使用描述性的分支名:
+#   - 例如 `feature/user-authentication`, `bugfix/login-error`, `hotfix/critical-security-patch`.
+# - 保持分支短小精悍:
+#   - 避免过长的特性分支，尽早集成回主线。
+# - 定期清理已合并的本地和远程分支。
+
+# --- 协作 (Collaboration) ---
+# - 经常拉取远程更改:
+#   - 在开始新工作或推送前，使用 `git pull --rebase` (推荐) 或 `git pull` 更新本地分支。
+# - 使用 Pull Requests / Merge Requests:
+#   - 这是代码审查和讨论更改的标准流程。
+# - 解决冲突:
+#   - 在本地解决合并或变基冲突，测试后再推送。
+# - 谨慎使用强制推送:
+#   - 绝不 `git push --force` 到共享分支 (main, develop 等)。
+#   - 如果必须在自己的特性分支上强制推送 (例如 rebase 后), 优先使用 `git push --force-with-lease`。
+
+# --- 历史记录 (History) ---
+# - 在推送前清理本地历史 (特性分支):
+#   - 使用 `git rebase -i` 来合并 (squash/fixup)、编辑 (reword/edit) 或重排提交，使历史更清晰。
+# - 避免修改已发布的历史:
+#   - 一旦分支被推送到共享仓库，避免使用 rebase 或其他改写历史的操作。如果必须修改，务必与团队沟通。
+# - 使用 `--no-ff` 合并特性分支到主分支:
+#   - 保留特性分支的开发历史脉络，便于追溯。
+
+# --- 其他 (Others) ---
+# - 维护好 `.gitignore` 文件:
+#   - 忽略构建产物、依赖项 (node_modules, vendor)、日志文件、编辑器/IDE 配置、敏感信息等。
+#   - 将 `.gitignore` 文件本身加入版本控制。
+# - 使用标签标记发布版本:
+#   - 使用带附注的标签 (`git tag -a`) 标记重要的发布点 (e.g., v1.0.0)。
+# - 了解 Git LFS:
+#   - 对于大型二进制文件 (图像、视频、数据集等)，使用 Git LFS 避免仓库膨胀。
 
 ##############################################################################
 # 实用技巧 (Tips and Tricks)
 ##############################################################################
 
-# 使用别名简化常用命令:
-#   git config --global alias.co checkout
-#   git config --global alias.ci commit
-#   git config --global alias.st status
-#   git config --global alias.br branch
-#   git config --global alias.lg "log --oneline --graph --decorate --all"
+# 设置常用别名 (在 ~/.gitconfig 或 .git/config 中)
+# [alias]
+#   co = checkout
+#   ci = commit
+#   st = status
+#   br = branch
+#   lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+#   hist = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+#   type = cat-file -t
+#   dump = cat-file -p
+#   unstage = reset HEAD --
+#   last = log -1 HEAD
 
-# 使用 `.gitignore` 文件忽略不需要 Git 管理的文件和目录
+# 查找包含特定代码的提交
+# git log -S'function_name' --source --all
 
-# 使用 `git reflog` 查看所有分支的操作记录 (包括 reset 等操作)，用于找回误操作的提交
+# 查找修改了特定文件的提交
+# git log --follow -- <file_path>  # --follow 可以跟踪文件重命名
 
-# 使用 GUI 工具 (例如: GitKraken, SourceTree, GitHub Desktop) 可视化操作 Git
+# 快速查看两个分支的不同 (文件列表)
+# git diff --name-status <branch1>..<branch2>
+
+# 仅暂存部分文件修改
+# git add -p
+
+# 交互式 Rebase 清理提交历史 (推送特性分支前常用)
+# git rebase -i HEAD~5  # 清理最近 5 个提交
+# git rebase -i <base-branch> # 相对某个基础分支进行清理
+
+# 查看远程 URL
+# git remote get-url <remote>
+
+# 同步 Fork (假设 upstream 是原始仓库, origin 是你的 fork)
+# git fetch upstream
+# git switch main  # 或 master
+# git merge upstream/main --ff-only # 推荐 --ff-only 确保本地没有偏离
+# git push origin main
+
+# 查看未被追踪的文件将如何被 clean
+# git clean -fdx -n
 
 ##############################################################################
 # 示例 (Examples)
 ##############################################################################
 
-# 创建新仓库，添加文件，提交并推送到远程仓库:
-#   mkdir my-project && cd my-project
-#   git init
-#   echo "Hello, Git!" > README.md
-#   git add README.md
-#   git commit -m "Initial commit"
-#   git remote add origin <repository_url>
-#   git push -u origin main
+# 1. 开始新功能开发 (常用流程)
+# git switch main                     # 切换到主分支
+# git pull origin main --ff-only      # 拉取最新代码 (安全更新)
+# git switch -c feature/new-feature   # 创建并切换到新特性分支
+# # ... 开发代码, 经常 commit ...
+# git add .
+# git commit -m "feat: Implement initial structure for feature XYZ"
+# # ... 更多开发和 commit ...
+# git rebase -i main                  # (可选) 推送前清理本地提交历史
+# git push -u origin feature/new-feature # 推送新分支到远程 (创建 Pull Request)
 
-# 从远程仓库克隆，创建新分支，修改文件，提交并推送:
-#   git clone <repository_url> my-project
-#   cd my-project
-#   git checkout -b feature/new-feature
-#   echo "Adding a new feature" >> README.md
-#   git add README.md
-#   git commit -m "Implement new feature"
-#   git push origin feature/new-feature
+# 2. 合并功能分支到主分支 (常用流程, 通过 PR 完成)
+# # --- 在代码托管平台 (GitHub/GitLab) 操作 ---
+# # - 创建 Pull Request (PR) / Merge Request (MR)
+# # - 进行代码审查 (Code Review)
+# # - (可选) 平台可能会自动运行 CI/CD 检查
+# # - 点击 "Merge" 按钮 (通常使用 Merge Commit --no-ff 或 Squash and Merge)
+# # --- 本地清理 ---
+# git switch main
+# git pull origin main                # 更新本地 main 分支
+# git branch -d feature/new-feature   # 删除本地特性分支
+# git push origin --delete feature/new-feature # (可选) 删除远程特性分支 (如果平台没自动删)
+
+# 3. 使用交互式 Rebase 清理本地提交 (推送前整理)
+# git switch feature/work-in-progress
+# git rebase -i main                  # 相对 main 分支进行交互式变基
+# # 在编辑器中:
+# #   - pick: 保留提交
+# #   - reword: 保留提交, 修改提交信息
+# #   - edit: 保留提交, 暂停以修改代码/拆分提交
+# #   - squash: 将提交合并到前一个提交, 合并提交信息
+# #   - fixup: 将提交合并到前一个提交, 丢弃此提交信息
+# #   - drop: 删除提交
+# # ... 解决冲突 (如果需要), 使用 git rebase --continue / --abort ...
+# git push --force-with-lease origin feature/work-in-progress # 安全强制推送
+
+# 4. 切换远程仓库 URL (例如从 HTTPS 到 SSH)
+# git remote -v                       # 查看当前 origin URL
+# git remote set-url origin git@github.com:USERNAME/REPOSITORY.git # 设置新 URL
+# git remote -v                       # 验证新 URL
 
 ##############################################################################
 # 鸣谢 & 更多资源 (Credit & Further Resources)
 ##############################################################################
 
-# https://git-scm.com/docs
-# https://www.atlassian.com/git/tutorials
-# https://learngitbranching.js.org/
+# Pro Git Book (中文版): https://git-scm.com/book/zh/v2
+# Git 官方文档: https://git-scm.com/doc
+# Atlassian Git Tutorial: https://www.atlassian.com/git/tutorials
+# Learn Git Branching (交互式学习): https://learngitbranching.js.org/
+# Conventional Commits (提交规范): https://www.conventionalcommits.org/
+# Git Flight Rules (常见问题解决): https://github.com/k88hudson/git-flight-rules
 
-# vim: set ts=4 sw=4 tw=0 et ft=text :
+# vim: set ts=4 sw=4 tw=0 et ft=bash :
