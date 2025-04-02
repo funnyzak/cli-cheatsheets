@@ -206,6 +206,9 @@ COMMAND_DESCRIPTIONS["php"]="PHP 运行时"
 COMMAND_CATEGORIES["python"]="runtime"
 COMMAND_DESCRIPTIONS["python"]="Python 运行时"
 
+COMMAND_CATEGORIES["venv"]="runtime"
+COMMAND_DESCRIPTIONS["venv"]="Python 虚拟环境"
+
 
 # 安全工具类命令
 COMMAND_CATEGORIES["nmap"]="security"
