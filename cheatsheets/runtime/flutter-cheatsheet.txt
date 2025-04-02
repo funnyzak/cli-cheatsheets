@@ -1,0 +1,175 @@
+##############################################################################
+# Flutter CLI 速查表 (Flutter CLI Cheatsheet)
+# 快速参考 Flutter 命令行工具常用命令
+# Source: https://github.com/funnyzak/cli-cheatsheets (Placeholder)
+# Flutter Docs: https://flutter.dev/docs
+##############################################################################
+
+# 图例 (Legend):
+#   <PROJECT_NAME> : 项目目录名 (Project directory name)
+#   <DEVICE_ID>    : 设备 ID 或部分 ID (Device ID or partial ID from 'flutter devices')
+#   <PACKAGE_NAME> : Dart 包名 (Dart package name)
+#   <DIRECTORY>    : 目录路径 (Directory path)
+#   <FILE_PATH>    : 文件路径 (File path)
+#   [COMMAND]      : Flutter 子命令 (Flutter subcommand)
+#   [OPTIONS]      : 附加选项 (Additional options)
+
+##############################################################################
+# 环境与设置 (Environment & Setup)
+##############################################################################
+
+flutter doctor                            # 检查 Flutter 环境配置和依赖项
+flutter doctor -v                         # 显示详细的环境检查信息
+flutter create <PROJECT_NAME>             # 创建一个新的 Flutter 项目
+flutter create --org com.example <PROJECT_NAME> # 创建项目并指定组织名
+flutter create -t module <PROJECT_NAME>   # 创建一个 Flutter module (用于添加到现有应用)
+flutter create -t package <PROJECT_NAME>  # 创建一个 Dart 包
+flutter create -t plugin <PROJECT_NAME>   # 创建一个 Flutter 插件
+
+##############################################################################
+# 项目运行与调试 (Running & Debugging Projects)
+##############################################################################
+
+flutter run                               # 在连接的设备或模拟器上运行项目 (默认 debug 模式)
+flutter run -d <DEVICE_ID>                # 在指定设备上运行项目
+flutter run --release                     # 在 release 模式下运行项目
+flutter run --profile                     # 在 profile 模式下运行项目 (性能分析)
+flutter run -t <FILE_PATH>                # 运行指定的 Dart 文件 (例如: lib/main_dev.dart)
+flutter run --flavor <FLAVOR_NAME>        # 使用指定的 flavor 运行 (需原生配置)
+flutter attach                            # 连接到正在运行的 Flutter 应用进行调试和热重载
+
+# 在 'flutter run' 期间的交互式命令:
+#   r : 执行热重载 (Hot Reload)
+#   R : 执行热重启 (Hot Restart)
+#   h : 显示帮助信息
+#   d : 分离 (Detach)
+#   c : 清除屏幕
+#   q : 退出
+
+##############################################################################
+# 构建与打包 (Building & Packaging)
+##############################################################################
+
+flutter build apk                         # 构建 Android APK (Debug 模式)
+flutter build apk --release               # 构建 Android APK (Release 模式)
+flutter build apk --split-per-abi         # 为不同的 ABI 构建独立的 APKs
+flutter build appbundle                   # 构建 Android App Bundle (Debug 模式)
+flutter build appbundle --release         # 构建 Android App Bundle (Release 模式)
+flutter build ios                         # 构建 iOS 应用 (Debug 模式, 需要 macOS)
+flutter build ios --release               # 构建 iOS 应用 (Release 模式, 需要 macOS)
+flutter build web                         # 构建 Web 应用
+flutter build web --release               # 构建 Web 应用 (Release 模式)
+flutter build web --web-renderer html     # 使用 HTML 渲染器构建 Web (默认 canvaskit)
+flutter build linux                       # 构建 Linux 桌面应用
+flutter build macos                       # 构建 macOS 桌面应用 (需要 macOS)
+flutter build windows                     # 构建 Windows 桌面应用
+
+# 通用构建选项:
+#   --[no-]pub                        # 构建前是否运行 'pub get' (默认运行)
+#   --build-name=<X.Y.Z>              # 设置版本名称 (e.g., 1.0.0)
+#   --build-number=<INT>              # 设置版本号 (e.g., 1)
+#   --analyze-size                    # 构建后分析包大小 (支持 apk, appbundle, ios, linux, macos, windows)
+#   --[no-]tree-shake-icons           # 构建时移除未使用的图标字体 (默认移除)
+
+##############################################################################
+# 包管理 (Package Management - flutter pub)
+##############################################################################
+
+flutter pub get                           # 获取项目依赖项 (在 pubspec.yaml 中定义的)
+flutter pub upgrade                       # 升级项目依赖项到最新兼容版本
+flutter pub outdated                      # 检查可升级的依赖项
+flutter pub add <PACKAGE_NAME>            # 添加依赖项到 pubspec.yaml 并运行 'pub get'
+flutter pub add --dev <PACKAGE_NAME>      # 添加开发依赖项 (dev_dependency)
+flutter pub remove <PACKAGE_NAME>         # 从 pubspec.yaml 移除依赖项并运行 'pub get'
+flutter pub cache repair                  # 修复损坏的 pub 缓存
+flutter pub global activate <PACKAGE_NAME> # 全局激活 Dart 包
+flutter pub global list                   # 列出全局激活的 Dart 包
+
+##############################################################################
+# 设备管理 (Device Management)
+##############################################################################
+
+flutter devices                           # 列出所有连接的设备和模拟器/仿真器
+flutter emulators                         # 列出可用的模拟器/仿真器
+flutter emulators --launch <EMULATOR_ID>  # 启动指定的模拟器/仿真器
+flutter emulators --create [--name <NAME>] # 创建一个新的 Android 模拟器
+
+##############################################################################
+# 测试 (Testing)
+##############################################################################
+
+flutter test                              # 运行项目中的单元测试和 Widget 测试
+flutter test <FILE_PATH>                  # 运行指定文件中的测试
+flutter test --coverage                   # 运行测试并生成代码覆盖率报告 (lcov.info)
+flutter test --plain-name "Widget Test Name" # 按名称运行特定测试
+
+##############################################################################
+# 清理与维护 (Cleaning & Maintenance)
+##############################################################################
+
+flutter clean                             # 删除 build/ 和 .dart_tool/ 目录, 清理构建产物
+flutter channel                           # 列出可用的 Flutter 发行通道
+flutter channel stable                    # 切换到 stable 通道
+flutter channel beta                      # 切换到 beta 通道
+flutter channel dev                       # 切换到 dev 通道
+flutter channel master                    # 切换到 master 通道
+flutter upgrade                           # 升级 Flutter SDK 到当前通道的最新版本
+flutter downgrade                         # 降级 Flutter SDK 到当前通道的上一个版本
+flutter precache                          # 预下载平台相关的开发二进制文件
+
+##############################################################################
+# 通用命令与帮助 (General Commands & Help)
+##############################################################################
+
+flutter --version                         # 显示 Flutter SDK 版本信息
+flutter help                              # 显示 Flutter 帮助信息
+flutter help [COMMAND]                    # 显示特定子命令的帮助信息
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 强制指定 Web 渲染器:
+#   flutter run -d chrome --web-renderer html
+#   flutter build web --web-renderer canvaskit
+
+# 查看详细的构建或运行日志:
+#   flutter run -v
+#   flutter build apk -v
+
+# 格式化 Dart 代码:
+#   flutter format .
+
+# 分析 Dart 代码:
+#   flutter analyze
+
+# 快速创建新项目并立即运行:
+#   flutter create my_app && cd my_app && flutter run
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 创建项目, 添加 http 包, 并在 Chrome 中运行:
+#    flutter create my_web_app
+#    cd my_web_app
+#    flutter pub add http
+#    flutter run -d chrome
+
+# 2. 构建 Android Release App Bundle:
+#    flutter build appbundle --release --build-name=1.0.0 --build-number=1
+
+# 3. 检查环境, 切换到 beta 通道并升级:
+#    flutter doctor
+#    flutter channel beta
+#    flutter upgrade
+
+##############################################################################
+# 更多资源 (Further Resources)
+##############################################################################
+
+# Flutter 官方文档: https://flutter.dev/docs
+# Pub.dev (Dart Packages): https://pub.dev/
+# Flutter Cookbook: https://flutter.dev/docs/cookbook
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

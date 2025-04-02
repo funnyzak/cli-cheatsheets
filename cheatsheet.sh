@@ -58,6 +58,10 @@ COMMAND_DESCRIPTIONS["vite"]="前端构建工具"
 COMMAND_CATEGORIES["webpack"]="build"
 COMMAND_DESCRIPTIONS["webpack"]="前端构建工具"
 
+COMMAND_CATEGORIES["xcodebuild"]="build"
+COMMAND_DESCRIPTIONS["xcodebuild"]="Xcode 构建工具"
+
+
 # 数据库类命令
 COMMAND_CATEGORIES["mongo"]="database"
 COMMAND_DESCRIPTIONS["mongo"]="MongoDB 客户端"
@@ -214,6 +218,12 @@ COMMAND_DESCRIPTIONS["python"]="Python 运行时"
 
 COMMAND_CATEGORIES["venv"]="runtime"
 COMMAND_DESCRIPTIONS["venv"]="Python 虚拟环境"
+
+COMMAND_CATEGORIES["dotnet"]="runtime"
+COMMAND_DESCRIPTIONS["dotnet"]="DotNet 运行时"
+
+COMMAND_CATEGORIES["flutter"]="runtime"
+COMMAND_DESCRIPTIONS["flutter"]="Flutter 运行时"
 
 
 # 安全工具类命令
