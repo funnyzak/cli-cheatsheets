@@ -114,6 +114,9 @@ COMMAND_DESCRIPTIONS["ffmpeg"]="音视频处理工具"
 COMMAND_CATEGORIES["Imagemagick"]="media"
 COMMAND_DESCRIPTIONS["Imagemagick"]="图像处理工具"
 
+COMMAND_CATEGORIES["yt-dlp"]="media"
+COMMAND_DESCRIPTIONS["yt-dlp"]="下载视频/音频"
+
 # 网络工具类命令
 COMMAND_CATEGORIES["curl"]="network"
 COMMAND_DESCRIPTIONS["curl"]="网络请求工具"
