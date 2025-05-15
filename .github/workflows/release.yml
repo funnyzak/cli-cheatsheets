@@ -34,7 +34,8 @@ jobs:
       - name: Create distribution package
         run: |
           mkdir -p dist
-          tar -czf "dist/${PROJECT_NAME}-${DATE_SUFFIX}.tar.gz" cheatsheets cheatsheet.sh
+          tar -czf "dist/${PROJECT_NAME}-${DATE_SUFFIX}.tar.gz" cheatsheets cheatsheet.sh README.md
+          echo "Created distribution package: dist/${PROJECT_NAME}-${DATE_SUFFIX}.tar.gz"
       
       - name: Create GitHub Release By Tag
         uses: softprops/action-gh-release@v1

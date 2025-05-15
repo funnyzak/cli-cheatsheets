@@ -286,7 +286,8 @@ CLI 速查表按类别组织在以下目录中：
 (`cheatsheets/media/`) 媒体处理工具
 
 * `ffmpeg-cheatsheet.txt`: FFmpeg 音视频处理命令
-* `Imagemagick-cheatsheet.txt`: ImageMagick 图像处理命令
+* `imagemagick-cheatsheet.txt`: imageMagick 图像处理命令
+* `yt-dlp-cheatsheet.txt` 下载视频/音频
 
 ### Network
 

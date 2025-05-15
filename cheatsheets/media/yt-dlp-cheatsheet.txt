@@ -1,0 +1,213 @@
+##############################################################################
+# yt-dlp 速查表 (yt-dlp Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+#
+# yt-dlp 是一个 youtube-dl 的分支，专注于下载视频/音频。
+# 官方 GitHub: https://github.com/yt-dlp/yt-dlp
+##############################################################################
+
+# 图例 (Legend):
+#   - URL:               视频/播放列表/频道的 URL
+#   - PLAYLIST_URL:      播放列表的 URL
+#   - FORMAT_CODE:       通过 -F 列出的格式代码
+#   - FILENAME_TEMPLATE: 输出文件名的模板 (见下方输出模板)
+#   - LANG_CODE:         语言代码 (例如: en, zh-CN, ja)
+#   - NUMBER:            数字 (例如: 5, 0)
+#   - RANGE:             范围 (例如: 1-5, 10, 12-15)
+#   - USERNAME:          用户名
+#   - PASSWORD:          密码
+#   - COOKIE_FILE:       包含 cookies 的文件路径
+
+##############################################################################
+# 基本下载 (Basic Downloading)
+##############################################################################
+
+yt-dlp URL                                    # 下载指定 URL 的视频 (默认最佳质量)
+yt-dlp -F URL                                 # 列出所有可用格式 (不下载)
+yt-dlp --list-formats URL                     # 同上, 列出所有可用格式
+yt-dlp -f FORMAT_CODE URL                     # 下载指定格式代码的视频/音频
+yt-dlp --simulate URL                         # 模拟下载过程 (不实际下载)
+yt-dlp --dump-json URL                        # 提取视频信息为 JSON 格式 (不下载)
+
+##############################################################################
+# 格式选择 (Format Selection)
+##############################################################################
+
+# 常用格式选择器:
+#   best:                选择包含视频和音频的最佳质量格式
+#   worst:               选择包含视频和音频的最差质量格式
+#   bestvideo:           选择最佳质量的纯视频流
+#   worstvideo:          选择最差质量的纯视频流
+#   bestaudio:           选择最佳质量的纯音频流
+#   worstaudio:          选择最差质量的纯音频流
+#   bv:                  等同于 bestvideo
+#   ba:                  等同于 bestaudio
+#   bv*:                 选择最佳质量的视频流 (允许特定编解码器，如 bv*[vcodec^=av01])
+#   ba*:                 选择最佳质量的音频流 (允许特定编解码器，如 ba*[acodec=opus])
+#   b:                   等同于 best
+#   w:                   等同于 worst
+#   all:                 下载所有格式 (谨慎使用!)
+
+yt-dlp -f bestvideo+bestaudio URL             # 下载最佳视频和最佳音频，然后合并 (推荐)
+yt-dlp -f "bv*+ba/b" URL                      # 优先最佳分离流，若无则选最佳合并流
+yt-dlp -f "best[height<=720]" URL             # 下载高度不超过 720p 的最佳格式
+yt-dlp -f "bestvideo[height<=1080][fps>30]+bestaudio/best" URL # 下载 1080p 且帧率 >30fps 的视频 + 最佳音频
+yt-dlp --format-sort "res,fps,vcodec:vp9" URL # 按分辨率、帧率、vp9 编解码器优先排序并下载最佳
+
+##############################################################################
+# 音频提取 (Audio Extraction)
+##############################################################################
+
+yt-dlp -x URL                                 # 提取音频 (默认最佳，通常为 m4a/opus/aac)
+yt-dlp -x --audio-format mp3 URL              # 提取音频并转换为 mp3 格式
+yt-dlp -x --audio-format wav --audio-quality 0 URL # 提取音频并转换为 wav (0=最佳质量)
+                                              # 可用格式: best, aac, flac, mp3, m4a, opus, vorbis, wav
+yt-dlp -f bestaudio --extract-audio --audio-format mp3 URL # 同上，更明确指定下载最佳音频流
+
+##############################################################################
+# 播放列表和频道 (Playlists & Channels)
+##############################################################################
+
+yt-dlp PLAYLIST_URL                           # 下载整个播放列表
+yt-dlp --playlist-items RANGE PLAYLIST_URL    # 下载播放列表中的指定项目 (例如: 1-5, 7, 10-12)
+yt-dlp --playlist-start NUMBER PLAYLIST_URL   # 从播放列表的第 N 个视频开始下载
+yt-dlp --playlist-end NUMBER PLAYLIST_URL     # 下载到播放列表的第 N 个视频结束
+yt-dlp --yes-playlist URL                     # 如果 URL 指向视频和播放列表，则下载播放列表
+yt-dlp --no-playlist URL                      # 如果 URL 指向视频和播放列表，则仅下载视频
+yt-dlp --flat-playlist URL                    # 仅列出播放列表视频信息，不下载
+yt-dlp --download-archive archive.txt URL     # 记录已下载的视频ID，避免重复下载
+
+##############################################################################
+# 输出和命名 (Output & Naming)
+##############################################################################
+
+yt-dlp -o FILENAME_TEMPLATE URL               # 指定输出文件名模板
+# 常用模板变量:
+#   %(title)s             # 视频标题
+#   %(id)s                # 视频 ID
+#   %(uploader)s          # 上传者
+#   %(uploader_id)s       # 上传者 ID
+#   %(upload_date)s       # 上传日期 (YYYYMMDD)
+#   %(playlist)s          # 播放列表标题
+#   %(playlist_index)s    # 视频在播放列表中的序号
+#   %(ext)s               # 文件扩展名
+#   %(resolution)s        # 视频分辨率 (例如 1920x1080)
+#   %(format_id)s         # 格式代码
+# 示例: yt-dlp -o "%(playlist)s/%(playlist_index)s - %(title)s [%(id)s].%(ext)s" PLAYLIST_URL
+
+yt-dlp -o "~/Videos/%(title)s.%(ext)s" URL    # 下载到指定目录和文件名
+yt-dlp --paths /path/to/download URL          # 指定下载文件的根目录
+yt-dlp --paths temp:/tmp/yt-dlp-temp          # 指定临时文件目录
+yt-dlp -P "/path/to/download" URL             # 等同于 --paths home:"/path/to/download"
+yt-dlp --restrict-filenames                   # 限制文件名中的特殊字符
+yt-dlp --write-thumbnail URL                  # 下载视频缩略图
+yt-dlp --embed-thumbnail URL                  # 下载并嵌入缩略图到音频文件 (需 ffmpeg)
+yt-dlp --convert-thumbnails jpg URL           # 将下载的缩略图转换为 jpg
+
+##############################################################################
+# 字幕 (Subtitles)
+##############################################################################
+
+yt-dlp --list-subs URL                        # 列出所有可用字幕
+yt-dlp --write-subs URL                       # 下载所有可用语言的字幕
+yt-dlp --write-auto-subs URL                  # 下载自动生成的字幕
+yt-dlp --sub-langs LANG_CODE[,LANG_CODE...] URL # 下载指定语言的字幕 (例如: en,zh-CN)
+                                              # 使用 "all" 下载所有语言
+yt-dlp --sub-format FORMAT URL                # 下载指定格式的字幕 (例如: srt, vtt, ass)
+yt-dlp --embed-subs URL                       # 将字幕嵌入视频文件 (如果格式支持)
+
+##############################################################################
+# 认证和网络 (Authentication & Network)
+##############################################################################
+
+yt-dlp --cookies COOKIE_FILE URL              # 使用 cookies 文件进行认证
+yt-dlp --cookies-from-browser BROWSER URL     # 从指定浏览器导入 cookies (例如: chrome, firefox)
+yt-dlp -u USERNAME -p PASSWORD URL            # 使用用户名和密码 (不推荐，可能不安全)
+yt-dlp --username USERNAME URL                # 仅提供用户名 (会提示输入密码)
+yt-dlp --netrc URL                            # 使用 .netrc 文件进行认证
+yt-dlp --proxy PROXY_URL URL                  # 使用 HTTP/HTTPS/SOCKS 代理
+yt-dlp --limit-rate RATE URL                  # 限制下载速度 (例如: 50K, 1M)
+yt-dlp --retries NUMBER URL                   # 设置重试次数 (默认 10)
+yt-dlp --fragment-retries NUMBER URL          # 设置分片下载重试次数
+yt-dlp --ignore-errors                        # 下载播放列表时忽略下载错误，继续下载其他视频
+yt-dlp --no-check-certificate                 # 禁止 SSL 证书验证 (不安全)
+
+##############################################################################
+# SponsorBlock (跳过赞助商等片段)
+##############################################################################
+
+# 需要 ffmpeg 来移除片段
+yt-dlp --sponsorblock-mark all URL            # 标记所有类型的片段 (不移除)
+yt-dlp --sponsorblock-remove all URL          # 移除所有类型的片段
+yt-dlp --sponsorblock-remove sponsor,selfpromo URL # 仅移除赞助商和自我推广片段
+# 可用类型: sponsor, selfpromo, interaction, intro, outro, preview, music_offtopic, filler
+
+##############################################################################
+# 高级/调试 (Advanced/Debugging)
+##############################################################################
+
+yt-dlp --verbose URL                          # 显示详细调试信息
+yt-dlp --print ARGS URL                       # 打印指定字段 (例如: --print title url)
+yt-dlp --force-ipv4 / --force-ipv6 URL        # 强制使用 IPv4 / IPv6
+yt-dlp --update                               # 更新 yt-dlp 到最新版本
+yt-dlp -U                                     # 同上, 更新 yt-dlp
+yt-dlp --rm-cache-dir                         # 清除 yt-dlp 的缓存
+yt-dlp --config-location PATH                 # 加载指定路径的配置文件
+                                              # 默认 ~/.config/yt-dlp/config 或 ~/.yt-dlp.conf
+
+##############################################################################
+# 实用技巧 (Tips and Tricks)
+##############################################################################
+
+# 1. 使用配置文件:
+#    在 ~/.config/yt-dlp/config (Linux/macOS) 或 %APPDATA%/yt-dlp/config.txt (Windows)
+#    中设置常用选项，例如:
+#    -x
+#    --audio-format mp3
+#    --audio-quality 0
+#    -o "~/Music/%(uploader)s/%(title)s.%(ext)s"
+#    --sponsorblock-remove all
+#    --ignore-errors
+
+# 2. 结合 `xargs` 或 `parallel` 批量下载 (从文件读取 URL):
+#    cat urls.txt | xargs -n 1 yt-dlp
+#    cat urls.txt | parallel yt-dlp
+
+# 3. 下载前预览格式，然后选择:
+#    yt-dlp -F "URL"
+#    # (查看输出，选择 FORMAT_CODE)
+#    yt-dlp -f FORMAT_CODE "URL"
+
+# 4. 下载视频并嵌入字幕和缩略图:
+#    yt-dlp -f "bv*+ba/b" --embed-subs --sub-langs "en,ja" --embed-thumbnail "URL"
+
+# 5. 下载整个频道的所有视频 (注意：频道 URL 可能需要特殊格式，或直接用播放列表):
+#    yt-dlp -o "%(uploader)s/%(playlist_title)s/%(playlist_index)s - %(title)s.%(ext)s" "CHANNEL_URL/videos"
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 下载最佳质量的 MP3 音频，并命名为 "艺术家 - 歌曲名.mp3":
+#    yt-dlp -x --audio-format mp3 -o "%(artist,uploader)s - %(track,title)s.%(ext)s" "VIDEO_URL"
+
+# 2. 下载播放列表的前5个视频，选择 720p 视频和最佳音频，输出到 "播放列表名/序号 - 标题.mp4":
+#    yt-dlp --playlist-items 1-5 \
+#           -f "bestvideo[height<=720]+bestaudio/best[height<=720]" \
+#           -o "%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s" \
+#           "PLAYLIST_URL"
+
+# 3. 下载视频，移除赞助商片段，并嵌入英语字幕:
+#    yt-dlp --sponsorblock-remove sponsor \
+#           --embed-subs --sub-langs en \
+#           "VIDEO_URL"
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# yt-dlp 官方文档: https://github.com/yt-dlp/yt-dlp#usage-and-options
+# yt-dlp 格式选择文档: https://github.com/yt-dlp/yt-dlp#format-selection
+# yt-dlp 输出模板文档: https://github.com/yt-dlp/yt-dlp#output-template
+
+# vim: set ts=4 sw=4 tw=0 et ft=sh :
