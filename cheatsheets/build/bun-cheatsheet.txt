@@ -1,8 +1,3 @@
-好的，专家已就位。请提供工具名称，我将为您生成一份高质量的 `.txt` 格式速查表。
-
-当我收到 `bun` 这个工具名称后，立即为您生成以下速查表：
-
-```
 ##############################################################################
 # Bun.js 速查表 (Bun.js Cheatsheet)
 # 快速、一体化的 JavaScript 工具集 (A fast, all-in-one JavaScript toolkit)
@@ -131,4 +126,3 @@ bun --help                                    # 显示帮助信息
 # Bun GitHub 仓库: https://github.com/oven-sh/bun
 
 # vim: set ts=4 sw=4 tw=0 et ft=bash :
-```
