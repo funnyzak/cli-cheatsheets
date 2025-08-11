@@ -46,6 +46,9 @@ COMMAND_DESCRIPTIONS["adb"]="Android调试桥接器"
 COMMAND_CATEGORIES["cmake"]="build"
 COMMAND_DESCRIPTIONS["cmake"]="CMake 构建系统"
 
+COMMAND_CATEGORIES["bun"]="build"
+COMMAND_DESCRIPTIONS["bun"]="Bun JavaScript 运行时和包管理器"
+
 COMMAND_CATEGORIES["gradle"]="build"
 COMMAND_DESCRIPTIONS["gradle"]="Gradle 构建工具"
 

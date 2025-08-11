@@ -238,6 +238,9 @@ CLI 速查表按类别组织在以下目录中：
 * `cmake-cheatsheet.txt`: CMake 构建系统命令
 * `gradle-cheatsheet.txt`: Gradle 构建工具命令
 * `mvn-cheatsheet.txt`: Maven 构建工具命令
+* `bun-cheatsheet.txt`: Bun JavaScript 运行时和包管理器命令
+* `flutter-cheatsheet.txt`: Flutter 移动应用开发框架命令
+* `webpack-cheatsheet.txt`: Webpack 模块打包工具命令
 
 ### CLI Tools
 
