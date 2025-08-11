@@ -4,125 +4,142 @@
 # https://github.com/funnyzak/cli-cheatsheets
 ##############################################################################
 
-# Bun 是一个现代的 JavaScript 运行时、打包器、转译器和包管理器，全部功能集于一身。
-# 本速查表旨在帮助您快速掌握其核心命令。
+# 图例 (Legend):
+#   - <path>:     文件或目录路径 (File or directory path)
+#   - <command>:  要执行的命令 (Command to execute)
+#   - <package>:  包名 (Package name, 例如: react, express)
+#   - <script>:   package.json 中定义的脚本名 (Script name defined in package.json)
+#   - <port>:     端口号 (Port number, 例如: 3000, 8080)
+#   - <args>:     传递给命令或脚本的额外参数 (Additional arguments)
+
+##############################################################################
+# 通用命令 (General Commands)
+##############################################################################
+
+bun run <script> [<args>]                     # 运行 package.json 中的脚本
+bun <path/to/file.ts|js> [<args>]             # 直接执行 TypeScript/JavaScript 文件
+bun --version                                 # 显示 Bun 版本
+bun --help                                    # 显示 Bun 帮助信息
 
 ##############################################################################
 # 项目初始化 (Project Initialization)
 ##############################################################################
 
-bun init                                      # 在当前目录初始化一个新项目 (生成 package.json 等)
-bun create <template> [dir]                   # 使用模板创建一个新项目
-# 常用模板: react, next, elysia, svelte, vue, astro
+bun init                                      # 在当前目录初始化一个新项目
+bun init --yes                                # 非交互式初始化 (使用默认值)
+bun create <template> <project-name>          # 基于模板创建项目 (例如: bun create react-app my-app)
 
 ##############################################################################
-# 依赖管理 (Dependency Management) - 极速
+# 依赖管理 (Dependency Management)
 ##############################################################################
 
-bun install                                   # 安装 package.json 中的所有依赖 (等同于 bun i)
-bun add <pkg>                                 # 添加一个生产依赖
-bun add -d <pkg>                              # 添加一个开发依赖 (-D, --dev)
-bun add -o <pkg>                              # 添加一个可选依赖 (-O, --optional)
-bun add -E <pkg>                              # 添加一个精确版本的依赖 (-E, --exact)
-bun add <alias>@npm:<pkg>                     # 为包设置别名
-bun remove <pkg>                              # 移除一个依赖 (等同于 bun rm)
-bun update [pkg...]                           # 更新指定的包或所有包
-bun pm ls                                     # 列出已安装的包
+# 安装 (Install)
+bun install                                   # 安装 package.json 中所有依赖 (或简写为 bun i)
+bun install --production                      # 仅安装生产依赖
+bun install --frozen-lockfile                 # 确保 lockfile 不被修改 (CI/CD 推荐)
+bun install --force                           # 强制重新安装所有依赖
 
-# 提示:
-#   - Bun 的包管理速度远超 npm/yarn/pnpm。
-#   - 使用 `bun.lockb` 二进制文件锁定依赖，读写更快。
+# 添加 (Add)
+bun add <package>                             # 添加一个或多个依赖到 dependencies
+bun add <package> --dev                       # 添加到 devDependencies (或简写为 -D)
+bun add <package> --peer                      # 添加到 peerDependencies (或简写为 -P)
+bun add <package> --optional                  # 添加到 optionalDependencies (或简写为 -O)
+bun add <package>@<version>                   # 添加指定版本的依赖
+bun add <package> --exact                     # 添加精确版本的依赖 (不带 ^ 或 ~)
 
-##############################################################################
-# 运行脚本与文件 (Running Scripts & Files)
-##############################################################################
+# 移除 (Remove)
+bun remove <package>                          # 移除一个或多个依赖 (或简写为 bun rm)
 
-bun run <script_name>                         # 运行在 package.json 中定义的脚本
-bun <file>                                    # 直接运行一个 JS/TS/JSX/TSX 文件，无需额外配置
-bun --watch <file>                            # 监视文件变化并自动重新运行
-bunx <pkg>                                    # 从 npm registry 执行一个包 (类似 npx)
-bunx --bun <script.sh>                        # 使用 Bun 的内置 Shell 运行脚本
-
-# 提示:
-#   - `bun <file>` 是 `bun run <file>` 的简写。
-#   - Bun 内置支持 TypeScript 和 JSX，无需预编译。
+# 升级 (Upgrade)
+bun update [<package>]                        # 更新所有依赖或指定依赖到最新版本
+bun update --interactive                      # 交互式更新依赖
 
 ##############################################################################
-# 代码打包 (Bundling - bun build)
+# 脚本执行 (Script Execution)
 ##############################################################################
 
-bun build <entrypoints...> --outdir <dir>     # 打包一个或多个入口文件到指定目录
-bun build ./index.ts --outdir ./dist          # 示例: 打包 index.ts 到 dist 目录
-bun build ./index.ts --outfile ./bundle.js    # 打包并指定输出文件名
-
-# 常用选项:
-#   --target=browser|node|bun                 # 指定打包目标环境
-#   --minify                                  # 压缩输出代码
-#   --sourcemap                               # 生成 Source Map
-#   --watch                                   # 监视文件变化并自动重新打包
-#   --external <pkg>                          # 将某个包标记为外部依赖，不打包进去
+bun run <script>                              # 运行 package.json 中定义的脚本 (例如: bun run start)
+bun run <script> -- <args>                    # 传递额外参数给脚本
+bun <command>                                 # 运行 node_modules/.bin 中的可执行文件 (无需 `run`)
+                                              # 例如: `bun jest` 等同于 `bun run jest`
 
 ##############################################################################
-# 测试 (Testing - bun test)
+# 开发服务器 (Development Server)
 ##############################################################################
 
-bun test                                      # 运行项目中的所有测试文件 (*.test.ts, *.spec.ts 等)
-bun test [query]                              # 运行匹配查询字符串的测试文件
-bun test --watch                              # 监视文件变化并自动重新运行测试
-bun test --coverage                           # 生成代码覆盖率报告
-bun test --preload <file>                     # 在运行测试前预加载一个模块 (例如: setup 文件)
-
-# 提示:
-#   - Bun 的测试运行器与 Jest API 兼容，迁移成本低。
+bun dev                                       # 启动开发服务器 (如果 package.json 中有 `dev` 脚本)
+bun run <script> --hot                        # 启用热模块替换 (HMR) (如果脚本支持)
 
 ##############################################################################
-# 其他实用命令 (Other Utility Commands)
+# 测试 (Testing)
 ##############################################################################
 
-bun repl                                      # 启动一个交互式 REPL (Read-Eval-Print Loop)
-bun upgrade                                   # 升级 Bun 到最新版本
-bun --version                                 # 显示 Bun 的版本 (等同于 bun -v)
-bun --help                                    # 显示帮助信息
+bun test                                      # 运行项目中的所有测试文件 (使用 Bun 的内置测试运行器)
+bun test <file.test.ts|js>                    # 运行指定测试文件
+bun test --watch                              # 监听文件变化并重新运行测试
+bun test --only <test-name>                   # 只运行指定名称的测试
+bun test --coverage                           # 生成测试覆盖率报告
 
 ##############################################################################
-# 实用技巧 (Tips & Tricks)
+# 构建 (Build)
 ##############################################################################
 
-# 配置文件 (bunfig.toml):
-#   在项目根目录创建 `bunfig.toml` 文件可以自定义 Bun 的行为，
-#   例如设置 registry, 定义 loader, 配置预加载模块等。
+bun build <input> --outdir <output-dir>       # 构建 JavaScript/TypeScript 文件
+bun build <input> --target browser            # 构建用于浏览器的代码
+bun build <input> --target bun                # 构建用于 Bun 运行时的代码
+bun build <input> --target node               # 构建用于 Node.js 运行时的代码
+bun build <input> --minify                    # 压缩输出代码
+bun build <input> --sourcemap                 # 生成 Source Map
 
-# 速度优势:
-#   - `bun install`: 利用全局缓存和优化的依赖解析，速度极快。
-#   - `bun run`: 启动脚本的开销远小于 npm/yarn。
+##############################################################################
+# 其他实用工具 (Other Utilities)
+##############################################################################
 
-# Bun Shell:
-#   Bun 实现了一个跨平台的 Shell，可以让你用 JavaScript/TypeScript 编写 Shell 脚本，
-#   并使用熟悉的命令如 `cd`, `ls`, `rm` 等。
-#   使用 `import { $ } from "bun"; await $`ls -la`;`
+bun x <package> [<args>]                      # 执行远程或本地的临时包 (类似 npx)
+                                              # 例如: `bun x create-react-app my-app`
+bun doctor                                    # 检查 Bun 环境和依赖问题
+bun upgrade                                   # 升级 Bun 自身到最新版本
+bun clean                                     # 清理 Bun 缓存和临时文件
+
+##############################################################################
+# 实用提示 (Tips & Tricks)
+##############################################################################
+
+# Bun 默认支持 TypeScript 和 JSX/TSX，无需额外配置。
+# Bun 默认支持 ESM 和 CommonJS 模块。
+# `bun run` 可以省略 `run` 关键字，直接 `bun <script>`。
+# `bun <command>` 会自动查找 `node_modules/.bin` 中的可执行文件。
+# 使用 `bun install --frozen-lockfile` 在 CI/CD 环境中确保构建一致性。
 
 ##############################################################################
 # 示例 (Examples)
 ##############################################################################
 
-# 1. 创建并运行一个新的 React 项目:
-#   bun create react ./my-react-app
-#   cd ./my-react-app
-#   bun install
-#   bun run dev
+# 1. 初始化新项目并安装依赖:
+#    bun init
+#    bun install
 
-# 2. 打包一个 TypeScript 库用于 Node.js 环境:
-#   # 假设入口文件是 ./src/index.ts
-#   bun build ./src/index.ts --outdir ./dist --target=node --minify
+# 2. 运行开发服务器 (假设 package.json 中有 "dev" 脚本):
+#    bun dev
 
-# 3. 快速执行一个远程脚本:
-#   bunx cowsay "Hello from Bun!"
+# 3. 添加一个生产依赖和一个开发依赖:
+#    bun add express
+#    bun add typescript --dev
+
+# 4. 运行指定测试文件并查看覆盖率:
+#    bun test src/components/Button.test.tsx --coverage
+
+# 5. 使用 bunx 执行一个一次性工具:
+#    bun x cowsay "Hello Bun!"
+
+# 6. 构建一个前端应用:
+#    bun build src/index.tsx --outdir dist --target browser --minify
 
 ##############################################################################
 # 鸣谢 & 更多资源 (Credit & Further Resources)
 ##############################################################################
 
-# Bun 官方文档 (Official Bun Documentation): https://bun.sh/docs
-# Bun GitHub 仓库: https://github.com/oven-sh/bun
+# 官方文档: https://bun.sh/docs
+# GitHub 仓库: https://github.com/oven-sh/bun
 
 # vim: set ts=4 sw=4 tw=0 et ft=bash :
