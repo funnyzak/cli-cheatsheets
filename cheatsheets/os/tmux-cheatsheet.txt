@@ -1,0 +1,185 @@
+##############################################################################
+# tmux 速查表 (tmux Cheatsheet)
+# 终端复用器 (Terminal Multiplexer)
+# 来源: https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PREFIX: 默认前缀键 `Ctrl+b` (可配置，例如改为 `Ctrl+a`)
+#   - KEY:    需要按下的键盘键
+#   - CMD:    tmux 命令 (在 shell 中执行)
+#   - SESSION_NAME: 会话名称 (例如: my_dev_session)
+#   - WINDOW_NUM:   窗口编号 (例如: 0, 1, 2)
+#   - PANE_NUM:     窗格编号 (例如: 0, 1)
+#   - TEXT:   要发送的文本内容
+
+##############################################################################
+# 通用概念 (General Concepts)
+##############################################################################
+
+# tmux 的基本工作流程是：
+# 1. 创建一个会话 (Session)。
+# 2. 在会话中创建多个窗口 (Window)。
+# 3. 在每个窗口中创建多个窗格 (Pane)。
+# 4. 可以随时从会话中分离 (Detach)，稍后重新连接 (Attach)。
+
+##############################################################################
+# 会话管理 (Session Management)
+##############################################################################
+
+tmux                                          # 启动一个新的会话
+tmux new -s SESSION_NAME                      # 启动一个命名会话
+tmux ls                                       # 列出所有会话
+tmux attach                                   # 连接到最近的会话
+tmux attach -t SESSION_NAME                   # 连接到指定会话
+tmux attach -t :WINDOW_NUM                    # 连接到指定会话的指定窗口
+tmux detach                                   # 从当前会话分离 (在 tmux 内部执行)
+PREFIX d                                      # 从当前会话分离 (快捷键)
+PREFIX s                                      # 列出并选择会话 (快捷键)
+tmux switch -t SESSION_NAME                   # 切换到指定会话
+tmux kill-session -t SESSION_NAME             # 杀死指定会话
+tmux kill-server                              # 杀死所有会话和 tmux 服务器
+
+##############################################################################
+# 窗口管理 (Window Management)
+##############################################################################
+
+PREFIX c                                      # 创建新窗口
+PREFIX &                                      # 关闭当前窗口 (需确认)
+PREFIX p                                      # 切换到上一个窗口
+PREFIX n                                      # 切换到下一个窗口
+PREFIX l                                      # 切换到上次选择的窗口
+PREFIX <NUM>                                  # 切换到指定编号的窗口 (例如: PREFIX 0, PREFIX 1)
+PREFIX w                                      # 列出所有窗口并选择
+PREFIX ,                                      # 重命名当前窗口
+PREFIX .                                      # 更改当前窗口编号 (慎用，可能打乱顺序)
+PREFIX f                                      # 查找窗口 (按名称搜索)
+PREFIX !                                      # 将当前窗格移到一个新窗口
+
+##############################################################################
+# 窗格管理 (Pane Management)
+##############################################################################
+
+PREFIX %                                      # 垂直分割窗格 (左右)
+PREFIX "                                      # 水平分割窗格 (上下)
+PREFIX x                                      # 关闭当前窗格 (需确认)
+PREFIX o                                      # 切换到下一个窗格
+PREFIX ;                                      # 切换到上一个窗格
+PREFIX <Arrow Keys>                           # 切换到指定方向的窗格 (例如: PREFIX Up, PREFIX Down)
+PREFIX z                                      # 切换当前窗格全屏/非全屏
+PREFIX {                                      # 将当前窗格与上一个窗格互换
+PREFIX }                                      # 将当前窗格与下一个窗格互换
+PREFIX M-Up/Down/Left/Right                   # 调整当前窗格大小 (按住 Alt + 方向键)
+PREFIX q                                      # 显示窗格编号 (显示后按对应数字切换)
+PREFIX !                                      # 将当前窗格分离为一个新窗口
+PREFIX C-o                                    # 旋转当前窗口中的所有窗格
+
+# 同步输入 (Synchronize Panes):
+PREFIX M-s                                    # 开启/关闭所有窗格的同步输入 (在所有窗格中输入相同命令)
+
+##############################################################################
+# 复制模式 (Copy Mode)
+##############################################################################
+
+PREFIX [                                      # 进入复制模式
+# 在复制模式下:
+#   - 移动光标:
+#       hjkl (Vim 风格) 或 方向键
+#       C-u / C-d                             # 半页上/下滚动
+#       g / G                                 # 滚动到顶部/底部
+#       b / w                                 # 按单词移动
+#       ^ / $                                 # 移动到行首/行尾
+#   - 选择文本:
+#       Space                                 # 开始选择
+#       移动光标                               # 扩大选择范围
+#       Enter                                 # 复制选择的文本到 tmux 缓冲区
+#   - 粘贴文本:
+#       PREFIX ]                              # 粘贴 tmux 缓冲区的内容
+#   - 退出复制模式:
+#       q / Esc                               # 退出复制模式
+
+# 提示: 默认复制模式的行为可能因 tmux 版本或配置而异。
+#      较新版本可能默认支持鼠标选择。
+
+##############################################################################
+# 配置与重载 (Configuration & Reload)
+##############################################################################
+
+# 配置文件通常在 ~/.tmux.conf
+
+PREFIX :                                      # 进入 tmux 命令模式 (输入命令)
+  source-file ~/.tmux.conf                    # 在命令模式下重载配置文件
+  display-message "tmux.conf reloaded"        # 显示重载成功消息
+
+# 常用配置示例 (添加到 ~/.tmux.conf):
+#   set -g prefix C-a                         # 将前缀键从 C-b 改为 C-a
+#   unbind C-b                                # 解绑旧的前缀键
+#   bind C-a send-prefix                      # 绑定 C-a 为前缀键
+#   bind r source-file ~/.tmux.conf \; display-message "tmux.conf reloaded!" # 快速重载配置
+#   set -g mouse on                           # 启用鼠标支持 (点击窗格切换、滚动、调整大小)
+#   set -g status-position top                # 将状态栏放到顶部
+#   set -g history-limit 10000                # 增加历史记录行数
+#   set -g default-terminal "screen-256color" # 确保终端支持 256 色
+#   set -g allow-rename off                   # 禁用窗口自动重命名
+#   set -g base-index 1                       # 窗口编号从 1 开始
+#   set -g pane-base-index 1                  # 窗格编号从 1 开始
+
+##############################################################################
+# 实用提示与技巧 (Tips & Tricks)
+##############################################################################
+
+# 快速导航到特定窗格 (结合 PREFIX q):
+#   1. 按 PREFIX q
+#   2. 看到窗格编号后，直接按对应数字键即可切换。
+
+# 将当前 shell 命令输出重定向到文件:
+#   PREFIX : pipe-pane -o 'cat > ~/tmux-pane-output.txt'
+#   (Ctrl+d 或 exit 退出 shell 后，文件会写入)
+
+# 搜索历史记录 (在复制模式下):
+#   PREFIX [                                  # 进入复制模式
+#   Ctrl+s                                    # 向前搜索
+#   Ctrl+r                                    # 向后搜索
+
+# 运行命令但保持会话分离 (例如用于后台任务):
+#   tmux new -s my_task -d 'long_running_command; tmux kill-session'
+#   这将创建一个名为 `my_task` 的会话，在其中运行 `long_running_command`，
+#   并在命令完成后自动杀死该会话。
+
+# 更改前缀键:
+#   在 ~/.tmux.conf 中添加 `set -g prefix C-a` 和 `unbind C-b; bind C-a send-prefix`
+#   然后重载配置 `PREFIX : source-file ~/.tmux.conf`
+
+##############################################################################
+# 示例 (Examples)
+##############################################################################
+
+# 1. 启动并配置一个开发会话:
+#    tmux new -s dev
+#    PREFIX %                                # 垂直分割
+#    PREFIX "                                # 水平分割
+#    PREFIX <Up>                             # 切换到顶部窗格
+#    PREFIX ,                                # 重命名窗口为 "Main"
+#    PREFIX c                                # 创建新窗口
+#    PREFIX ,                                # 重命名窗口为 "Logs"
+#    PREFIX 0                                # 切换回第一个窗口
+#    PREFIX w                                # 查看所有窗口和会话
+#    PREFIX d                                # 分离会话
+
+# 2. 重新连接到开发会话并执行命令:
+#    tmux attach -t dev
+#    # 在其中一个窗格中输入: git status
+#    # 切换到另一个窗格: PREFIX o
+#    # 在该窗格中输入: tail -f /var/log/syslog
+#    PREFIX z                                # 全屏显示日志窗格
+#    PREFIX z                                # 恢复日志窗格
+
+##############################################################################
+# 鸣谢 & 更多资源 (Credit & Further Resources)
+##############################################################################
+
+# 官方文档: https://man.openbsd.org/cgi-bin/man.cgi?query=tmux
+# GitHub 项目: https://github.com/tmux/tmux
+# 社区指南: https://www.hamvocke.com/blog/a-guide-to-tmux/
+
+# vim: set ts=4 sw=4 tw=0 et ft=bash :

@@ -317,6 +317,7 @@ CLI 速查表按类别组织在以下目录中：
 
 (`cheatsheets/os/`) 操作系统命令
 
+* `tmux-cheatsheet.txt`: tmux 终端复用器命令
 * `apt-cheatsheet.txt`: apt Debian/Ubuntu 包管理器命令
 * `awk-cheatsheet.txt`: awk 文本处理命令
 * `cat-cheatsheet.txt`: cat 查看文件内容命令

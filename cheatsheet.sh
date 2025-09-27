@@ -246,6 +246,9 @@ COMMAND_DESCRIPTIONS["certbot"]="Let's Encrypt 证书管理工具"
 
 
 # 操作系统命令 (OS Commands)
+COMMAND_CATEGORIES["tmux"]="os"
+COMMAND_DESCRIPTIONS["tmux"]="终端多路复用器"
+
 COMMAND_CATEGORIES["apt"]="os"
 COMMAND_DESCRIPTIONS["apt"]="Debian/Ubuntu 包管理器"
 
