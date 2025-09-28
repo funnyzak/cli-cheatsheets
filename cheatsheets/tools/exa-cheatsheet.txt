@@ -1,0 +1,315 @@
+##############################################################################
+# exa 速查表 (exa Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PATH:       路径 (Path)
+#   - PATTERN:    搜索模式 (Search pattern)
+#   - FORMAT:     输出格式 (Output format)
+#   - COLOR:      颜色主题 (Color theme)
+
+##############################################################################
+# 基本语法 (Basic Syntax)
+##############################################################################
+
+exa [OPTIONS] [PATH]...                             # 基本语法格式
+exa --help                                          # 显示帮助信息
+exa --version                                       # 显示版本信息
+
+##############################################################################
+# 基本列表 (Basic Listing)
+##############################################################################
+
+exa                                                 # 列出当前目录
+exa -l                                              # 长格式列表
+exa -la                                             # 列出所有文件（包括隐藏文件）
+exa /path/to/dir                                    # 列出指定目录
+exa file1 file2                                     # 列出指定文件
+
+##############################################################################
+# 显示选项 (Display Options)
+##############################################################################
+
+exa -1                                              # 每行一个文件
+exa -l                                              # 长格式显示
+exa -G                                              # 网格显示
+exa -T                                              # 树形结构显示
+exa -R                                              # 递归显示
+exa -a                                              # 显示隐藏文件
+exa -A                                              # 显示隐藏文件，但不包括.和..
+exa -d                                              # 仅显示目录
+exa -F                                              # 显示文件类型指示符
+exa --group-directories-first                      # 目录优先显示
+
+##############################################################################
+# 长格式选项 (Long Format Options)
+##############################################################################
+
+exa -l --binary                                     # 二进制格式显示文件大小
+exa -l --bytes                                      # 字节格式显示文件大小
+exa -l --group                                      # 显示文件组
+exa -l --header                                     # 显示表头
+exa -l --inode                                      # 显示inode号
+exa -l --links                                      # 显示链接数
+exa -l --modified                                   # 显示修改时间
+exa -l --changed                                    # 显示更改时间
+exa -l --accessed                                   # 显示访问时间
+exa -l --created                                    # 显示创建时间
+exa -l --no-user                                    # 不显示用户
+exa -l --no-group                                   # 不显示组
+exa -l --no-permissions                             # 不显示权限
+exa -l --no-filesize                                # 不显示文件大小
+exa -l --no-time                                    # 不显示时间
+
+##############################################################################
+# 时间显示 (Time Display)
+##############################################################################
+
+exa -l --time=modified                              # 显示修改时间（默认）
+exa -l --time=changed                               # 显示更改时间
+exa -l --time=accessed                              # 显示访问时间
+exa -l --time=created                               # 显示创建时间
+
+exa -l --time-style=long-iso                        # ISO格式时间
+exa -l --time-style=full-iso                        # 完整ISO格式时间
+exa -l --time-style=iso                             # ISO格式时间
+exa -l --time-style=relative                        # 相对时间
+
+##############################################################################
+# 排序选项 (Sorting Options)
+##############################################################################
+
+exa --sort=name                                     # 按名称排序（默认）
+exa --sort=Name                                     # 按名称排序（不区分大小写）
+exa --sort=size                                     # 按大小排序
+exa --sort=extension                                # 按扩展名排序
+exa --sort=modified                                 # 按修改时间排序
+exa --sort=changed                                  # 按更改时间排序
+exa --sort=accessed                                  # 按访问时间排序
+exa --sort=created                                  # 按创建时间排序
+exa --sort=inode                                     # 按inode号排序
+exa --sort=type                                     # 按文件类型排序
+exa --sort=none                                      # 不排序
+
+exa --reverse                                       # 反向排序
+exa --group-directories-first --sort=name           # 目录优先并按名称排序
+
+##############################################################################
+# 过滤选项 (Filter Options)
+##############################################################################
+
+exa --glob=PATTERN                                  # 通配符模式匹配
+exa --ignore-glob=PATTERN                           # 忽略通配符模式
+exa --tree --level=2                                # 树形显示限制层级
+exa --tree --ignore-glob=node_modules               # 忽略node_modules目录
+exa --only-dirs                                     # 仅显示目录
+exa --only-files                                    # 仅显示文件
+
+##############################################################################
+# 显示图标 (Icons Display)
+##############################################################################
+
+exa --icons                                         # 显示文件图标
+exa --icons=always                                  # 总是显示图标
+exa --icons=auto                                    # 自动决定（默认）
+exa --icons=never                                   # 从不显示图标
+
+##############################################################################
+# 颜色主题 (Color Themes)
+##############################################################################
+
+exa --color=always                                  # 总是显示颜色
+exa --color=auto                                    # 自动决定（默认）
+exa --color=never                                    # 从不显示颜色
+
+exa --colour-scale                                  # 显示文件大小颜色梯度
+exa --color-scale                                   # 显示文件大小颜色梯度
+
+##############################################################################
+# 网格视图 (Grid View)
+##############################################################################
+
+exa --grid                                          # 网格显示
+exa --grid=auto                                     # 自动网格
+exa --grid=long                                     # 长网格
+exa --across                                        # 横向排列
+exa --width=80                                      # 设置显示宽度
+
+##############################################################################
+# 超链接支持 (Hyperlink Support)
+##############################################################################
+
+exa --hyperlink                                     # 启用超链接
+exa --hyperlink=always                              # 总是启用超链接
+exa --hyperlink=auto                                # 自动决定超链接
+exa --hyperlink=never                               # 从不启用超链接
+
+##############################################################################
+# Git集成 (Git Integration)
+##############################################################################
+
+exa --git                                           # 显示Git状态
+exa --git-ignore                                    # 忽略Git忽略的文件
+exa --git-ignore-file=PATTERN                       # 忽略特定Git模式
+
+##############################################################################
+# 实用示例 (Practical Examples)
+##############################################################################
+
+# 基本用法
+exa                                                 # 当前目录
+exa -l                                              # 长格式
+exa -la                                             # 包含隐藏文件
+exa -la /home/user                                  # 指定目录
+
+# 树形显示
+exa -T                                              # 树形结构
+exa -T --level=2                                   # 2层树形结构
+exa -T --ignore-glob=node_modules                   # 忽略node_modules
+
+# 开发者常用
+exa -l --git --icons --tree --level=2               # 带Git状态和图标的树形显示
+exa -l --group-directories-first                    # 目录优先
+exa --only-dirs                                     # 仅显示目录
+exa --only-files                                    # 仅显示文件
+
+##############################################################################
+# 别名设置 (Alias Settings)
+##############################################################################
+
+# 替代ls命令
+alias ls='exa'
+alias ll='exa -l'
+alias la='exa -la'
+alias l='exa -alF'
+alias lt='exa -T'
+alias lta='exa -Ta'
+alias l1='exa -1'
+
+# 开发者友好别名
+alias lsg='exa --git --icons'
+alias lst='exa -T --git --icons --level=2'
+alias lld='exa -l --group-directories-first'
+alias ltree='exa -T --level=3 --ignore-glob=node_modules'
+
+##############################################################################
+# 脚本集成 (Script Integration)
+##############################################################################
+
+# 在脚本中使用exa
+#!/bin/bash
+list_files() {
+    local path="${1:-.}"
+    exa -1 --icons --git "$path"
+}
+
+show_tree() {
+    local path="${1:-.}"
+    local level="${2:-2}"
+    exa -T --level="$level" --ignore-glob=node_modules "$path"
+}
+
+# 查找特定类型文件
+find_python_files() {
+    exa -1 --only-files --glob='*.py' "$@"
+}
+
+##############################################################################
+# 高级用法 (Advanced Usage)
+##############################################################################
+
+# 与其他工具组合
+exa -1 | head -10                                    # 显示前10个文件
+exa -l | grep '^d'                                   # 仅显示目录
+exa -l | grep '^-.*\.py$'                            # 仅显示Python文件
+
+# 输出重定向
+exa -1 > file_list.txt                               # 保存文件列表
+exa -l --long-iso > directory_listing.txt           # 保存长格式列表
+
+# 管道操作
+exa -1 | xargs wc -l                                 # 统计文件行数
+exa -1 | grep '\.py$' | xargs python -m py_compile   # 编译Python文件
+
+##############################################################################
+# 配置文件 (Configuration)
+##############################################################################
+
+# exa没有传统的配置文件，但可以通过shell别名和环境变量配置
+export EXA_COLORS="di=34:fi=32:ex=31:*.tar.gz=33"   # 自定义颜色
+export EXA_ICON_SPACING=2                            # 图标间距
+
+##############################################################################
+# 性能考虑 (Performance Considerations)
+##############################################################################
+
+# 大目录处理
+exa -1 --tree-ignore=node_modules,.git              # 忽略大目录
+exa --only-files                                     # 仅显示文件
+exa --level=1                                        # 限制树形深度
+
+# 快速查看
+exa -1                                              # 每行一个文件（最快）
+exa --no-permissions --no-user --no-time            # 最小化信息显示
+
+##############################################################################
+# 与其他工具的比较 (Comparison with Other Tools)
+##############################################################################
+
+# exa vs ls
+ls -la                                              # 传统ls
+exa -la                                             # 现代exa，带颜色和图标
+
+# exa vs tree
+tree                                                # 专用树形显示工具
+exa -T                                               # 集成在exa中的树形显示
+
+# exa vs git status
+git status                                          # Git状态
+exa -l --git                                       # 在文件列表中显示Git状态
+
+##############################################################################
+# 故障排除 (Troubleshooting)
+##############################################################################
+
+exa --version                                       # 检查版本
+exa --help                                          # 查看帮助
+which exa                                           # 检查安装位置
+
+# 常见问题
+# 1. 如果图标显示为方块，确保终端支持Unicode
+# 2. 如果颜色不显示，检查终端颜色支持
+# 3. 在某些终端中可能需要设置export TERM=xterm-256color
+
+##############################################################################
+# 实际应用场景 (Real-world Scenarios)
+##############################################################################
+
+# 代码项目导航
+exa -T --level=2 --ignore-glob=node_modules,.git     # 项目结构概览
+exa -l --git --only-files --glob='*.py'             # Python文件列表
+
+# 系统管理
+exa -l /var/log                                    # 日志目录
+exa -l /etc                                         # 配置文件
+exa -l /usr/local/bin                               # 可执行文件
+
+# 日常使用
+exa -l ~                                           # 家目录
+exa -T Downloads                                   # 下载目录树形结构
+exa --only-files ~/*.md                             # Markdown文件
+
+##############################################################################
+# 终端集成 (Terminal Integration)
+##############################################################################
+
+# 在vim中调用exa
+:command! Ls !exa -l %:h                            # 当前目录列表
+:command! Lt !exa -T %:h                            # 树形显示
+
+# 在tmux中显示目录
+bind C-l send-keys "exa -l --git --icons" Enter      # 快捷键显示目录
+
+# 配置提示符显示
+PROMPT_COMMAND='exa -1 --icons -a | head -5'        # 在提示符前显示文件

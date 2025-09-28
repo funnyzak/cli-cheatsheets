@@ -1,0 +1,253 @@
+##############################################################################
+# awk 速查表 (awk Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - FILE:       文件名 (File name)
+#   - PATTERN:    模式/条件 (Pattern/Condition)
+#   - ACTION:     动作 (Action)
+#   - VAR:        变量名 (Variable name)
+#   - FIELD_NUM:  字段号 (Field number, 例如: $1, $2, $3)
+#   - FORMAT:     格式字符串 (Format string)
+
+##############################################################################
+# 基本语法 (Basic Syntax)
+##############################################################################
+
+awk 'PATTERN { ACTION }' FILE                         # 基本语法
+awk '{ ACTION }' FILE                                 # 对所有行执行动作
+awk 'PATTERN' FILE                                    # 只打印匹配的行
+awk -F 'DELIMITER' 'PATTERN { ACTION }' FILE          # 指定字段分隔符
+awk -v VAR=VALUE 'PATTERN { ACTION }' FILE            # 设置变量
+
+##############################################################################
+# 内置变量 (Built-in Variables)
+##############################################################################
+
+$0                                                     # 当前整行
+$1, $2, $3...                                         # 当前行的第1,2,3...个字段
+NF                                                     # 字段数量 (Number of fields)
+NR                                                     # 当前行号 (Number of records)
+FNR                                                    # 当前文件中的行号
+FILENAME                                               # 当前文件名
+FS                                                     # 字段分隔符 (Field Separator)
+OFS                                                    # 输出字段分隔符
+RS                                                     # 记录分隔符 (Record Separator)
+ORS                                                    # 输出记录分隔符
+SUBSEP                                                 # 子数组分隔符
+ARGC                                                   # 命令行参数数量
+ARGV                                                   # 命令行参数数组
+ENVIRON                                                # 环境变量数组
+CONVFMT                                                # 数字转换格式
+OFMT                                                   # 数字输出格式
+RSTART                                                 # 匹配开始位置
+RLENGTH                                                # 匹配长度
+
+##############################################################################
+# 模式和动作 (Patterns and Actions)
+##############################################################################
+
+awk 'NR == 5' FILE                                     # 只处理第5行
+awk 'NR >= 5 && NR <= 10' FILE                        # 处理第5-10行
+awk '/pattern/' FILE                                  # 处理包含模式的行
+awk '!/pattern/' FILE                                 # 处理不包含模式的行
+awk '/pattern1/ && /pattern2/' FILE                    # 处理同时包含两个模式的行
+awk '/pattern1/ || /pattern2/' FILE                    # 处理包含任一模式的行
+awk '$1 == "value"' FILE                               # 字段等于特定值
+awk '$1 ~ /pattern/' FILE                              # 字段匹配模式
+awk '$1 !~ /pattern/' FILE                             # 字段不匹配模式
+awk '$NF == "value"' FILE                              # 最后一个字段等于特定值
+awk 'BEGIN { ACTION }' FILE                           # 开始时执行
+awk 'END { ACTION }' FILE                             # 结束时执行
+
+##############################################################################
+# 字段处理 (Field Processing)
+##############################################################################
+
+awk '{ print $1 }' FILE                                # 打印第一个字段
+awk '{ print $NF }' FILE                               # 打印最后一个字段
+awk '{ print $(NF-1) }' FILE                           # 打印倒数第二个字段
+awk '{ print $1, $3 }' FILE                            # 打印第1和第3个字段
+awk '{ for(i=1; i<=NF; i++) print $i }' FILE           # 每个字段一行
+awk '{ print NF }' FILE                                # 打印每行的字段数量
+awk '{ if (NF > 3) print $0 }' FILE                   # 只打印字段数大于3的行
+
+##############################################################################
+# 输出格式化 (Output Formatting)
+##############################################################################
+
+awk '{ printf "%-10s %10s\n", $1, $2 }' FILE            # 格式化输出
+awk '{ printf "Name: %-20s Age: %3d\n", $1, $2 }' FILE # 自定义格式
+awk '{ printf "%03d %s\n", NR, $0 }' FILE              # 行号格式化为3位数字
+awk '{ printf "%.2f\n", $1 }' FILE                     # 浮点数格式化
+awk '{ printf "%s %s\n", $1, $2 }' FILE > output.txt    # 输出到文件
+
+##############################################################################
+# 算术运算 (Arithmetic Operations)
+##############################################################################
+
+awk '{ print $1 + $2 }' FILE                           # 字段相加
+awk '{ print $1 * $2 }' FILE                           # 字段相乘
+awk '{ print $1 / $2 }' FILE                           # 字段相除
+awk '{ print $1 % $2 }' FILE                           # 取模
+awk '{ print $1 ^ $2 }' FILE                           # 幂运算
+awk '{ print $1 + $2 * $3 }' FILE                      # 运算优先级
+awk '{ sum += $1 } END { print sum }' FILE             # 累加求和
+awk '{ count++ } END { print count }' FILE             # 计数
+awk '{ avg += $1 } END { print avg/NR }' FILE          # 计算平均值
+
+##############################################################################
+# 字符串操作 (String Operations)
+##############################################################################
+
+awk '{ print length($0) }' FILE                        # 字符串长度
+awk '{ print tolower($0) }' FILE                       # 转换为小写
+awk '{ print toupper($0) }' FILE                       # 转换为大写
+awk '{ print substr($0, 1, 5) }' FILE                   # 提取子字符串
+awk '{ print index($0, "pattern") }' FILE              # 查找字符串位置
+awk '{ gsub(/old/, "new", $0); print $0 }' FILE        # 全局替换
+awk '{ sub(/old/, "new", $0); print $0 }' FILE         # 只替换第一个
+awk '{ print match($0, /pattern/) }' FILE              # 模式匹配位置
+awk '{ print split($0, arr, " "); print arr[1] }' FILE # 分割字符串为数组
+
+##############################################################################
+# 数组操作 (Array Operations)
+##############################################################################
+
+awk '{ arr[$1] = $2 } END { for (key in arr) print key, arr[key] }' FILE
+awk '{ count[$1]++ } END { for (key in count) print key, count[key] }' FILE
+awk '{ sum[$1] += $2 } END { for (key in sum) print key, sum[key] }' FILE
+awk '{ if (!($1 in arr)) arr[$1] = 0; arr[$1] += $2 } END { for (key in arr) print key, arr[key] }' FILE
+awk '{ delete arr[$1] }' FILE                         # 删除数组元素
+awk '{ if (key in arr) print "exists" }' FILE          # 检查数组元素是否存在
+
+##############################################################################
+# 条件语句 (Conditional Statements)
+##############################################################################
+
+awk '{ if ($1 > 10) print "large"; else print "small" }' FILE
+awk '{ if ($1 > 10 && $2 < 5) print $0 }' FILE
+awk '{ if ($1 ~ /pattern/) print "match" }' FILE
+awk '{ if (NF > 3) { print "long line"; print $0 } }' FILE
+awk '{ switch ($1) { case "A": print "Alpha"; break; case "B": print "Beta"; break; default: print "Other" } }' FILE
+
+##############################################################################
+# 循环语句 (Loop Statements)
+##############################################################################
+
+awk '{ for (i=1; i<=NF; i++) print $i }' FILE          # for循环
+awk '{ i=1; while (i<=NF) { print $i; i++ } }' FILE     # while循环
+awk '{ do { print $1; getline } while ($1 != "END") }' FILE # do-while循环
+awk '{ for (i=NF; i>=1; i--) print $i }' FILE           # 反向循环
+awk '{ for (i=1; i<=NF; i+=2) print $i }' FILE          # 步进循环
+
+##############################################################################
+# 函数定义 (Function Definition)
+##############################################################################
+
+awk 'function sum(a, b) { return a + b } { print sum($1, $2) }' FILE
+awk 'function max(a, b) { return (a > b) ? a : b } { print max($1, $2) }' FILE
+awk 'function is_numeric(x) { return x == x+0 } { if (is_numeric($1)) print "number" }' FILE
+awk 'function format_phone(num) { gsub(/[^0-9]/, "", num); return "(" substr(num,1,3) ") " substr(num,4,3) "-" substr(num,7,4) } { print format_phone($1) }' FILE
+
+##############################################################################
+# 内置函数 (Built-in Functions)
+##############################################################################
+
+# 数学函数
+awk '{ print sin($1) }' FILE                           # 正弦
+awk '{ print cos($1) }' FILE                           # 余弦
+awk '{ print exp($1) }' FILE                           # 指数
+awk '{ print log($1) }' FILE                           # 自然对数
+awk '{ print sqrt($1) }' FILE                          # 平方根
+awk '{ print int($1) }' FILE                           # 整数部分
+awk '{ print rand() }' FILE                            # 随机数 (0-1)
+awk '{ srand(); print rand() }' FILE                   # 设置随机种子
+
+# 字符串函数
+awk '{ print tolower($0) }' FILE                       # 转小写
+awk '{ print toupper($0) }' FILE                       # 转大写
+awk '{ print index($0, "find") }' FILE                 # 查找子字符串
+awk '{ print length($0) }' FILE                        # 字符串长度
+awk '{ print match($0, /pattern/) }' FILE              # 模式匹配
+awk '{ print sprintf("%3d", $1) }' FILE                # 格式化字符串
+awk '{ print substr($0, 2, 5) }' FILE                 # 提取子字符串
+awk '{ print split($0, arr, " ") }' FILE               # 分割字符串
+awk '{ print sprintf("%.2f", $1) }' FILE               # 格式化数字
+
+##############################################################################
+# 多文件处理 (Multi-file Processing)
+##############################################################################
+
+awk 'FNR == 1 { print "Processing:", FILENAME } { print $0 }' FILE1 FILE2
+awk 'NR == FNR { arr[$1] = $2; next } { print $1, arr[$1] }' FILE1 FILE2  # 文件关联
+awk '{ if (FNR == 1) print "=== FILE:", FILENAME, "===" } { print $0 }' FILE1 FILE2
+
+##############################################################################
+# 实用示例 (Practical Examples)
+##############################################################################
+
+# 列出文件 (ls -l 风格)
+awk '{ print $6, $7, $8, $9 }' FILE
+
+# 计算列的总和
+awk '{ sum += $1 } END { print "Total:", sum }' FILE
+
+# 找到最大值
+awk 'BEGIN { max = 0 } { if ($1 > max) max = $1 } END { print "Max:", max }' FILE
+
+# 统计单词频率
+awk '{ for (i=1; i<=NF; i++) count[$i]++ } END { for (word in count) print word, count[word] }' FILE
+
+# 格式化CSV输出
+awk -F, '{ printf "%-20s %-10s %-15s\n", $1, $2, $3 }' FILE
+
+# 过滤和转换
+awk '$1 > 100' FILE                                    # 只显示第一列大于100的行
+awk 'length($0) > 80' FILE                            # 只显示长度超过80字符的行
+awk '{ gsub(/\t/, "    "); print $0 }' FILE           # 制表符转换为空格
+
+##############################################################################
+# 性能和最佳实践 (Performance and Best Practices)
+##############################################################################
+
+# 使用 BEGIN 初始化变量
+awk 'BEGIN { FS = ":"; OFS = "\t" } { print $1, $5 }' /etc/passwd
+
+# 避免在主循环中使用系统命令
+awk '{ system("echo " $0) }' FILE  # 慢 - 避免使用
+
+# 使用数组进行高效查找
+awk 'BEGIN { while (getline < "lookup.txt") arr[$1] = $2 } { print $1, arr[$1] }' FILE
+
+# 大文件处理
+awk '{ if (NR % 1000 == 0) print "Processing line:", NR > "/dev/stderr" }' FILE
+
+##############################################################################
+# 调试技巧 (Debugging Tips)
+##############################################################################
+
+awk '{ print "Line:", NR, "Fields:", NF }' FILE         # 调试信息
+awk '{ for (i=1; i<=NF; i++) print "Field " i ": " $i }' FILE
+awk 'BEGIN { print "Variables: FS=" FS, "OFS=" OFS }'  # 检查变量
+
+# 使用 -W 选项获取更多信息
+gawk --version                                        # GNU awk 版本信息
+gawk --help                                           # GNU awk 帮助信息
+
+##############################################################################
+# 高级技巧 (Advanced Tips)
+##############################################################################
+
+# 处理CSV文件
+awk -F, '{ gsub(/"/, "", $1); print $1 }' FILE         # 删除引号
+
+# 多模式匹配
+awk '/error/ { errors++ } /warning/ { warnings++ } END { print errors, warnings }' FILE
+
+# 复杂的数据处理
+awk 'function process_data(x) { return x * 2 } { print process_data($1) }' FILE
+
+# 递归函数 (GNU awk)
+awk 'function factorial(n) { return (n <= 1) ? 1 : n * factorial(n-1) } BEGIN { print factorial(5) }' FILE

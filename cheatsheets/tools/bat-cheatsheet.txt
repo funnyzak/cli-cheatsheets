@@ -1,0 +1,286 @@
+##############################################################################
+# bat 速查表 (bat Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - FILE:       文件名 (File name)
+#   - PATTERN:    搜索模式 (Search pattern)
+#   - LINE_NUM:   行号 (Line number)
+#   - THEME:      主题名称 (Theme name)
+
+##############################################################################
+# 基本语法 (Basic Syntax)
+##############################################################################
+
+bat [OPTIONS] [FILE]...                              # 基本语法格式
+bat [OPTIONS] [FILE1] [FILE2] ...                    # 查看多个文件
+bat --help                                          # 显示帮助信息
+bat --version                                       # 显示版本信息
+
+##############################################################################
+# 文件查看 (File Viewing)
+##############################################################################
+
+bat FILE                                            # 查看文件内容
+bat FILE1 FILE2                                    # 查看多个文件
+bat *.txt                                          # 查看所有txt文件
+bat FILE1 | bat                                    # 从管道读取内容
+bat --pager never FILE                              # 不使用分页器
+bat --pager always FILE                             # 强制使用分页器
+
+##############################################################################
+# 语法高亮 (Syntax Highlighting)
+##############################################################################
+
+bat --language=python FILE                          # 指定语言类型
+bat -l python FILE                                  # 简写形式
+bat --language=html FILE                            # HTML高亮
+bat --language=javascript FILE                     # JavaScript高亮
+bat --language=json FILE                            # JSON高亮
+bat --language=sql FILE                             # SQL高亮
+
+##############################################################################
+# 主题设置 (Theme Settings)
+##############################################################################
+
+bat --theme=GitHub FILE                             # 使用GitHub主题
+bat --theme=Monokai Extended FILE                    # 使用Monokai主题
+bat --theme=OneHalfDark FILE                        # 使用OneHalfDark主题
+bat --theme=Solarized (dark) FILE                   # 使用Solarized暗色主题
+bat --list-themes                                  # 列出所有可用主题
+bat --print-themes                                 # 打印主题预览
+
+##############################################################################
+# 行号显示 (Line Numbers)
+##############################################################################
+
+bat --line-numbers FILE                             # 显示行号
+bat --number FILE                                   # 简写形式
+bat --line-numbers=always FILE                      # 总是显示行号
+bat --line-numbers=never FILE                      # 从不显示行号
+bat --line-numbers=auto FILE                       # 自动决定（默认）
+bat --style=numbers FILE                            # 仅显示行号样式
+
+##############################################################################
+# 输出控制 (Output Control)
+##############################################################################
+
+bat --decorations=never FILE                        # 禁用所有装饰
+bat --decorations=always FILE                       # 启用所有装饰
+bat --style=header FILE                             # 显示文件头
+bat --style=grid FILE                               # 显示网格线
+bat --style=rule FILE                               # 显示规则行
+bat --style=header-filename FILE                    # 仅显示文件名
+bat --style=header-filesize FILE                    # 显示文件大小
+bat --style=snip FILE                               # 截断过长的行
+
+##############################################################################
+# 分页器控制 (Pager Control)
+##############################################################################
+
+bat --paging=never FILE                             # 禁用分页器
+bat --paging=always FILE                            # 启用分页器
+bat --paging=auto FILE                              # 自动决定（默认）
+bat --pager-program="less -R" FILE                  # 指定分页器程序
+bat --pager-program="more" FILE                     # 使用more作为分页器
+
+##############################################################################
+# 网格和装饰 (Grid and Decorations)
+##############################################################################
+
+bat --grid=always FILE                              # 总是显示网格
+bat --grid=never FILE                               # 从不显示网格
+bat --grid=auto FILE                                # 自动决定网格
+bat --border=always FILE                            # 总是显示边框
+bat --border=never FILE                             # 从不显示边框
+bat --border=auto FILE                              # 自动决定边框
+bat --style=plain FILE                              # 纯文本模式
+bat --style=full FILE                               # 完整样式
+
+##############################################################################
+# 搜索功能 (Search Features)
+##############################################################################
+
+bat --highlight-line=PATTERN FILE                   # 高亮匹配行
+bat --highlight-line="error" FILE                   # 高亮包含error的行
+bat --highlight-line=42 FILE                        # 高亮第42行
+bat --force-colorization FILE                       # 强制颜色输出
+
+##############################################################################
+# 配置文件 (Configuration)
+##############################################################################
+
+bat --config-file                                  # 显示配置文件位置
+bat --config-file=/path/to/config                 # 指定配置文件
+bat --print-config                                 # 打印当前配置
+# 默认配置文件位置:
+# - Linux: ~/.config/bat/config
+# - macOS: ~/Library/Application Support/bat/config
+
+##############################################################################
+# 输出格式 (Output Formats)
+##############################################################################
+
+bat --output-format=terminal FILE                   # 终端格式（默认）
+bat --output-format=html FILE                       # HTML格式
+bat --output-format=markdown FILE                   # Markdown格式
+bat --output-format=rich FILE                       # 富文本格式
+
+##############################################################################
+# 文件编码 (File Encoding)
+##############################################################################
+
+bat --character-limit=80 FILE                       # 限制字符宽度
+bat --wrap=character FILE                           # 按字符换行
+bat --wrap=never FILE                               # 不换行
+bat --terminal-width=80 FILE                        # 设置终端宽度
+
+##############################################################################
+# 实用示例 (Practical Examples)
+##############################################################################
+
+# 查看代码文件
+bat main.py                                        # 查看Python文件
+bat index.html                                     # 查看HTML文件
+bat app.js                                         # 查看JavaScript文件
+bat config.json                                    # 查看JSON配置
+
+# 与其他命令组合
+ls -la | bat                                       # 查看目录列表
+ps aux | bat                                       # 查看进程列表
+cat large.log | bat                                # 查看大文件
+find . -name "*.py" | xargs bat                    # 查看所有Python文件
+
+# 查看特定主题
+bat --theme=GitHub FILE                            # GitHub主题
+bat --theme=Monokai\ Extended FILE                 # Monokai主题
+bat --list-themes | bat                            # 查看可用主题
+
+# 脚本中使用
+#!/bin/bash
+bat --style=plain --line-numbers=never --theme=GitHub "$1"  # 简洁输出
+
+##############################################################################
+# 高级用法 (Advanced Usage)
+##############################################################################
+
+# 创建别名
+alias cat=bat                                       # 替换cat命令
+alias cat='bat --pager=never'                      # 不使用分页器
+alias cat='bat --style=plain'                      # 纯文本模式
+
+# 在脚本中使用bat
+#!/bin/bash
+show_file() {
+    local file="$1"
+    if [ -f "$file" ]; then
+        bat --line-numbers --style=header "$file"
+    else
+        echo "File not found: $file"
+    fi
+}
+
+# 批量查看文件
+for file in *.md; do
+    echo "=== $file ==="
+    bat --style=header-filename "$file"
+    echo
+done
+
+##############################################################################
+# 性能和最佳实践 (Performance and Best Practices)
+##############################################################################
+
+# 大文件处理
+bat --line-numbers=never large_file.log            # 禁用行号提高性能
+bat --decorations=never large_file.log             # 禁用装饰提高性能
+bat --paging=never large_file.log                   # 禁用分页器
+
+# 与git集成
+git show HEAD:README.md | bat                       # 查看历史版本
+git diff | bat --language=diff                      # 查看差异
+
+# 自动检测文件类型
+bat --auto-detect-config FILE                       # 自动检测配置
+
+##############################################################################
+# 调试和故障排除 (Debugging and Troubleshooting)
+##############################################################################
+
+bat --diagnostic FILE                               # 显示诊断信息
+bat --no-config FILE                                # 不使用配置文件
+bat --debug FILE                                    # 调试模式
+
+# 常见问题解决
+bat --force-colorization FILE                       # 强制颜色输出
+export COLORTERM=truecolor                          # 启用真彩色支持
+export BAT_PAGER="less -R"                          # 设置分页器
+
+##############################################################################
+# 集成示例 (Integration Examples)
+##############################################################################
+
+# 与fzf集成
+preview="bat --style=numbers --color=always {} | head -200"
+find . -name "*.py" | fzf --preview="$preview"
+
+# 与ripgrep集成
+rg "pattern" --line-number | bat --language=txt
+
+# 与vim集成
+:terminal bat %                                     # 在vim中查看当前文件
+:!bat %                                             # 在vim中运行bat
+
+##############################################################################
+# 配置文件示例 (Configuration File Example)
+##############################################################################
+
+# ~/.config/bat/config
+--theme=GitHub
+--style=numbers,changes,header
+--line-numbers=always
+--decorations=always
+--grid=auto
+--paging=auto
+--wrap-character=never
+
+##############################################################################
+# 与其他工具的比较 (Comparison with Other Tools)
+##############################################################################
+
+# bat vs cat
+cat FILE                                           # 纯文本输出
+bat FILE                                           # 带语法高亮和行号
+
+# bat vs less
+less FILE                                          # 基础分页查看
+bat FILE                                           # 语法高亮分页查看
+
+# bat vs vim
+vim FILE                                           # 编辑文件
+bat FILE                                           # 只读查看
+
+# bat vs highlight
+highlight -O ansi FILE                             # 语法高亮工具
+bat FILE                                           # 更现代化的替代品
+
+##############################################################################
+# 实际应用场景 (Real-world Scenarios)
+##############################################################################
+
+# 代码审查
+bat --diff FILE1 FILE2                             # 比较文件差异
+bat --line-numbers --style=grid code.py            # 代码审查模式
+
+# 日志分析
+bat --highlight-line="ERROR" app.log               # 高亮错误行
+bat --style=plain --line-numbers=never log.txt      # 快速查看日志
+
+# 文档查看
+bat --theme=GitHub README.md                       # 查看Markdown文档
+bat --language=json config.json                    # 查看配置文件
+
+# 教学和演示
+bat --style=full --theme=Monokai\ Extended demo.py  # 演示代码
+bat --output-format=html FILE.html                 # 生成HTML版本

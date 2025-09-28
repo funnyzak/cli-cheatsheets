@@ -438,6 +438,15 @@ COMMAND_DESCRIPTIONS["jq"]="JSON 处理工具"
 COMMAND_CATEGORIES["yq"]="data-process"
 COMMAND_DESCRIPTIONS["yq"]="YAML 处理工具"
 
+COMMAND_CATEGORIES["sed"]="data-process"
+COMMAND_DESCRIPTIONS["sed"]="流文本编辑器"
+
+COMMAND_CATEGORIES["awk"]="data-process"
+COMMAND_DESCRIPTIONS["awk"]="文本处理工具"
+
+COMMAND_CATEGORIES["cut"]="data-process"
+COMMAND_DESCRIPTIONS["cut"]="文本列提取工具"
+
 # 版本控制工具类命令
 COMMAND_CATEGORIES["git"]="version-control"
 COMMAND_DESCRIPTIONS["git"]="版本控制系统"
@@ -445,6 +454,12 @@ COMMAND_DESCRIPTIONS["git"]="版本控制系统"
 # 容器化工具类命令
 COMMAND_CATEGORIES["docker"]="container"
 COMMAND_DESCRIPTIONS["docker"]="容器化平台"
+
+COMMAND_CATEGORIES["podman"]="container"
+COMMAND_DESCRIPTIONS["podman"]="无根容器引擎"
+
+COMMAND_CATEGORIES["kubectl"]="container"
+COMMAND_DESCRIPTIONS["kubectl"]="Kubernetes 命令行工具"
 
 
 # Web 服务器类命令
@@ -464,6 +479,12 @@ COMMAND_DESCRIPTIONS["apprise"]="通知工具"
 # 其他命令
 COMMAND_CATEGORIES["tldr"]="tools"
 COMMAND_DESCRIPTIONS["tldr"]="简化的命令行速查表"
+
+COMMAND_CATEGORIES["bat"]="tools"
+COMMAND_DESCRIPTIONS["bat"]="现代化的 cat 替代品"
+
+COMMAND_CATEGORIES["exa"]="tools"
+COMMAND_DESCRIPTIONS["exa"]="现代化的 ls 替代品"
 
 
 # 临时目录，用于缓存命令速查表

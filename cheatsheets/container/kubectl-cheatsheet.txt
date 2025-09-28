@@ -1,0 +1,211 @@
+##############################################################################
+# kubectl 速查表 (kubectl Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - RESOURCE_NAME: 资源名称 (例如: my-pod, my-deployment)
+#   - RESOURCE_TYPE: 资源类型 (例如: pod, deployment, service)
+#   - NAMESPACE:      命名空间 (例如: default, kube-system)
+#   - CONTAINER_NAME: 容器名称
+#   - LABEL_SELECTOR: 标签选择器 (例如: app=nginx)
+#   - FILE_NAME:      文件名 (YAML/JSON 配置文件)
+
+##############################################################################
+# 集群信息 (Cluster Information)
+##############################################################################
+
+kubectl cluster-info                                    # 显示集群信息
+kubectl version                                        # 显示客户端和服务器版本
+kubectl config view                                    # 显示当前配置
+kubectl config current-context                         # 显示当前上下文
+kubectl config get-contexts                            # 列出所有上下文
+kubectl config use-context CONTEXT_NAME                # 切换上下文
+kubectl config set-context CONTEXT_NAME --namespace=NAMESPACE  # 设置默认命名空间
+
+##############################################################################
+# 资源管理 (Resource Management)
+##############################################################################
+
+kubectl get RESOURCE_TYPE [RESOURCE_NAME]              # 列出资源
+#   - -o wide              显示更多信息
+#   - -o yaml              以 YAML 格式显示
+#   - -o json              以 JSON 格式显示
+#   - -l, --selector       使用标签选择器
+#   - -A, --all-namespaces 显示所有命名空间的资源
+#   - -n, --namespace      指定命名空间
+
+kubectl describe RESOURCE_TYPE RESOURCE_NAME           # 显示资源详细信息
+kubectl explain RESOURCE_TYPE                           # 显示资源类型文档
+kubectl explain RESOURCE_TYPE.FIELD_NAME               # 显示字段文档
+
+##############################################################################
+# Pod 管理 (Pod Management)
+##############################################################################
+
+kubectl get pods [POD_NAME]                            # 列出 Pods
+kubectl describe pod POD_NAME                           # 显示 Pod 详细信息
+kubectl logs POD_NAME                                   # 查看 Pod 日志
+#   - -f, --follow        跟踪日志输出
+#   - --tail N            显示末尾 N 行
+#   - -c, --container     指定容器名称
+#   --previous            查看之前容器的日志
+
+kubectl exec POD_NAME -- COMMAND [ARGS...]              # 在 Pod 中执行命令
+#   - -it                 交互式终端
+
+kubectl exec -it POD_NAME -- /bin/bash                 # 进入 Pod 容器
+kubectl cp POD_NAME:SRC_PATH DEST_PATH                 # 从 Pod 复制文件到本地
+kubectl cp SRC_PATH POD_NAME:DEST_PATH                 # 从本地复制文件到 Pod
+
+kubectl port-forward POD_NAME LOCAL_PORT:REMOTE_PORT    # 端口转发
+
+##############################################################################
+# 部署管理 (Deployment Management)
+##############################################################################
+
+kubectl get deployments [DEPLOYMENT_NAME]              # 列出部署
+kubectl describe deployment DEPLOYMENT_NAME            # 显示部署详细信息
+kubectl create deployment DEPLOYMENT_NAME --image=IMAGE_NAME  # 创建部署
+kubectl scale deployment DEPLOYMENT_NAME --replicas=REPLICAS  # 扩展部署
+kubectl autoscale deployment DEPLOYMENT_NAME --min=MIN --max=MAX  # 自动扩展
+kubectl rollout status deployment DEPLOYMENT_NAME       # 查看部署状态
+kubectl rollout history deployment DEPLOYMENT_NAME     # 查看部署历史
+kubectl rollout undo deployment DEPLOYMENT_NAME        # 回滚部署
+kubectl rollout undo deployment DEPLOYMENT_NAME --to-revision=REVISION  # 回滚到指定版本
+
+##############################################################################
+# 服务管理 (Service Management)
+##############################################################################
+
+kubectl get services [SERVICE_NAME]                    # 列出服务
+kubectl describe service SERVICE_NAME                   # 显示服务详细信息
+kubectl expose deployment DEPLOYMENT_NAME --port=PORT --target-port=TARGET_PORT  # 暴露服务
+kubectl expose pod POD_NAME --port=PORT --target-port=TARGET_PORT  # 暴露 Pod 为服务
+kubectl create service clusterip SERVICE_NAME --tcp=PORT:TARGET_PORT  # 创建 ClusterIP 服务
+kubectl create service nodeport SERVICE_NAME --tcp=PORT:TARGET_PORT  # 创建 NodePort 服务
+kubectl create service loadbalancer SERVICE_NAME --tcp=PORT:TARGET_PORT  # 创建 LoadBalancer 服务
+
+##############################################################################
+# 配置管理 (Config Management)
+##############################################################################
+
+kubectl get configmaps [CONFIGMAP_NAME]                # 列出配置映射
+kubectl create configmap CONFIGMAP_NAME --from-file=PATH  # 从文件创建配置映射
+kubectl create configmap CONFIGMAP_NAME --from-literal=KEY=VALUE  # 从字面量创建配置映射
+kubectl describe configmap CONFIGMAP_NAME               # 显示配置映射详细信息
+
+kubectl get secrets [SECRET_NAME]                       # 列出密钥
+kubectl create secret generic SECRET_NAME --from-file=PATH  # 从文件创建密钥
+kubectl create secret generic SECRET_NAME --from-literal=KEY=VALUE  # 从字面量创建密钥
+kubectl describe secret SECRET_NAME                     # 显示密钥详细信息
+
+##############################################################################
+# 命名空间管理 (Namespace Management)
+##############################################################################
+
+kubectl get namespaces                                  # 列出命名空间
+kubectl create namespace NAMESPACE_NAME                 # 创建命名空间
+kubectl describe namespace NAMESPACE_NAME              # 显示命名空间详细信息
+kubectl delete namespace NAMESPACE_NAME                 # 删除命名空间
+
+##############################################################################
+# 资源创建和删除 (Resource Creation and Deletion)
+##############################################################################
+
+kubectl create -f FILE_NAME                             # 从文件创建资源
+kubectl apply -f FILE_NAME                              # 应用配置文件
+kubectl delete -f FILE_NAME                             # 从文件删除资源
+kubectl delete RESOURCE_TYPE RESOURCE_NAME              # 删除指定资源
+#   - -f, --force         强制删除
+#   - --grace-period=0    立即删除
+
+kubectl delete all --all                                # 删除所有资源
+kubectl delete pod,service,deployment --all             # 删除指定类型的所有资源
+
+##############################################################################
+# 标签和注解 (Labels and Annotations)
+##############################################################################
+
+kubectl label RESOURCE_TYPE RESOURCE_NAME KEY=VALUE     # 添加标签
+kubectl label RESOURCE_TYPE RESOURCE_NAME KEY-          # 删除标签
+kubectl get RESOURCE_TYPE --show-labels                 # 显示标签
+kubectl get RESOURCE_TYPE -l KEY=VALUE                  # 按标签过滤
+
+kubectl annotate RESOURCE_TYPE RESOURCE_NAME KEY=VALUE  # 添加注解
+kubectl annotate RESOURCE_TYPE RESOURCE_NAME KEY-       # 删除注解
+
+##############################################################################
+# 节点管理 (Node Management)
+##############################################################################
+
+kubectl get nodes                                       # 列出节点
+kubectl describe node NODE_NAME                         # 显示节点详细信息
+kubectl cordon NODE_NAME                                # 标记节点为不可调度
+kubectl uncordon NODE_NAME                              # 标记节点为可调度
+kubectl drain NODE_NAME                                # 驱逐节点上的 Pod
+#   - --ignore-daemonsets  忽略 DaemonSet
+#   - --delete-emptydir-data 删除 emptyDir 数据
+
+kubectl taint nodes NODE_NAME KEY=VALUE:EFFECT          # 为节点添加污点
+kubectl taint nodes NODE_NAME KEY:VALUE-                # 删除节点污点
+
+##############################################################################
+# 上下文和权限 (Context and Permissions)
+##############################################################################
+
+kubectl auth can-i VERB RESOURCE_TYPE                   # 检查权限
+kubectl auth can-i VERB RESOURCE_TYPE --list           # 列出所有权限检查
+kubectl get rolebindings,clusterrolebindings            # 列出角色绑定
+kubectl get roles,clusterroles                          # 列出角色
+
+##############################################################################
+# 调试和诊断 (Debugging and Diagnostics)
+##############################################################################
+
+kubectl top nodes                                       # 显示节点资源使用情况
+kubectl top pods                                        # 显示 Pod 资源使用情况
+kubectl api-resources                                   # 列出 API 资源
+kubectl api-versions                                    # 列出 API 版本
+kubectl cluster-info dump                               # 集群信息转储
+kubectl get events                                      # 显示事件
+kubectl get events --field-selector involvedObject.name=POD_NAME  # 显示特定 Pod 的事件
+
+##############################################################################
+# 输出和格式化 (Output and Formatting)
+##############################################################################
+
+kubectl get pods -o jsonpath='{.items[*].metadata.name}'  # JSONPath 输出
+kubectl get pods -o custom-columns=NAME:.metadata.name,STATUS:.status.phase  # 自定义列
+kubectl get pods -o go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'  # Go 模板
+kubectl get pods --watch                                # 监控变化
+kubectl get pods --watch-only                           # 只监控不显示当前状态
+
+##############################################################################
+# 高级功能 (Advanced Features)
+##############################################################################
+
+kubectl apply -k DIRECTORY                              # 应用 Kustomize 配置
+kubectl kustomize DIRECTORY                             # 渲染 Kustomize 配置
+kubectl apply -f https://example.com/manifest.yaml     # 从 URL 应用配置
+kubectl apply -f - <<EOF                                # 从标准输入应用配置
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+EOF
+
+##############################################################################
+# 常用快捷操作 (Common Shortcuts)
+##############################################################################
+
+alias k=kubectl                                         # 创建 kubectl 别名
+alias kgp='kubectl get pods'                            # 获取 Pods
+alias kgd='kubectl get deployments'                     # 获取部署
+alias kgs='kubectl get services'                        # 获取服务
+alias kex='kubectl exec -it'                            # 执行命令
+alias k logs='kubectl logs -f'                          # 跟踪日志

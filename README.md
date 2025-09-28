@@ -8,7 +8,7 @@
 
 ## 📋 特性
 
-- **丰富的速查表:** 涵盖 Android, Build Tools, Database, Media, Network, Package Managers, Runtime, System, Tools, Web Servers 等多个类别，持续更新和扩充。
+- **丰富的速查表:** 涵盖 Android, Build Tools, CLI Tools, Cloud Tools, Container Tools, Data Process Tools, Database, Media, Network, Notification, OS Commands, Package Managers, Runtime, Security, Tools, Version Control, Web Servers 等 17 个类别，共 141+ 个速查表，持续更新和扩充。
 - **快速查询:** 通过简单的命令即可查看指定工具的速查表。
 - **别名支持:** 方便配置 Bash/Zsh/Fish 别名，实现更快速的调用。
 - **简单易用:** 脚本简洁明了，操作简单直观。
@@ -196,11 +196,13 @@ CLI 速查表按类别组织在以下目录中：
 │   ├── database
 │   ├── media
 │   ├── network
+│   ├── notification
 │   ├── os
 │   ├── package
 │   ├── runtime
 │   ├── security
-│   ├── version-control 
+│   ├── tools
+│   ├── version-control
 │   └── webserver
 └── get-cheatsheet.sh      # 远程获取速查表的脚本
 ```
@@ -216,10 +218,12 @@ CLI 速查表按类别组织在以下目录中：
 * **[Database](#database)**: 数据库工具
 * **[Media](#media)**: 媒体处理工具
 * **[Network](#network)**: 网络工具
+* **[Notification](#notification)**: 通知服务工具
 * **[OS Commands](#os-commands)**: 操作系统命令
 * **[Package Managers](#package-managers)**: 包管理器
 * **[Runtime](#runtime)**: 运行时环境
 * **[Security](#security)**: 安全工具
+* **[Tools](#tools)**: 其他实用工具
 * **[Version Control](#version-control)**: 版本控制工具
 * **[Web Servers](#web-servers)**: Web 服务器
 
@@ -266,6 +270,8 @@ CLI 速查表按类别组织在以下目录中：
 (`cheatsheets/container/`) 容器化工具
 
 * `docker-cheatsheet.txt`: Docker 容器平台命令
+* `kubectl-cheatsheet.txt`: kubectl Kubernetes 命令行工具命令
+* `podman-cheatsheet.txt`: Podman 容器管理工具命令
 
 ### Data Process Tools
 
@@ -273,6 +279,9 @@ CLI 速查表按类别组织在以下目录中：
 
 * `jq-cheatsheet.txt`: jq JSON 处理器命令
 * `yq-cheatsheet.txt`: yq YAML 处理器命令
+* `awk-cheatsheet.txt`: awk 文本处理和模式扫描命令
+* `cut-cheatsheet.txt`: cut 文本列提取命令
+* `sed-cheatsheet.txt`: sed 流文本编辑器命令
 
 
 ### Database
@@ -312,6 +321,12 @@ CLI 速查表按类别组织在以下目录中：
 * `telnet-cheatsheet.txt`: telnet 远程登录命令
 * `traceroute-cheatsheet.txt`: traceroute 路由追踪命令
 * `wget-cheatsheet.txt`: wget 文件下载工具命令
+
+### Notification
+
+(`cheatsheets/notification/`) 通知服务工具
+
+* `apprise-cheatsheet.txt`: Apprise 通知服务工具命令
 
 ### OS Commands
 
@@ -415,6 +430,14 @@ CLI 速查表按类别组织在以下目录中：
 * `nmap-cheatsheet.txt`: nmap 网络扫描工具命令
 * `certbot-cheatsheet.txt`: certbot Let's Encrypt 证书管理工具命令
 * `acme.sh-cheatsheet.txt`: acme.sh Let's Encrypt 证书管理工具命令
+
+### Tools
+
+(`cheatsheets/tools/`) 其他实用工具
+
+* `bat-cheatsheet.txt`: bat 增强的 cat 命令工具
+* `exa-cheatsheet.txt`: exa 现代化的 ls 命令工具
+* `tldr-cheatsheet.txt`: tldr 简化的 man 页面工具
 
 ### Version Control
 

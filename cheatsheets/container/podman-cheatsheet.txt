@@ -1,0 +1,148 @@
+##############################################################################
+# Podman 速查表 (Podman Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - CONTAINER_ID:  容器 ID (Container ID, 例如: a1b2c3d4e5f6)
+#   - IMAGE_NAME:    镜像名称 (Image Name, 例如: ubuntu, nginx:latest)
+#   - PORT:          端口号 (Port number, 例如: 80, 8080)
+#   - VOLUME_NAME:   数据卷名称 (Volume Name, 例如: my-data-volume)
+#   - NETWORK_NAME:  网络名称 (Network Name, 例如: my-network)
+
+##############################################################################
+# 容器管理 (Container Management)
+##############################################################################
+
+podman run [OPTIONS] IMAGE_NAME [COMMAND] [ARG...]   # 运行一个新的容器
+#   - -d, --detach        后台运行容器 (Detached mode)
+#   - -p, --publish PORT:PORT  端口映射 (Publish a container's port to the host)
+#   - -v, --volume HOST_DIR:CONTAINER_DIR  数据卷挂载 (Bind mount a volume)
+#   - --name NAME         指定容器名称 (Assign a name to the container)
+#   - -it                 交互式终端 (Interactive)
+#   - --rm                容器停止后自动删除 (Automatically remove the container when it exits)
+#   - --env KEY=VALUE     设置环境变量 (Set environment variables)
+#   - --userns keep-id    保持用户ID映射 (Keep user ID mapping)
+
+podman ps [OPTIONS]                                  # 列出容器 (List containers)
+#   - -a, --all           显示所有容器 (Show all containers, including stopped ones)
+#   - -q, --quiet         只显示容器 ID (Only display container IDs)
+#   - -l, --latest        显示最近创建的容器 (Show the latest created container)
+
+podman stop CONTAINER_ID [CONTAINER_ID...]            # 停止一个或多个容器
+podman start CONTAINER_ID [CONTAINER_ID...]           # 启动一个或多个容器
+podman restart CONTAINER_ID [CONTAINER_ID...]         # 重启一个或多个容器
+podman kill CONTAINER_ID [CONTAINER_ID...]            # 强制停止一个或多个容器
+podman rm CONTAINER_ID [CONTAINER_ID...]              # 删除一个或多个容器
+#   - -f, --force         强制删除运行中的容器 (Force the removal of a running container)
+#   - -v                  删除容器关联的匿名数据卷 (Remove anonymous volumes associated with the container)
+
+podman exec [OPTIONS] CONTAINER_ID COMMAND [ARG...]   # 在运行的容器中执行命令
+#   - -it                 交互式终端 (Interactive)
+#   - -d, --detach        后台运行命令 (Detached mode)
+#   - -u, --user USER     以指定用户身份运行命令 (Username or UID)
+
+podman logs [OPTIONS] CONTAINER_ID                     # 获取容器日志
+#   - -f, --follow        跟踪日志输出 (Follow log output)
+#   - --tail N            显示末尾 N 行日志 (Number of lines to show from the end of the logs)
+#   - --since TIME        显示指定时间之后的日志 (Show logs since timestamp)
+
+podman inspect CONTAINER_ID                             # 查看容器详细信息 (JSON 格式)
+podman port CONTAINER_ID [PORT]                        # 列出端口映射或特定端口映射
+
+##############################################################################
+# 镜像管理 (Image Management)
+##############################################################################
+
+podman images [OPTIONS]                                # 列出本地镜像
+#   - -a, --all           显示所有镜像 (包括中间层)
+#   - -q, --quiet         只显示镜像 ID
+#   - --format TEMPLATE   格式化输出 (Format output using Go template)
+
+podman pull IMAGE_NAME[:TAG]                           # 拉取镜像
+podman push IMAGE_NAME[:TAG]                           # 推送镜像
+podman build [OPTIONS] PATH | URL | -                  # 构建镜像
+#   - -t, --tag NAME      为镜像指定名称和标签
+#   - -f, --file FILE     指定 Dockerfile 路径
+#   - --no-cache          构建镜像时不使用缓存
+
+podman rmi IMAGE_NAME [IMAGE_NAME...]                   # 删除一个或多个镜像
+#   - -f, --force         强制删除镜像
+
+podman save IMAGE_NAME -o archive.tar                  # 将镜像保存到 tar 归档文件
+podman load -i archive.tar                             # 从 tar 归档文件加载镜像
+
+podman tag SOURCE_IMAGE[:TAG] TARGET_IMAGE[:TAG]       # 为镜像创建标签
+
+##############################################################################
+# Podman 特有功能 (Podman-Specific Features)
+##############################################################################
+
+podman machine start [NAME]                            # 启动 Podman 虚拟机
+podman machine stop [NAME]                             # 停止 Podman 虚拟机
+podman machine ls                                      # 列出 Podman 虚拟机
+podman machine rm [NAME]                               # 删除 Podman 虚拟机
+
+podman pod create [OPTIONS] [NAME]                    # 创建 Pod
+podman pod ls                                          # 列出 Pods
+podman pod start POD [POD...]                          # 启动 Pod
+podman pod stop POD [POD...]                           # 停止 Pod
+podman pod rm POD [POD...]                             # 删除 Pod
+
+podman generate systemd --name CONTAINER [OPTIONS]     # 生成 systemd 服务文件
+podman auto-update [OPTIONS]                           # 自动更新容器
+
+##############################################################################
+# 网络管理 (Network Management)
+##############################################################################
+
+podman network ls                                      # 列出网络
+podman network create NETWORK_NAME                     # 创建网络
+podman network rm NETWORK_NAME                         # 删除网络
+podman network inspect NETWORK_NAME                   # 查看网络详细信息
+
+##############################################################################
+# 数据卷管理 (Volume Management)
+##############################################################################
+
+podman volume ls                                      # 列出数据卷
+podman volume create VOLUME_NAME                       # 创建数据卷
+podman volume rm VOLUME_NAME                           # 删除数据卷
+podman volume inspect VOLUME_NAME                      # 查看数据卷详细信息
+
+##############################################################################
+# 系统信息 (System Information)
+##############################################################################
+
+podman version                                         # 显示 Podman 版本信息
+podman info                                           # 显示系统信息
+podman system df                                       # 显示磁盘使用情况
+podman system prune                                   # 清理未使用的资源
+#   - -a, --all           删除所有未使用的镜像
+#   - -f, --force         不提示确认
+
+##############################################################################
+# 安全和特权 (Security and Privileges)
+##############################################################################
+
+podman run --privileged IMAGE_NAME                     # 以特权模式运行容器
+podman run --userns keep-id IMAGE_NAME                 # 保持用户 ID 映射
+podman run --cap-add CAP_NAME IMAGE_NAME               # 添加 Linux 能力
+podman run --cap-drop CAP_NAME IMAGE_NAME              # 删除 Linux 能力
+
+##############################################################################
+# 根less 模式 (Rootless Mode)
+##############################################################################
+
+podman unshare                                         # 在用户命名空间中运行命令
+podman unshare --pidns                                 # 在新的 PID 命名空间中运行
+podman unshare --netns                                 # 在新的网络命名空间中运行
+
+##############################################################################
+# 多架构支持 (Multi-Architecture Support)
+##############################################################################
+
+podman manifest create MANIFEST_NAME IMAGE_NAME        # 创建多架构清单
+podman manifest add MANIFEST_NAME IMAGE_NAME            # 向清单添加镜像
+podman manifest inspect MANIFEST_NAME                  # 检查清单
+podman manifest push MANIFEST_NAME                     # 推送多架构清单
