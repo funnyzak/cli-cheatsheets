@@ -1,0 +1,335 @@
+##############################################################################
+# Claude Code 命令速查表 (Claude Code Command Cheatsheet)
+# Anthropic AI 代码助手 CLI 工具
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   <query>        : 要执行的问题或任务描述
+#   <session_id>   : 会话 ID (用于恢复会话)
+#   <model>        : 模型名称 (sonnet, opus, haiku, claude-sonnet-4-20250514)
+#   <directory>    : 目录路径
+#   <file>         : 文件路径
+#   <tools>        : 工具名称列表
+#   <format>       : 输出格式 (json, text, stream-json)
+#   <command>      : 自定义命令名称
+#   <instructions> : 指令或说明
+
+##############################################################################
+# 安装与基础设置 (Installation & Basic Setup)
+##############################################################################
+
+# 安装 Claude Code (Install Claude Code)
+curl -sL https://install.anthropic.com | sh                           # macOS/Linux 安装
+npm install -g @anthropic-ai/claude-code                              # 通过 npm 安装
+wsl                                                                     # Windows 用户先进入 WSL
+
+# 基础命令 (Basic Commands)
+claude                                                                  # 启动交互式 REPL
+claude --version                                                       # 检查版本
+claude update                                                          # 更新到最新版本
+claude "summarize this project"                                        # 以初始提示启动
+claude -p "explain this function"                                      # 打印模式 (SDK) - 执行后退出
+claude -c                                                              # 继续最近的会话
+claude -c -p "Check for type errors"                                   # 通过 SDK 继续会话
+
+# 提示:
+#   - 首次使用需要配置 API 密钥
+#   - 使用 -p 参数可以直接执行命令并退出，无需进入交互模式
+#   - 使用 -c 参数可以继续上一次的对话
+
+##############################################################################
+# 会话管理 (Session Management)
+##############################################################################
+
+# 恢复会话 (Resume Sessions)
+claude -r <session_id> "Finish this PR"                                # 根据 ID 恢复会话
+claude --resume <session_id> "query"                                   # 使用标志恢复会话
+claude --continue                                                      # 继续当前会话
+
+# 会话控制 (Session Control)
+claude -p --max-turns 3 "query"                                        # 限制对话轮数
+claude --verbose                                                       # 启用详细日志
+/cos                                                                   # 显示当前会话的成本和持续时间
+
+# 提示:
+#   - 会话 ID 可以在交互模式中查看
+#   - 使用 --max-turns 可以控制对话长度，避免无限循环
+
+##############################################################################
+# 模型配置 (Model Configuration)
+##############################################################################
+
+# 模型选择 (Model Selection)
+claude --model sonnet                                                 # 使用 Sonnet 模型
+claude --model opus                                                   # 使用 Opus 模型
+claude --model haiku                                                  # 使用 Haiku 模型
+claude --model claude-sonnet-4-20250514                               # 使用特定模型版本
+
+# 提示:
+#   - 不同模型有不同的性能和成本特点
+#   - Sonnet 适合日常任务，Opus 适合复杂任务，Haiku 适合快速响应
+
+##############################################################################
+# 目录管理 (Directory Management)
+##############################################################################
+
+# 添加工作目录 (Add Working Directories)
+claude --add-dir ../apps ../lib                                       # 添加额外工作目录
+claude --add-dir <directory>                                          # 添加单个目录
+claude --add-dir /path/to/project                                     # 添加项目目录
+
+# 提示:
+#   - 添加的目录会被包含在 Claude 的上下文中
+#   - 确保目录路径存在且可访问
+
+##############################################################################
+# 输出格式 (Output Formatting)
+##############################################################################
+
+# 输出格式控制 (Output Format Control)
+claude -p "query" --output-format json                                # JSON 格式输出
+claude -p "query" --output-format text                                # 文本格式输出
+claude -p "query" --output-format stream-json                         # 流式 JSON 输出
+claude -p --input-format stream-json                                  # 流式 JSON 输入
+
+# 提示:
+#   - JSON 格式适合脚本自动化处理
+#   - 流式 JSON 适合实时数据处理
+
+##############################################################################
+# 管道操作 (Piping Operations)
+##############################################################################
+
+# 输入管道 (Input Piping)
+cat logs.txt | claude -p "explain"                                    # 处理管道内容
+git log --oneline | claude -p "summarize these commits"              # 分析 Git 日志
+cat error.log | claude -p "find the root cause"                      # 查找错误根因
+ls -la | claude -p "explain this directory structure"               # 解释目录结构
+
+# 提示:
+#   - 管道操作适合批量处理和分析
+#   - 可以与其他命令行工具组合使用
+
+##############################################################################
+# 工具管理 (Tool Management)
+##############################################################################
+
+# 允许特定工具 (Allow Specific Tools)
+claude --allowedTools "Bash(git log:*)" "Bash(git diff:*)" "Write"    # 允许特定工具
+claude --allowedTools "Read" "Write" "Edit"                          # 允许读写编辑工具
+
+# 禁用特定工具 (Disallow Specific Tools)
+claude --disallowedTools "Bash(rm:*)" "Bash(sudo:*)"                 # 禁用危险工具
+claude --disallowedTools "Bash(*:*)"                                  # 禁用所有 Bash 工具
+
+# 权限管理 (Permission Management)
+claude -p --permission-prompt-tool mcp_auth_tool "query"              # 特定工具权限提示
+claude --dangerously-skip-permissions                                 # 跳过所有权限提示
+
+# 提示:
+#   - 工具管理可以提高安全性，特别是处理敏感操作时
+#   --dangerously-skip-permissions 仅在可信环境中使用
+
+##############################################################################
+# 斜杠命令 (Slash Commands)
+##############################################################################
+
+# 基础斜杠命令 (Basic Slash Commands)
+/help                                                                  # 显示帮助和可用命令
+/exit                                                                  # 退出 REPL
+/clear                                                                 # 清除对话历史
+/config                                                                # 打开配置面板
+/doctor                                                                # 检查 Claude Code 安装健康状态
+
+# 会话管理斜杠命令 (Session Management Slash Commands)
+/compact [instructions]                                               # 总结对话，可选保留特定内容
+/clear                                                                 # 重置对话历史和上下文
+/exit                                                                  # 退出 REPL
+/help                                                                  # 显示可用命令
+/config                                                                # 打开配置面板
+
+# 系统斜杠命令 (System Slash Commands)
+/doctor                                                                # 检查安装健康状态
+/cos                                                                   # 显示当前会话成本和持续时间
+/ide                                                                   # 管理 IDE 集成
+/mcp                                                                   # 访问 MCP 功能
+
+# 提示:
+#   - 斜杠命令在交互模式中使用
+#   - /compact 可以在保持上下文的同时减少 token 使用
+
+##############################################################################
+# Model Context Protocol (MCP)
+##############################################################################
+
+# MCP 配置 (MCP Configuration)
+claude --mcp                                                           # 配置 MCP 服务器
+/mcp                                                                   # 访问 MCP 功能
+
+# 提示:
+#   - MCP 允许 Claude 访问外部工具和数据源
+#   - 需要先配置相应的 MCP 服务器
+
+##############################################################################
+# IDE 集成 (IDE Integration)
+##############################################################################
+
+# IDE 配置 (IDE Configuration)
+/ide vscode                                                           # 配置 VS Code 集成
+/ide configure                                                        # 设置 IDE 配置
+claude --ide-mode "explain selected code"                              # IDE 模式解释选中代码
+claude --ide-mode "refactor this function"                            # IDE 模式重构函数
+
+# 提示:
+#   - IDE 集成提供更流畅的开发体验
+#   - 支持多种主流 IDE 和编辑器
+
+##############################################################################
+# 自定义命令 (Custom Commands)
+##############################################################################
+
+# 创建自定义命令 (Create Custom Commands)
+# 在 .claude/commands/ 目录下创建自定义命令文件
+/debug                                                                 # 执行自定义调试命令
+/test                                                                  # 执行自定义测试命令
+/deploy                                                                # 执行自定义部署命令
+
+# 提示:
+#   - 自定义命令可以自动化常用任务
+#   - 命令文件应遵循特定格式和约定
+
+##############################################################################
+# 键盘快捷键 (Keyboard Shortcuts)
+##############################################################################
+
+Ctrl+C                                                                 # 取消当前操作
+Ctrl+D                                                                 # 退出 Claude Code
+Tab                                                                    # 自动补全
+Up/Down                                                                # 导航命令历史
+
+# 提示:
+#   - 快捷键在交互模式中使用
+#   - Ctrl+C 可以安全中断正在执行的操作
+
+##############################################################################
+# 环境变量 (Environment Variables)
+##############################################################################
+
+ANTHROPIC_API_KEY                                                     # API 密钥
+CLI_CHEATSHEET_PATH                                                   # Cheatsheet 路径
+CLI_CHEATSHEET_REGION                                                 # 区域设置 (cn 为中国区域)
+
+# 提示:
+#   - API 密钥需要从 Anthropic 官网获取
+#   - 中国区域用户可以设置 CLI_CHEATSHEET_REGION=cn
+
+##############################################################################
+# 自动化脚本示例 (Automation Script Examples)
+##############################################################################
+
+#!/bin/bash
+# PR 审查自动化 (Automated PR Review)
+git diff HEAD~1 | claude -p "review this PR for security issues" > security_review.md
+git diff HEAD~1 | claude -p "check for performance issues" > performance_review.md
+git diff HEAD~1 | claude -p "suggest improvements" > improvements.md
+
+#!/bin/bash
+# CI/CD 集成 (CI/CD Integration)
+claude -p "analyze test coverage" --output-format json | jq '.coverage_percentage'
+claude -p "generate release notes from commits" --max-turns 2 > RELEASE_NOTES.md
+
+#!/bin/bash
+# 批量处理 (Batch Processing)
+find . -name "*.js" -exec claude -p "analyze this file for bugs: {}" \; > bug_report.txt
+for file in src/*.py; do
+  claude -p "generate docstring for $file" --output-format text >> docs.md
+done
+
+# 提示:
+#   - 自动化脚本可以大大提高开发效率
+#   - 使用 JSON 输出格式便于后续处理
+
+##############################################################################
+# 高级工作流 (Advanced Workflows)
+##############################################################################
+
+# 复杂工具组合 (Complex Tool Combinations)
+claude --allowedTools "Bash(git:*)" "Write" "Read" \
+ --disallowedTools "Bash(rm:*)" "Bash(sudo:*)" \
+ --add-dir ../frontend ../backend ../shared
+
+# 性能优化配置 (Performance Optimization Configuration)
+claude --model claude-sonnet-4-20250514 \
+ --add-dir ../apps ../lib ../tools \
+ --allowedTools "Bash(git:*)" "Write" "Read" \
+ --verbose \
+ --output-format json
+
+# 复杂工作流 (Complex Workflows)
+claude -p "analyze project structure" | \
+claude -p "suggest improvements" | \
+claude -p "create implementation plan"
+
+# 提示:
+#   - 高级工作流适合复杂项目和任务
+#   - 合理使用工具限制和目录管理可以提高效率和安全性
+
+##############################################################################
+# 故障排除 (Troubleshooting)
+##############################################################################
+
+# 安装检查 (Installation Check)
+claude --doctor                                                       # 检查安装状态
+claude --version                                                      # 检查版本信息
+claude update                                                         # 更新到最新版本
+
+# 性能优化 (Performance Optimization)
+claude -p --max-turns 5 "focused query"                               # 限制上下文以提高性能
+/clear                                                                # 在任务之间使用以提高性能
+/compact "keep only important parts"                                   # 压缩对话内容
+
+# 提示:
+#   - 定期更新可以修复 bug 和获得新功能
+#   - 合理使用会话管理可以优化性能
+
+##############################################################################
+# 最佳实践 (Best Practices)
+##############################################################################
+
+# 安全性 (Security)
+- 避免在生产环境中使用 --dangerously-skip-permissions
+- 合理配置允许和禁止的工具列表
+- 定期审查和更新权限设置
+
+# 性能 (Performance)
+- 使用 /compact 压缩长对话
+- 合理设置 --max-turns 限制
+- 在任务之间使用 /clear 清理上下文
+
+# 自动化 (Automation)
+- 使用 JSON 输出格式进行脚本集成
+- 创建自定义命令自动化常用任务
+- 利用管道操作处理批量数据
+
+# 提示:
+#   - 遵循最佳实践可以提高效率和安全性
+#   - 根据具体需求调整配置和策略
+
+##############################################################################
+# 相关资源 (Related Resources)
+##############################################################################
+
+# 官方资源 (Official Resources)
+- 官方文档: https://docs.anthropic.com/claude/docs/claude-code
+- GitHub 仓库: https://github.com/anthropics/claude-code
+- API 密钥: https://console.anthropic.com/
+
+# 社区资源 (Community Resources)
+- 示例项目: https://github.com/Njengah/claude-code-cheat-sheet
+- 教程和指南: 官方博客和社区论坛
+- 问题反馈: GitHub Issues
+
+# 提示:
+#   - 保持关注官方更新和社区动态
+#   - 积极参与社区讨论和贡献

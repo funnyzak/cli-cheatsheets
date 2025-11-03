@@ -8,7 +8,7 @@
 
 ## 📋 特性
 
-- **丰富的速查表:** 涵盖 Android, Build Tools, CLI Tools, Cloud Tools, Container Tools, Data Process Tools, Database, Media, Network, Notification, OS Commands, Package Managers, Runtime, Security, Tools, Version Control, Web Servers 等 17 个类别，共 141+ 个速查表，持续更新和扩充。
+- **丰富的速查表:** 涵盖 Android, Build Tools, CLI Tools, Cloud Tools, Container Tools, Data Process Tools, Database, Media, Network, Notification, OS Commands, Package Managers, Runtime, Security, Tools, Version Control, Web Servers 等 17 个类别，共 142+ 个速查表，持续更新和扩充。
 - **快速查询:** 通过简单的命令即可查看指定工具的速查表。
 - **别名支持:** 方便配置 Bash/Zsh/Fish 别名，实现更快速的调用。
 - **简单易用:** 脚本简洁明了，操作简单直观。
@@ -251,6 +251,7 @@ CLI 速查表按类别组织在以下目录中：
 (`cheatsheets/cli/`) 命令行工具
 
 * `ansible-cheatsheet.txt`: Ansible 自动化工具命令
+* `claude-code-cheatsheet.txt`: Claude Code AI 代码助手 CLI 工具命令
 * `helm-cheatsheet.txt`: Helm Kubernetes 包管理器命令
 * `watchman-cheatsheet.txt`: Watchman 文件监控工具命令
 

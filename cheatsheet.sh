@@ -93,6 +93,9 @@ COMMAND_DESCRIPTIONS["helm"]="Kubernetes 包管理器"
 COMMAND_CATEGORIES["watchman"]="cli"
 COMMAND_DESCRIPTIONS["watchman"]="文件监控工具"
 
+COMMAND_CATEGORIES["claude-code"]="cli"
+COMMAND_DESCRIPTIONS["claude-code"]="Anthropic AI 代码助手 CLI 工具"
+
 
 # 云平台工具类命令 (Cloud Tools)
 COMMAND_CATEGORIES["awscli"]="cloud"
