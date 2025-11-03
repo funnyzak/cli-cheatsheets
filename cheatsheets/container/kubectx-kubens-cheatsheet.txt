@@ -1,0 +1,288 @@
+##############################################################################
+# kubectx & kubens Cheatsheet
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# Legend:
+#   <context>     : Kubernetes context name
+#   <namespace>   : Kubernetes namespace name
+#   <cluster>     : Kubernetes cluster name
+#   <option>      : Command option
+
+##############################################################################
+# kubectx - 上下文切换 / Context Switching
+##############################################################################
+
+# 基础用法 / Basic usage
+kubectx                                 # 列出所有上下文
+kubectx <context>                       # 切换到指定上下文
+kubectx -                                # 切换到上一个上下文
+kubectx .                                # 切换到当前上下文
+
+# 交互式选择 / Interactive selection
+kubectx                                 # 显示上下文菜单（交互式）
+kubectx -f                              # 强制交互式选择
+
+# 上下文信息 / Context information
+kubectx -c                              # 显示当前上下文
+kubectx --current                       # 同上
+kubectl config current-context          # 同上（kubectl命令）
+
+##############################################################################
+# kubens - 命名空间切换 / Namespace Switching
+##############################################################################
+
+# 基础用法 / Basic usage
+kubens                                 # 列出所有命名空间
+kubens <namespace>                     # 切换到指定命名空间
+kubens -                                # 切换到上一个命名空间
+kubens .                                # 切换到默认命名空间
+
+# 交互式选择 / Interactive selection
+kubens                                 # 显示命名空间菜单（交互式）
+kubens -f                              # 强制交互式选择
+
+# 命名空间信息 / Namespace information
+kubens -c                              # 显示当前命名空间
+kubens --current                       # 同上
+kubectl config view --minify -o jsonpath='{..namespace}'  # 同上（kubectl命令）
+
+##############################################################################
+# 上下文管理 / Context Management
+##############################################################################
+
+# 重命名上下文 / Rename context
+kubectx <old_name>=<new_name>          # 重命名上下文
+
+# 删除上下文 / Delete context
+kubectx -d <context>                   # 删除指定上下文
+kubectx --delete <context>             # 同上
+
+# 上下文详情 / Context details
+kubectl config get-contexts            # 显示所有上下文详情
+kubectl config view                    # 显示完整配置
+kubectl config view --minify           # 显示精简配置
+
+##############################################################################
+# 批量操作 / Batch Operations
+##############################################################################
+
+# 批量切换 / Batch switching
+kubectx production-.*                   # 切换到匹配模式的上下文
+kubectx -r 'prod' 'staging'           # 重命名上下文
+
+# 多集群管理 / Multi-cluster management
+kubectx dev-cluster staging-cluster prod-cluster  # 在开发、测试、生产环境间切换
+
+##############################################################################
+# 与fzf集成 / FZF Integration
+##############################################################################
+
+# 安装fzf集成 / Install fzf integration
+# kubectx和kubens默认支持fzf，如果安装了fzf会自动启用
+
+# 模糊搜索 / Fuzzy search
+kubectx                                # 使用fzf进行上下文模糊搜索
+kubens                                 # 使用fzf进行命名空间模糊搜索
+
+# 快速切换示例 / Quick switching examples
+kubectx                                # 输入"prod"快速匹配production-cluster
+kubens                                 # 输入"dev"快速匹配development-ns
+
+##############################################################################
+# 别名和快捷方式 / Aliases and Shortcuts
+##############################################################################
+
+# 常用别名 / Common aliases
+alias kctx=kubectx                      # kubectx简写
+alias kns=kubens                        # kubens简写
+alias kcc='kubectl config current-context'  # 显示当前上下文
+alias kcn='kubectl config view --minify -o jsonpath="{..namespace}"'  # 显示当前命名空间
+
+# 函数示例 / Function examples
+k() {
+    kubectl "$@"
+}
+
+kc() {
+    kubectl "$@"
+}
+
+# 上下文和命名空间组合 / Context and namespace combination
+kubens $(kubectx -c):<namespace>       # 在指定上下文中切换命名空间
+
+##############################################################################
+# 配置文件管理 / Configuration File Management
+##############################################################################
+
+# 配置文件位置 / Configuration file location
+# 默认: ~/.kube/config
+export KUBECONFIG=~/.kube/config       # 设置配置文件路径
+export KUBECONFIG=~/.kube/config:~/.kube/dev-config  # 多配置文件
+
+# 合并配置 / Merge configurations
+export KUBECONFIG=$KUBECONFIG:~/.kube/staging-config
+kubectl config view --flatten          # 展平合并后的配置
+
+##############################################################################
+# 脚本和自动化 / Scripts and Automation
+##############################################################################
+
+# 批量部署脚本 / Batch deployment script
+#!/bin/bash
+CLUSTERS=("dev" "staging" "prod")
+for cluster in "${CLUSTERS[@]}"; do
+    echo "Deploying to $cluster..."
+    kubectx $cluster
+    kubectl apply -f deployment.yaml
+done
+
+# 环境切换函数 / Environment switching function
+switch_env() {
+    local env=$1
+    kubectx "${env}-cluster"
+    kubens "${env}-namespace"
+    echo "Switched to $env environment"
+}
+
+##############################################################################
+# 故障排除 / Troubleshooting
+##############################################################################
+
+# 连接问题 / Connection issues
+kubectx -c                              # 检查当前上下文
+kubectl cluster-info                   # 检查集群连接
+kubectl get nodes                      # 检查节点状态
+
+# 权限问题 / Permission issues
+kubectl auth can-i get pods            # 检查当前权限
+kubectl get pods --all-namespaces      # 检查全局权限
+
+# 配置问题 / Configuration issues
+kubectl config view                    # 检查配置文件
+kubectl config view --raw              # 查看原始配置
+
+##############################################################################
+# 高级用法 / Advanced Usage
+##############################################################################
+
+# 多配置文件管理 / Multi-config management
+export KUBECONFIG=~/.kube/config:~/.kube/work-config:~/.kube/personal-config
+
+# 上下文复制 / Context duplication
+kubectl config copy-context source-context new-context
+
+# 用户切换 / User switching
+kubectl config use-context <context>   # 切换上下文
+kubectl config set-context <context> --user=<user>  # 设置上下文用户
+
+##############################################################################
+# 工作流集成 / Workflow Integration
+##############################################################################
+
+# Git Hooks集成 / Git hooks integration
+# .git/hooks/pre-commit:
+#!/bin/bash
+kubectx staging-cluster
+kubectl apply -f k8s/
+kubectx dev-cluster
+
+# CI/CD集成 / CI/CD integration
+# 在CI/CD管道中：
+kubectx production-cluster
+kubens production-namespace
+kubectl set image deployment/app app=container:latest
+
+##############################################################################
+# 监控和调试 / Monitoring and Debugging
+##############################################################################
+
+# 快速诊断 / Quick diagnosis
+kubectx staging-cluster                 # 切换到测试环境
+kubens monitoring                       # 切换到监控命名空间
+kubectl get pods -l app=monitoring     # 查看监控Pod状态
+
+# 日志收集 / Log collection
+kubectx production-cluster              # 切换到生产环境
+kubectl logs -f deployment/app         # 查看应用日志
+
+##############################################################################
+# 安全最佳实践 / Security Best Practices
+##############################################################################
+
+# 环境隔离 / Environment isolation
+# 使用不同的上下文和命名空间隔离环境
+kubectx production-cluster
+kubens production-namespace
+
+# 权限验证 / Permission verification
+kubectl auth can-i create deployments --namespace=production
+kubectl auth can-i delete pods --namespace=production
+
+# 配置备份 / Configuration backup
+cp ~/.kube/config ~/.kube/config.backup.$(date +%Y%m%d)
+
+##############################################################################
+# 性能优化 / Performance Optimization
+##############################################################################
+
+# 配置缓存 / Configuration caching
+# kubectx会缓存配置以提高切换速度
+# 清理缓存：
+rm -rf ~/.kube/kubectx.cache
+
+# 快速切换 / Fast switching
+# 使用别名提高切换速度：
+alias kp='kubectx production'
+alias ks='kubectx staging'
+alias kd='kubectx development'
+
+##############################################################################
+# 团队协作 / Team Collaboration
+##############################################################################
+
+# 标准化命名 / Standardized naming
+# 建议: <environment>-<cluster-name>
+# 例如: dev-us-east-1, prod-eu-west-2
+
+# 共享配置 / Shared configuration
+# 团队成员共享kubeconfig文件，但使用不同的用户身份
+export KUBECONFIG=~/.kube/shared-config:~/.kube/personal-config
+
+##############################################################################
+# 扩展工具集成 / Extended Tool Integration
+##############################################################################
+
+# 与k9s集成 / k9s integration
+kubectx production-cluster              # 切换上下文
+k9s                                    # 启动k9s界面
+
+# 与lens集成 / lens integration
+# lens会自动识别kubeconfig中的上下文
+# 使用kubectx切换后，lens会自动刷新
+
+# 与helm集成 / helm integration
+kubectx staging-cluster                 # 切换上下文
+helm list --all-namespaces             # 查看所有命名空间的helm releases
+
+##############################################################################
+# 常见模式 / Common Patterns
+##############################################################################
+
+# 开发流程 / Development workflow
+kubectx dev-cluster                    # 1. 切换到开发集群
+kubens dev-namespace                   # 2. 切换到开发命名空间
+kubectl apply -f dev-deployment.yaml   # 3. 部署应用
+kubectl logs -f deployment/app         # 4. 查看日志
+
+# 测试流程 / Testing workflow
+kubectx staging-cluster                # 1. 切换到测试集群
+kubens staging-namespace               # 2. 切换到测试命名空间
+kubectl apply -f staging-deployment.yaml  # 3. 部署应用
+kubectl get pods                       # 4. 检查状态
+
+# 生产流程 / Production workflow
+kubectx prod-cluster                   # 1. 切换到生产集群
+kubens prod-namespace                  # 2. 切换到生产命名空间
+kubectl apply -f prod-deployment.yaml  # 3. 部署应用（谨慎操作）
+kubectl get pods --watch              # 4. 监控状态

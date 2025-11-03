@@ -1,0 +1,383 @@
+##############################################################################
+# terraform Cheatsheet
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# Legend:
+#   <resource>    : Terraform resource name
+#   <workspace>   : Terraform workspace name
+#   <module>      : Terraform module path
+#   <option>      : Command option
+
+##############################################################################
+# 基础命令 / Basic Commands
+##############################################################################
+
+# 初始化和计划 / Initialize and plan
+terraform init                          # 初始化工作目录
+terraform plan                          # 查看执行计划
+terraform plan -out=plan.out            # 保存执行计划到文件
+terraform apply                         # 应用配置（交互式确认）
+terraform apply -auto-approve           # 自动应用配置（无交互）
+terraform apply plan.out                # 应用保存的执行计划
+
+# 销毁和清理 / Destroy and cleanup
+terraform destroy                       # 销毁所有资源（交互式确认）
+terraform destroy -auto-approve         # 自动销毁资源
+terraform destroy -target <resource>    # 销毁特定资源
+
+##############################################################################
+# 状态管理 / State Management
+##############################################################################
+
+# 状态查看 / State viewing
+terraform show                          # 显示当前状态
+terraform state list                    # 列出所有资源
+terraform show <resource>               # 显示特定资源详情
+terraform state show <resource>         # 显示资源状态
+
+# 状态操作 / State operations
+terraform state rm <resource>           # 从状态中移除资源
+terraform state mv <source> <dest>     # 移动或重命名资源
+terraform state pull                    # 拉取远程状态
+terraform state push                    # 推送状态到远程
+
+##############################################################################
+# 资源管理 / Resource Management
+##############################################################################
+
+# 导入现有资源 / Import existing resources
+terraform import <resource> <id>        # 导入现有资源
+terraform import module.vpc.aws_vpc.main vpc-12345678  # 导入VPC资源
+
+# 刷新状态 / Refresh state
+terraform refresh                       # 刷新状态文件
+terraform refresh -target <resource>    # 刷新特定资源状态
+
+# 资源依赖 / Resource dependencies
+terraform graph                         # 生成依赖关系图
+terraform graph | dot -Tpng > graph.png  # 生成可视化依赖图
+
+##############################################################################
+# 工作空间管理 / Workspace Management
+##############################################################################
+
+# 工作空间操作 / Workspace operations
+terraform workspace new <name>          # 创建新工作空间
+terraform workspace select <name>       # 切换工作空间
+terraform workspace list                # 列出所有工作空间
+terraform workspace show                # 显示当前工作空间
+terraform workspace delete <name>       # 删除工作空间
+
+# 工作空间使用 / Workspace usage
+terraform workspace select dev          # 切换到开发环境
+terraform workspace select prod         # 切换到生产环境
+terraform apply -var-file="dev.tfvars"  # 使用开发环境变量
+
+##############################################################################
+# 变量和输出 / Variables and Outputs
+##############################################################################
+
+# 变量文件 / Variable files
+terraform apply -var-file="prod.tfvars" # 使用特定变量文件
+terraform apply -var="region=us-west-2" # 设置单个变量
+terraform apply -var="instance_count=3" # 设置实例数量
+
+# 输出查看 / Output viewing
+terraform output                        # 显示所有输出
+terraform output <name>                 # 显示特定输出
+terraform output -json                  # JSON格式输出
+terraform output -raw <name>            # 原始输出值
+
+##############################################################################
+# 模块管理 / Module Management
+##############################################################################
+
+# 模块使用 / Module usage
+terraform get                          # 下载模块
+terraform get -update                   # 更新模块
+terraform fmt                          # 格式化配置文件
+terraform fmt -recursive               # 递归格式化所有文件
+
+# 模块开发 / Module development
+terraform validate                     # 验证配置语法
+terraform validate -no-color           # 验证配置（无颜色输出）
+terraform fmt -check=true              # 检查格式化
+
+##############################################################################
+# 远程状态和后端 / Remote State and Backend
+##############################################################################
+
+# 状态后端配置 / State backend configuration
+terraform init -backend-config="bucket=mybucket" -backend-config="key=terraform.tfstate"
+terraform init -backend-config="region=us-west-2"
+
+# 状态锁定 / State locking
+terraform force-unlock LOCK_ID          # 强制解锁状态
+terraform plan -lock=false             # 执行计划时不锁定状态
+
+##############################################################################
+# 提供商管理 / Provider Management
+##############################################################################
+
+# 提供商初始化 / Provider initialization
+terraform init -plugin-dir=/custom/path # 指定插件目录
+terraform init -get-plugins=false      # 跳过插件下载
+terraform init -upgrade                # 升级插件
+
+# 提供商配置 / Provider configuration
+terraform providers                    # 显示配置的提供商
+terraform validate -provider-only      # 只验证提供商配置
+
+##############################################################################
+# 调试和故障排除 / Debugging and Troubleshooting
+##############################################################################
+
+# 详细日志 / Verbose logging
+terraform apply -verbose               # 详细输出
+TF_LOG=DEBUG terraform apply          # 启用调试日志
+TF_LOG_PATH=terraform.log terraform plan  # 日志输出到文件
+
+# 调试命令 / Debug commands
+terraform console                      # 进入交互式控制台
+terraform graph -draw-cycles          # 显示依赖环
+terraform state pull > state.json      # 导出状态文件
+
+##############################################################################
+# 格式化和验证 / Formatting and Validation
+##############################################################################
+
+# 代码格式化 / Code formatting
+terraform fmt                          # 格式化当前目录
+terraform fmt -recursive               # 递归格式化所有子目录
+terraform fmt -check                  # 检查格式化但不修改
+terraform fmt -diff                   # 显示格式化差异
+
+# 语法验证 / Syntax validation
+terraform validate                     # 验证语法
+terraform fmt -check=true              # 检查代码格式
+terraform plan -detailed-exitcode      # 计划结果返回详细退出码
+
+##############################################################################
+# 资源导入和管理 / Resource Import and Management
+##############################################################################
+
+# 批量导入 / Bulk import
+terraform import 'aws_instance.web[0]' i-1234567890abcdef0  # 导入特定索引资源
+terraform import 'module.vpc.aws_vpc.main' vpc-12345678     # 导入模块资源
+
+# 资源管理 / Resource management
+terraform taint <resource>             # 标记资源为损坏
+terraform untaint <resource>           # 取消损坏标记
+terraform apply -replace=<resource>    # 强制替换资源
+
+##############################################################################
+# 实用技巧 / Useful Tips
+##############################################################################
+
+# 快速预览 / Quick preview
+terraform plan -destroy               # 预览销毁计划
+terraform show -json                  # JSON格式显示状态
+terraform output -json               # JSON格式显示输出
+
+# 安全操作 / Safe operations
+terraform plan -out=plan.out          # 保存计划供审查
+terraform apply plan.out              # 应用审查过的计划
+terraform fmt -check -diff            # 检查代码格式
+
+##############################################################################
+# 常用工作流 / Common Workflows
+##############################################################################
+
+# 开发工作流 / Development workflow
+terraform fmt                         # 格式化代码
+terraform validate                    # 验证配置
+terraform plan                       # 查看计划
+terraform apply                      # 应用配置
+
+# 生产部署 / Production deployment
+terraform workspace select prod       # 切换生产工作空间
+terraform plan -out=prod.plan        # 保存生产计划
+# 审查prod.plan文件
+terraform apply prod.plan             # 应用生产计划
+
+# 清理环境 / Environment cleanup
+terraform destroy -target <resource> # 删除特定资源
+terraform destroy                    # 清理所有资源
+
+##############################################################################
+# 最佳实践 / Best Practices
+##############################################################################
+
+# 1. 使用工作空间 / Use workspaces
+terraform workspace new dev          # 开发环境
+terraform workspace new staging      # 测试环境
+terraform workspace new prod         # 生产环境
+
+# 2. 状态文件管理 / State file management
+# 使用远程后端存储状态文件
+# 配置状态锁定防止并发修改
+
+# 3. 变量管理 / Variable management
+# 使用变量文件管理环境配置
+# 敏感信息使用环境变量
+
+# 4. 模块化 / Modularization
+# 使用模块重用配置
+# 版本控制模块引用
+
+# 5. 安全实践 / Security practices
+# 最小权限原则
+# 定期轮换密钥
+# 审计资源变更
+
+##############################################################################
+# 配置示例 / Configuration Examples
+##############################################################################
+
+# 主配置文件 / Main configuration file
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+
+  backend "s3" {
+    bucket = "my-terraform-state"
+    key    = "terraform.tfstate"
+    region = "us-west-2"
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+}
+
+variable "aws_region" {
+  description = "AWS region"
+  type        = string
+  default     = "us-west-2"
+}
+
+resource "aws_instance" "web" {
+  ami           = var.ami_id
+  instance_type = var.instance_type
+
+  tags = {
+    Name        = var.instance_name
+    Environment = terraform.workspace
+  }
+}
+
+# 变量文件 / Variables file
+variable "ami_id" {
+  description = "AMI ID for EC2 instance"
+  type        = string
+}
+
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t3.micro"
+}
+
+variable "instance_name" {
+  description = "Name tag for instance"
+  type        = string
+  default     = "web-server"
+}
+
+# 输出配置 / Outputs configuration
+output "instance_id" {
+  description = "ID of the EC2 instance"
+  value       = aws_instance.web.id
+}
+
+output "public_ip" {
+  description = "Public IP address of the instance"
+  value       = aws_instance.web.public_ip
+}
+
+##############################################################################
+# 模块示例 / Module Examples
+##############################################################################
+
+# 使用模块 / Using modules
+module "vpc" {
+  source = "./modules/vpc"
+
+  cidr_block = "10.0.0.0/16"
+  public_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+  private_subnets = ["10.0.10.0/24", "10.0.20.0/24"]
+
+  tags = {
+    Environment = terraform.workspace
+    Project     = var.project_name
+  }
+}
+
+module "security_group" {
+  source = "./modules/security-group"
+
+  vpc_id = module.vpc.vpc_id
+  ingress_rules = [
+    {
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  ]
+}
+
+##############################################################################
+# 环境配置 / Environment Configuration
+##############################################################################
+
+# 开发环境 / Development environment
+# dev.tfvars
+aws_region     = "us-west-2"
+instance_type  = "t3.micro"
+instance_count = 1
+enable_logging = false
+
+# 生产环境 / Production environment
+# prod.tfvars
+aws_region     = "us-west-2"
+instance_type  = "t3.medium"
+instance_count = 3
+enable_logging = true
+
+##############################################################################
+# 生命周期管理 / Lifecycle Management
+##############################################################################
+
+# 资源生命周期 / Resource lifecycle
+resource "aws_instance" "web" {
+  ami           = var.ami_id
+  instance_type = var.instance_type
+
+  lifecycle {
+    create_before_destroy = true
+    prevent_destroy       = true
+
+    ignore_changes = [
+      ami,  # 忽略AMI变更
+    ]
+  }
+}
+
+# 工作空间隔离 / Workspace isolation
+variable "instance_type" {
+  type = string
+  default = "t3.micro"
+
+  default = {
+    default = "t3.micro"
+    dev     = "t3.micro"
+    staging = "t3.small"
+    prod    = "t3.medium"
+  }
+}

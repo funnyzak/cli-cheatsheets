@@ -1,0 +1,378 @@
+##############################################################################
+# starship Cheatsheet
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# Legend:
+#   <format>      : Format string
+#   <symbol>      : Symbol character
+#   <color>       : Color name or code
+#   <style>       : Style combination
+#   <module>      : Starship module name
+
+##############################################################################
+# 安装和基础设置 / Installation and Basic Setup
+##############################################################################
+
+# 安装 / Installation
+curl -sS https://starship.rs/install.sh | bash    # Unix/Linux安装
+choco install starship                            # Windows Chocolatey
+brew install starship                             # macOS Homebrew
+
+# Shell初始化 / Shell initialization
+# Bash (~/.bashrc):
+eval "$(starship init bash)"
+
+# Zsh (~/.zshrc):
+eval "$(starship init zsh)"
+
+# Fish (~/.config/fish/config.fish):
+starship init fish | source
+
+# PowerShell (~/.config/powershell/profile.ps1):
+Invoke-Expression (&starship init powershell)
+
+##############################################################################
+# 基础配置 / Basic Configuration
+##############################################################################
+
+# 创建配置文件 / Create configuration file
+mkdir -p ~/.config/starship
+touch ~/.config/starship.toml
+
+# 基础配置示例 / Basic configuration example
+format = "$all"
+add_newline = true
+
+##############################################################################
+# 模块配置 / Module Configuration
+##############################################################################
+
+# 字符符号 / Character symbols
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[➜](bold red)"
+vicmd_symbol = "[➜](bold blue)"
+
+# 用户名模块 / Username module
+[username]
+style_user = "bold dimmed blue"
+show_always = false
+disabled = false
+
+# 主机名模块 / Hostname module
+[hostname]
+ssh_only = true
+format = "[$hostname](bold dimmed green)"
+disabled = false
+
+##############################################################################
+# 目录和路径 / Directory and Path
+##############################################################################
+
+# 当前目录 / Current directory
+[directory]
+truncation_length = 3
+truncation_symbol = "…/"
+read_only = " 🔒"
+read_only_style = "red"
+style = "bold blue"
+disabled = false
+
+# Git状态 / Git status
+[git_status]
+conflicted = "⚔️ "
+ahead = "🏎️ 💨"
+behind = "🐢 "
+diverged = "😵 "
+untracked = "🤷‍"
+stashed = "📦 "
+modified = "📝"
+staged = '[++\($count\)](green)'
+renamed = "👅"
+deleted = "🗑️ "
+
+# Git分支 / Git branch
+[git_branch]
+symbol = "🌿 "
+truncation_length = 10
+truncation_symbol = "…"
+style = "bold purple"
+
+##############################################################################
+# 编程语言模块 / Programming Language Modules
+##############################################################################
+
+# Node.js / Node.js
+[nodejs]
+symbol = "📜 "
+style = "bold green"
+disabled = false
+
+# Python / Python
+[python]
+symbol = "🐍 "
+style = "bold yellow"
+pyenv_version_name = true
+disabled = false
+
+# Rust / Rust
+[rust]
+symbol = "🦀 "
+style = "bold red"
+disabled = false
+
+# Go / Go
+[golang]
+symbol = "🐹 "
+style = "bold cyan"
+disabled = false
+
+# Java / Java
+[java]
+symbol = "☕ "
+style = "bold red"
+disabled = false
+
+##############################################################################
+# 云和容器 / Cloud and Container
+##############################################################################
+
+# Docker / Docker
+[docker_context]
+symbol = "🐳 "
+style = "blue bold"
+disabled = false
+
+# Kubernetes / Kubernetes
+[kubernetes]
+symbol = "☸️ "
+format = '[$symbol$context( \($namespace\))]($style)'
+disabled = false
+
+##############################################################################
+# 自定义格式 / Custom Formats
+##############################################################################
+
+# 简洁格式 / Minimal format
+format = """
+[🚀](bold red)$directory$character
+"""
+
+# 开发者格式 / Developer format
+format = """
+[┌───](bold green)$username$hostname$git_branch
+[│](bold green)$directory$nodejs$python$rust$golang$java
+[└───](bold green)$character
+"""
+
+# 详细格式 / Detailed format
+format = """
+$username$hostname$shlvl$singularity$kubernetes$directory$git_branch$git_commit$git_state$git_status$hg_branch$docker_context$package$cmake$dart$deno$dotnet$elixir$elm$erlang$golang$helm$java$julia$kotlin$lua$nim$nodejs$ocaml$perl$php$purescript$python$raku$rlang$red$ruby$rust$scala$swift$terraform$vlang$vcsh$nix_shell$conda$memory_usage$aws$gcloud$openstack$azure_env$env_var$crystal$custom$sudo$cmd_duration$line_break$jobs$battery$time$status$container$shell$character
+"""
+
+##############################################################################
+# 颜色和样式 / Colors and Styles
+##############################################################################
+
+# 预定义颜色 / Predefined colors
+#   black, red, green, blue, yellow, purple, cyan, white
+#   dimmed, bold, underline, italic, bg:color, fg:color
+
+# 自定义颜色示例 / Custom color examples
+[status]
+style = "bg:red fg:white"
+symbol = "✖"
+disabled = false
+
+[time]
+style = "bold yellow"
+format = "[$time]($style)"
+disabled = false
+
+##############################################################################
+# 条件模块 / Conditional Modules
+##############################################################################
+
+# 仅在SSH连接时显示 / Show only on SSH
+[hostname]
+ssh_only = true
+format = "[$hostname](bold green)"
+disabled = false
+
+# 仅在特定目录显示 / Show only in specific directories
+[package]
+extensions = ["js", "ts", "json", "py", "rs", "go"]
+format = "[$symbol$version]($style)"
+symbol = "📦"
+disabled = false
+
+##############################################################################
+# 高级配置 / Advanced Configuration
+##############################################################################
+
+# 自定义模块 / Custom modules
+[custom.example]
+command = "echo 'custom module'"
+when = "test -f /path/to/specific/file"
+format = "[$output]($style)"
+style = "bold blue"
+
+# 环境变量模块 / Environment variable module
+[env_var]
+variable = "MY_ENV_VAR"
+style = "bold dimmed green"
+format = "[$env_value]($style)"
+disabled = false
+
+##############################################################################
+# 性能优化 / Performance Optimization
+##############################################################################
+
+# 禁用不需要的模块 / Disable unused modules
+[aws]
+disabled = true
+
+[gcloud]
+disabled = true
+
+[azure_env]
+disabled = true
+
+# 减少命令执行时间 / Reduce command execution time
+[cmd_duration]
+min_time = 2000  # 只显示超过2秒的命令
+show_milliseconds = false
+style = "bold yellow"
+
+##############################################################################
+# 主题示例 / Theme Examples
+##############################################################################
+
+# Nerdy主题 / Nerdy theme
+format = """
+$character$directory$git_branch$git_status$python$nodejs$rust$golang$lua
+"""
+
+# Space主题 / Space theme
+format = """
+$all$line_break$character
+"""
+
+# Minimal主题 / Minimal theme
+format = """
+$directory$character
+"""
+
+##############################################################################
+# 实用技巧 / Useful Tips
+##############################################################################
+
+# 快速测试配置 / Quick test configuration
+starship preset nerd-font-symbols -o ~/.config/starship.toml
+
+# 重载配置 / Reload configuration
+starship module list                    # 列出所有模块
+starship config explain                 # 解释当前配置
+
+# 查看预设 / Browse presets
+starship preset -l                      # 列出所有预设
+starship preset pastel-powerline -o ~/.config/starship.toml  # 应用预设
+
+##############################################################################
+# 故障排除 / Troubleshooting
+##############################################################################
+
+# 调试模式 / Debug mode
+starship debug                          # 显示调试信息
+STARSHIP_LOG=info bash                  # 启用日志
+
+# 性能分析 / Performance profiling
+time starship prompt                    # 测量prompt生成时间
+starship timings                        # 显示模块执行时间
+
+# 常见问题 / Common issues
+# 1. 字体问题：确保使用Nerd Font
+# 2. 配置不生效：检查shell配置文件
+# 3. 模块不显示：检查禁用条件和路径
+
+##############################################################################
+# 与其他工具集成 / Integration with Other Tools
+##############################################################################
+
+# Tmux集成 / Tmux integration
+set -g status-right '#(starship prompt --terminal-width=60)'
+
+# Vim集成 / Vim integration
+# 使用vim-airline插件显示starship信息
+
+# Windows Terminal集成 / Windows Terminal integration
+# 在settings.json中配置字体为Cascadia Code或其他Nerd Font
+
+##############################################################################
+# 配置最佳实践 / Configuration Best Practices
+##############################################################################
+
+# 1. 模块顺序 / Module order
+#    建议顺序：身份认证信息 -> 位置信息 -> 版本控制 -> 项目信息 -> 执行状态
+
+# 2. 颜色一致性 / Color consistency
+#    使用一致的颜色方案，避免过于花哨
+
+# 3. 性能考虑 / Performance considerations
+#    禁用不常用的模块，特别是需要执行外部命令的模块
+
+# 4. 可读性 / Readability
+#    适当使用分隔符和换行，保持prompt简洁明了
+
+##############################################################################
+# 动态配置 / Dynamic Configuration
+##############################################################################
+
+# 基于目录的配置 / Directory-based configuration
+[custom.project]
+when = "[ -f package.json ] || [ -f Cargo.toml ] || [ -f requirements.txt ]"
+command = "echo '📁 Project'"
+format = "[$output]($style)"
+style = "bold green"
+
+# 基于时间的配置 / Time-based configuration
+[time]
+format = "[$time]($style)"
+time_format = "%T"
+style = "bold blue"
+disabled = false
+
+##############################################################################
+# 分段式prompt / Segmented Prompt
+##############################################################################
+
+# 左侧prompt / Left prompt
+format = """
+$username$hostname$directory$git_branch$character
+"""
+
+# 右侧prompt / Right prompt (需要shell支持)
+# 在bash中配置：
+#   PS1='$(starship prompt --left)'
+#   PS1+='$(starship prompt --right)'
+
+##############################################################################
+# 自定义符号 / Custom Symbols
+##############################################################################
+
+# 修改默认符号 / Modify default symbols
+[git_status]
+ahead = "↑"
+behind = "↓"
+diverged = "↕"
+conflicted = "✖"
+
+[directory]
+read_only = "🔒"
+truncation_symbol = ".../"
+
+[character]
+success_symbol = "❯"
+error_symbol = "❯"
+vicmd_symbol = "❮"

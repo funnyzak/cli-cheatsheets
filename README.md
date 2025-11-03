@@ -8,7 +8,7 @@
 
 ## 📋 特性
 
-- **丰富的速查表:** 涵盖 Android, Build Tools, CLI Tools, Cloud Tools, Container Tools, Data Process Tools, Database, Media, Network, Notification, OS Commands, Package Managers, Runtime, Security, Tools, Version Control, Web Servers 等 17 个类别，共 142+ 个速查表，持续更新和扩充。
+- **丰富的速查表:** 涵盖 Android, Build Tools, CLI Tools, Cloud Tools, Container Tools, Data Process Tools, Database, Media, Network, Notification, OS Commands, Package Managers, Runtime, Security, Tools, Version Control, Web Servers 等 17 个类别，共 155+ 个速查表，持续更新和扩充。
 - **快速查询:** 通过简单的命令即可查看指定工具的速查表。
 - **别名支持:** 方便配置 Bash/Zsh/Fish 别名，实现更快速的调用。
 - **简单易用:** 脚本简洁明了，操作简单直观。
@@ -231,13 +231,13 @@ CLI 速查表按类别组织在以下目录中：
 
 ### Android
 
-(`cheatsheets/android/`) Android 开发相关命令
+(`cheatsheets/android/`) Android 开发相关命令 (1个工具)
 
 * `adb-cheatsheet.txt`: Android Debug Bridge (ADB) 命令
 
 ### Build Tools
 
-(`cheatsheets/build/`) 构建工具
+(`cheatsheets/build/`) 构建工具 (9个工具)
 
 * `cmake-cheatsheet.txt`: CMake 构建系统命令
 * `gradle-cheatsheet.txt`: Gradle 构建工具命令
@@ -245,10 +245,13 @@ CLI 速查表按类别组织在以下目录中：
 * `bun-cheatsheet.txt`: Bun JavaScript 运行时和包管理器命令
 * `flutter-cheatsheet.txt`: Flutter 移动应用开发框架命令
 * `webpack-cheatsheet.txt`: Webpack 模块打包工具命令
+* `react-native-cheatsheet.txt`: React Native 移动应用开发框架命令
+* `vite-cheatsheet.txt`: Vite 现代化前端构建工具命令
+* `xcodebuild-cheatsheet.txt`: Xcode 命令行构建工具命令
 
 ### CLI Tools
 
-(`cheatsheets/cli/`) 命令行工具
+(`cheatsheets/cli/`) 命令行工具 (4个工具)
 
 * `ansible-cheatsheet.txt`: Ansible 自动化工具命令
 * `claude-code-cheatsheet.txt`: Claude Code AI 代码助手 CLI 工具命令
@@ -258,25 +261,29 @@ CLI 速查表按类别组织在以下目录中：
 
 ### Cloud Tools
 
-(`cheatsheets/cloud/`) 云平台工具
+(`cheatsheets/cloud/`) 云平台工具 (6个工具)
 
 * `awscli-cheatsheet.txt`: AWS 命令行界面 (AWS CLI) 命令
 * `az-cheatsheet.txt`: Azure 命令行界面 (Azure CLI) 命令
 * `rclone-cheatsheet.txt`: Rclone 云存储同步工具命令
 * `rsync-cheatsheet.txt`: Rsync 远程文件同步工具命令
+* `ossutil-cheatsheet.txt`: 阿里云OSS命令行工具
+* `terraform-cheatsheet.txt`: Terraform 基础设施即代码工具命令
 
 
 ### Container Tools
 
-(`cheatsheets/container/`) 容器化工具
+(`cheatsheets/container/`) 容器化工具 (5个工具)
 
 * `docker-cheatsheet.txt`: Docker 容器平台命令
 * `kubectl-cheatsheet.txt`: kubectl Kubernetes 命令行工具命令
 * `podman-cheatsheet.txt`: Podman 容器管理工具命令
+* `docker-compose-cheatsheet.txt`: Docker Compose 多容器编排工具命令
+* `kubectx-kubens-cheatsheet.txt`: kubectx/kubens Kubernetes 上下文和命名空间切换工具命令
 
 ### Data Process Tools
 
-(`cheatsheets/data-process/`) 数据处理工具
+(`cheatsheets/data-process/`) 数据处理工具 (5个工具)
 
 * `jq-cheatsheet.txt`: jq JSON 处理器命令
 * `yq-cheatsheet.txt`: yq YAML 处理器命令
@@ -287,7 +294,7 @@ CLI 速查表按类别组织在以下目录中：
 
 ### Database
 
-(`cheatsheets/database/`) 数据库工具
+(`cheatsheets/database/`) 数据库工具 (4个工具)
 
 * `mongo-cheatsheet.txt`: mongo MongoDB 客户端命令
 * `mysql-cheatsheet.txt`: mysql MySQL 客户端命令
@@ -296,15 +303,15 @@ CLI 速查表按类别组织在以下目录中：
 
 ### Media
 
-(`cheatsheets/media/`) 媒体处理工具
+(`cheatsheets/media/`) 媒体处理工具 (3个工具)
 
 * `ffmpeg-cheatsheet.txt`: FFmpeg 音视频处理命令
 * `imagemagick-cheatsheet.txt`: imageMagick 图像处理命令
-* `yt-dlp-cheatsheet.txt` 下载视频/音频
+* `yt-dlp-cheatsheet.txt`: yt-dlp 下载视频/音频命令
 
 ### Network
 
-(`cheatsheets/network/`) 网络工具
+(`cheatsheets/network/`) 网络工具 (16个工具)
 
 * `curl-cheatsheet.txt`: curl 网络请求工具命令
 * `dig-cheatsheet.txt`: dig DNS 查询工具命令
@@ -325,13 +332,13 @@ CLI 速查表按类别组织在以下目录中：
 
 ### Notification
 
-(`cheatsheets/notification/`) 通知服务工具
+(`cheatsheets/notification/`) 通知服务工具 (1个工具)
 
 * `apprise-cheatsheet.txt`: Apprise 通知服务工具命令
 
 ### OS Commands
 
-(`cheatsheets/os/`) 操作系统命令
+(`cheatsheets/os/`) 操作系统命令 (61个工具)
 
 * `tmux-cheatsheet.txt`: tmux 终端复用器命令
 * `apt-cheatsheet.txt`: apt Debian/Ubuntu 包管理器命令
@@ -398,7 +405,7 @@ CLI 速查表按类别组织在以下目录中：
 
 ### Package Managers
 
-(`cheatsheets/package/`) 包管理器
+(`cheatsheets/package/`) 包管理器 (13个工具)
 
 * `apk-cheatsheet.txt`: apk Alpine Linux 包管理器命令
 * `brew-cheatsheet.txt`: brew macOS 包管理器命令
@@ -416,39 +423,51 @@ CLI 速查表按类别组织在以下目录中：
 
 ### Runtime
 
-(`cheatsheets/runtime/`) 运行时环境
+(`cheatsheets/runtime/`) 运行时环境 (7个工具)
 
 * `golang-cheatsheet.txt`: golang Go 语言运行时命令
 * `java-cheatsheet.txt`: java Java 运行时命令
 * `node-cheatsheet.txt`: node Node.js 运行时命令
 * `php-cheatsheet.txt`: php PHP 运行时命令
 * `python-cheatsheet.txt`: python Python 运行时命令
+* `dotnet-cheatsheet.txt`: .NET 运行时命令
+* `venv-cheatsheet.txt`: Python 虚拟环境管理命令
 
 ### Security
 
-(`cheatsheets/security/`) 安全工具
+(`cheatsheets/security/`) 安全工具 (5个工具)
 
 * `nmap-cheatsheet.txt`: nmap 网络扫描工具命令
 * `certbot-cheatsheet.txt`: certbot Let's Encrypt 证书管理工具命令
 * `acme.sh-cheatsheet.txt`: acme.sh Let's Encrypt 证书管理工具命令
+* `openssl-cheatsheet.txt`: OpenSSL 加密工具箱命令
+* `ssh-keygen-cheatsheet.txt`: SSH 密钥管理工具命令
 
 ### Tools
 
-(`cheatsheets/tools/`) 其他实用工具
+(`cheatsheets/tools/`) 其他实用工具 (10个工具)
 
 * `bat-cheatsheet.txt`: bat 增强的 cat 命令工具
 * `exa-cheatsheet.txt`: exa 现代化的 ls 命令工具
 * `tldr-cheatsheet.txt`: tldr 简化的 man 页面工具
+* `fzf-cheatsheet.txt`: fzf 命令行模糊查找器命令
+* `ripgrep-cheatsheet.txt`: ripgrep (rg) 超快速文本搜索工具命令
+* `fd-cheatsheet.txt`: fd 现代文件查找工具命令
+* `zoxide-cheatsheet.txt`: zoxide 智能目录跳转工具命令
+* `starship-cheatsheet.txt`: starship 跨平台 shell 提示符命令
+* `gdb-cheatsheet.txt`: gdb GNU 调试器命令
+* `make-cheatsheet.txt`: make 构建工具命令
 
 ### Version Control
 
-(`cheatsheets/version-control/`) 版本控制工具
+(`cheatsheets/version-control/`) 版本控制工具 (2个工具)
 
 * `git-cheatsheet.txt`: git 版本控制系统命令
+* `gh-cheatsheet.txt`: gh GitHub CLI 工具命令
 
 ### Web Servers
 
-(`cheatsheets/webserver/`) Web 服务器
+(`cheatsheets/webserver/`) Web 服务器 (3个工具)
 
 * `apachectl-cheatsheet.txt`: apachectl Apache 服务器控制命令
 * `caddy-cheatsheet.txt`: caddy Caddy Web 服务器命令

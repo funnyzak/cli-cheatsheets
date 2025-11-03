@@ -4,7 +4,7 @@
 
 This is a comprehensive command-line cheatsheet collection project that provides quick reference guides for various CLI tools, programming languages, and system utilities. The project consists of:
 
-- **141+ cheatsheet files** covering 17 different categories
+- **155+ cheatsheet files** covering 17 different categories
 - **Interactive shell script** for easy access and navigation
 - **Multiple deployment options** (remote execution, local usage, shell aliases)
 - **Automated CI/CD pipelines** for releases and GitHub Pages deployment
@@ -36,7 +36,7 @@ cli-cheatsheets/
     ├── package/           # Package managers
     ├── runtime/           # Runtime environments
     ├── security/          # Security tools
-    ├── tools/             # Miscellaneous tools (bat, exa, tldr)
+    ├── tools/             # Miscellaneous tools (fzf, ripgrep, fd, zoxide, starship, bat, exa, tldr, gdb, make)
     ├── version-control/    # Version control systems
     └── webserver/         # Web server management
 ```
@@ -60,20 +60,6 @@ All cheatsheets follow a consistent format:
    - Clear descriptions of each variable
    - Example values where helpful
 
-### Recent Additions Examples
-
-**Container Tools:**
-- `kubectl-cheatsheet.txt`: Kubernetes cluster management commands
-- `podman-cheatsheet.txt`: Podman containerization tool commands
-
-**Data Processing Tools:**
-- `awk-cheatsheet.txt`: Text processing and pattern scanning
-- `sed-cheatsheet.txt`: Stream text editor commands
-- `cut-cheatsheet.txt`: Text column extraction commands
-
-**Tools Category:**
-- `bat-cheatsheet.txt`: Enhanced cat command with syntax highlighting
-- `exa-cheatsheet.txt`: Modern ls replacement with better UX
 
 Example structure:
 ```bash
@@ -243,7 +229,7 @@ CLI_CHEATSHEET_PATH=./test ./cheatsheet.sh git
 3. Improve error handling
 4. Update documentation
 5. Test cross-platform compatibility
-6. Ensure all 141+ cheatsheets are accessible
+6. Ensure all 155+ cheatsheets are accessible
 
 ## Project Guidelines
 
@@ -320,9 +306,8 @@ Enable debug output by examining the script's error handling and logging mechani
 
 ## Current Project Statistics (as of 2025)
 
-- **Total Cheatsheets**: 141+ files
+- **Total Cheatsheets**: 155+ files
 - **Categories**: 17 comprehensive categories
-- **Recent Additions**: kubectl, podman, awk, sed, cut, bat, exa
 - **Script Size**: 22KB main interactive script
 - **Deployment**: GitHub Pages with custom domain
 - **CI/CD**: Automated releases and deployment workflows

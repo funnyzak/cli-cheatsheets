@@ -1,0 +1,320 @@
+##############################################################################
+# gdb (GNU Debugger) Cheatsheet
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# Legend:
+#   <program>     : Program name or path
+#   <pid>         : Process ID
+#   <file>        : Source file path
+#   <function>    : Function name
+#   <variable>    : Variable name
+#   <address>     : Memory address
+
+##############################################################################
+# 基础启动 / Basic Startup
+##############################################################################
+
+# 启动调试 / Start debugging
+gdb <program>                          # 启动调试程序
+gdb <program> <core>                   # 调试核心转储文件
+gdb -p <pid>                           # 附加到正在运行的进程
+gdb -args <program> <arg1> <arg2>      # 带参数启动程序
+
+# 交互式启动 / Interactive startup
+gdb                                    # 进入GDB交互模式
+(gdb) file <program>                   # 加载程序
+(gdb) attach <pid>                     # 附加到进程
+
+##############################################################################
+# 运行控制 / Execution Control
+##############################################################################
+
+# 基础运行命令 / Basic run commands
+(gdb) run                               # 开始运行程序
+(gdb) run <args>                       # 带参数运行
+(gdb) continue                          # 继续执行
+(gdb) next                              # 单步执行（跳过函数）
+(gdb) step                              # 单步执行（进入函数）
+(gdb) finish                            # 执行到当前函数返回
+(gdb) until <line>                     # 执行到指定行
+(gdb) return                            # 从当前函数返回
+
+# 退出和重启 / Exit and restart
+(gdb) kill                              # 终止被调试程序
+(gdb) quit                              # 退出GDB
+(gdb) restart                           # 重启程序
+
+##############################################################################
+# 断点管理 / Breakpoint Management
+##############################################################################
+
+# 设置断点 / Set breakpoints
+(gdb) break <function>                 # 在函数处设置断点
+(gdb) break <file>:<line>              # 在文件指定行设置断点
+(gdb) break <line>                     # 在当前文件指定行设置断点
+(gdb) break *<address>                 # 在指定地址设置断点
+(gdb) break main                       # 在main函数设置断点
+
+# 条件断点 / Conditional breakpoints
+(gdb) break <function> if <condition>  # 条件断点
+(gdb) break 123 if x == 5              # 条件断点示例
+(gdb) break function if i > 10         # 当i>10时触发
+
+# 断点管理 / Breakpoint management
+(gdb) info breakpoints                 # 查看所有断点
+(gdb) delete <breakpoint_num>          # 删除指定断点
+(gdb) clear <function>                 # 清除函数断点
+(gdb) clear <file>:<line>              # 清除文件行断点
+(gdb) disable <breakpoint_num>         # 禁用断点
+(gdb) enable <breakpoint_num>          # 启用断点
+
+##############################################################################
+# 观察点 / Watchpoints
+##############################################################################
+
+# 设置观察点 / Set watchpoints
+(gdb) watch <variable>                 # 监视变量值变化
+(gdb) watch *<address>                 # 监视内存地址
+(gdb) rwatch <variable>                # 读监视点
+(gdb) awatch <variable>                # 读写监视点
+
+# 观察点管理 / Watchpoint management
+(gdb) info watchpoints                 # 查看所有观察点
+(gdb) delete watchpoints               # 删除所有观察点
+
+##############################################################################
+# 查看代码和变量 / View Code and Variables
+##############################################################################
+
+# 查看源代码 / View source code
+(gdb) list                             # 显示当前行周围代码
+(gdb) list <function>                  # 显示函数代码
+(gdb) list <file>:<line>               # 显示文件指定行代码
+(gdb) list <line>,<line>               # 显示行范围代码
+(gdb) list -, <line>                   # 显示到指定行
+
+# 查看变量 / View variables
+(gdb) print <variable>                 # 打印变量值
+(gdb) print *<pointer>                 # 打印指针指向的值
+(gdb) print &<variable>                # 打印变量地址
+(gdb) print <array>@<size>             # 打印数组元素
+(gdb) print struct_var                 # 打印结构体
+
+# 信息查询 / Information queries
+(gdb) info locals                      # 显示局部变量
+(gdb) info args                        # 显示函数参数
+(gdb) info variables                   # 显示所有变量
+(gdb) info functions                   # 显示函数信息
+(gdb) info registers                   # 显示寄存器状态
+
+##############################################################################
+# 堆栈检查 / Stack Inspection
+##############################################################################
+
+# 堆栈操作 / Stack operations
+(gdb) backtrace                         # 显示调用堆栈
+(gdb) bt                               # backtrace简写
+(gdb) backtrace full                   # 显示完整堆栈信息
+(gdb) frame <frame_num>                # 切换到指定栈帧
+(gdb) up                               # 向上移动栈帧
+(gdb) down                             # 向下移动栈帧
+(gdb) info stack                       # 显示堆栈信息
+
+# 函数信息 / Function information
+(gdb) info function <function>         # 显示函数信息
+(gdb) where                            # 显示当前位置
+(gdb) return <expression>              # 返回指定值
+
+##############################################################################
+# 内存检查 / Memory Inspection
+##############################################################################
+
+# 内存查看 / Memory view
+(gdb) x <address>                      # 检查内存地址
+(gdb) x/<format> <address>             # 按格式检查内存
+(gdb) x/10x <address>                  # 检查16个字节（十六进制）
+(gdb) x/20i <address>                  # 检查20条指令
+(gdb) x/1s <address>                   # 检查字符串
+
+# 内存格式 / Memory formats
+# x: 十六进制, d: 十进制, u: 无符号十进制
+# o: 八进制, t: 二进制, i: 指令
+# c: 字符, s: 字符串, f: 浮点数
+
+##############################################################################
+# 线程调试 / Thread Debugging
+##############################################################################
+
+# 线程操作 / Thread operations
+(gdb) info threads                     # 显示所有线程
+(gdb) thread <thread_num>              # 切换到指定线程
+(gdb) thread apply all <command>       # 对所有线程执行命令
+(gdb) thread apply 1 <command>         # 对指定线程执行命令
+
+##############################################################################
+# 多进程调试 / Multi-process Debugging
+##############################################################################
+
+# 进程调试 / Process debugging
+(gdb) info inferiors                   # 显示所有进程
+(gdb) inferior <inferior_num>          # 切换到指定进程
+(gdb) add-inferior                     # 添加新进程
+(gdb) detach-inferiors                 # 分离所有进程
+
+##############################################################################
+# 宏和自定义命令 / Macros and Custom Commands
+##############################################################################
+
+# 定义宏 / Define macros
+(gdb) define my_command
+> echo Custom command executed
+> print $argc
+> end
+
+# 自定义命令 / Custom commands
+(gdb) define print_array
+> set $i = 0
+> while $i < $arg1
+>   printf "array[%d] = %d\n", $i, $arg0[$i]
+>   set $i = $i + 1
+> end
+> end
+
+##############################################################################
+# 调试配置 / Debugging Configuration
+##############################################################################
+
+# 显示设置 / Display settings
+(gdb) set print pretty on               # 美化输出
+(gdb) set print array on               # 显示数组内容
+(gdb) set print null-stop on           # 显示字符串到null字符
+(gdb) set print elements 0             # 无限制显示数组元素
+
+# 历史记录 / History
+(gdb) show commands                    # 显示命令历史
+(gdb) show history                     # 显示详细历史
+(gdb) set history size 1000            # 设置历史记录大小
+
+##############################################################################
+# 文件和路径 / Files and Paths
+##############################################################################
+
+# 文件操作 / File operations
+(gdb) file <program>                   # 加载新程序
+(gdb) symbol-file <file>               # 加载符号文件
+(gdb) add-symbol-file <file> <address> # 添加动态符号文件
+(gdb) info sources                     # 显示源文件列表
+(gdb) directory <path>                 # 添加源文件搜索路径
+
+##############################################################################
+# 信号处理 / Signal Handling
+##############################################################################
+
+# 信号控制 / Signal control
+(gdb) info signals                     # 显示信号信息
+(gdb) handle <signal> <action>         # 设置信号处理方式
+(gdb) handle SIGINT print nostop        # 打印SIGINT但不停止
+(gdb) handle SIGSEGV stop print        # 遇到SIGSEGV时停止并打印
+
+##############################################################################
+# 远程调试 / Remote Debugging
+##############################################################################
+
+# 远程连接 / Remote connection
+(gdb) target remote <host>:<port>      # 连接到远程调试服务器
+(gdb) target extended-remote <host>:<port>  # 扩展远程连接
+(gdb) monitor                          # 执行远程monitor命令
+(gdb) detach                           # 断开远程连接
+
+##############################################################################
+# 调试脚本 / Debugging Scripts
+##############################################################################
+
+# Python脚本支持 / Python script support
+(gdb) python print("Hello from Python")
+(gdb) python
+> import gdb
+> frame = gdb.selected_frame()
+> print(f"Current function: {frame.name()}")
+> end
+
+# 脚本文件 / Script files
+(gdb) source <script_file>             # 执行GDB脚本
+(gdb) .gdbinit                         # 自动加载的配置文件
+
+##############################################################################
+# 性能分析 / Performance Analysis
+##############################################################################
+
+# 执行时间 / Execution time
+(gdb) set pagination off                # 关闭分页
+(gdb) set confirm off                  # 关闭确认提示
+(gdb) set verbose off                  # 关闭详细输出
+
+# 记录和回放 / Record and replay
+(gdb) record                            # 开始记录
+(gdb) record stop                      # 停止记录
+(gdb) record goto <time>               # 跳转到指定时间点
+
+##############################################################################
+# 实用调试技巧 / Practical Debugging Tips
+##############################################################################
+
+# 段错误调试 / Segmentation fault debugging
+gdb <program> core                     # 调试core文件
+(gdb) bt                               # 查看崩溃时的调用栈
+(gdb) info registers                   # 查看寄存器状态
+(gdb) x/20x $esp                       # 查看栈内容
+
+# 内存泄漏检查 / Memory leak detection
+(gdb) watch malloc                     # 监视malloc调用
+(gdb) break malloc                     # 在malloc处断点
+(gdb) condition 1 size > 1000          # 条件断点
+
+# 多线程死锁 / Multi-threading deadlock
+(gdb) info threads                     # 查看所有线程状态
+(gdb) thread apply all bt               # 查看所有线程调用栈
+(gdb) info mutex                       # 查看互斥锁信息
+
+##############################################################################
+# 常用调试序列 / Common Debugging Sequences
+##############################################################################
+
+# 基础调试流程 / Basic debugging flow
+1. gdb <program>
+2. break main
+3. run
+4. next/step 单步执行
+5. print 查看变量
+6. continue 继续执行
+7. quit 退出
+
+# 崩溃调试流程 / Crash debugging flow
+1. gdb <program> core
+2. bt 查看调用栈
+3. frame <n> 切换栈帧
+4. info locals 查看局部变量
+5. info registers 查看寄存器
+6. list 查看源代码
+
+##############################################################################
+# 调试最佳实践 / Debugging Best Practices
+##############################################################################
+
+# 1. 使用符号信息 / Use debug symbols
+gcc -g program.c -o program            # 编译时包含调试信息
+
+# 2. 优化级别 / Optimization levels
+gcc -O0 -g program.c -o program        # 关闭优化以便调试
+
+# 3. 条件断点 / Use conditional breakpoints
+break function if variable == value    # 避免不必要的断点
+
+# 4. 自动化调试 / Automated debugging
+# 创建 .gdbinit 文件，包含常用命令和设置
+
+# 5. 日志输出 / Log output
+set logging file debug.log              # 保存调试日志
+set logging on                         # 开始记录
+set logging off                        # 停止记录

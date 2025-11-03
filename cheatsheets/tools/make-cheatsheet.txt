@@ -1,0 +1,373 @@
+##############################################################################
+# make Cheatsheet
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# Legend:
+#   <target>      : Target name
+#   <file>        : File path
+#   <option>      : Make option
+#   <variable>    : Make variable
+
+##############################################################################
+# 基础用法 / Basic Usage
+##############################################################################
+
+# 基础命令 / Basic commands
+make                                   # 执行第一个目标
+make <target>                          # 执行指定目标
+make -f <file>                         # 指定Makefile文件
+make -C <directory>                    # 在指定目录执行make
+
+# 常用目标 / Common targets
+make all                               # 构建所有目标
+make clean                             # 清理临时文件
+make install                           # 安装程序
+make uninstall                         # 卸载程序
+make test                              # 运行测试
+make help                              # 显示帮助信息
+
+##############################################################################
+# 选项和控制 / Options and Control
+##############################################################################
+
+# 调试选项 / Debug options
+make -n                                # 显示命令但不执行（dry run）
+make -d                                # 显示调试信息
+make -p                                # 显示所有规则和变量
+make -f <file> -n                      # dry run指定文件
+
+# 并行执行 / Parallel execution
+make -j                                # 并行执行（使用所有CPU核心）
+make -j4                               # 使用4个并行任务
+make -j1                               # 串行执行
+
+# 忽略错误 / Ignore errors
+make -k                                # 遇到错误继续执行
+make -i                                # 忽略所有错误
+
+# 强制重建 / Force rebuild
+make -B                                # 强制重建所有目标
+make --always-make                     # 总是重建
+
+##############################################################################
+# 变量和宏 / Variables and Macros
+##############################################################################
+
+# 设置变量 / Set variables
+make CC=gcc                            # 设置C编译器
+make CFLAGS="-O2 -Wall"               # 设置编译选项
+make DEBUG=1                           # 启用调试模式
+make PREFIX=/usr/local                # 设置安装前缀
+
+# 变量覆盖 / Variable override
+make CC=gcc CFLAGS="-O2" <target>      # 临时覆盖变量
+make -e <variable>=<value> <target>    # 环境变量覆盖
+
+# 显示变量 / Display variables
+make -p | grep <variable>              # 显示变量定义
+make --print-data-base                 # 显示数据库
+
+##############################################################################
+# Makefile结构 / Makefile Structure
+##############################################################################
+
+# 基础Makefile示例 / Basic Makefile example
+CC = gcc
+CFLAGS = -Wall -g
+TARGET = program
+SRCS = main.c utils.c
+OBJS = $(SRCS:.c=.o)
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean:
+	rm -f $(OBJS) $(TARGET)
+
+.PHONY: all clean
+
+# 变量定义 / Variable definitions
+CC = gcc                              # C编译器
+CXX = g++                             # C++编译器
+CFLAGS = -Wall -Wextra -O2           # C编译选项
+CXXFLAGS = -Wall -Wextra -O2         # C++编译选项
+LDFLAGS =                             # 链接选项
+LIBS = -lm                           # 库文件
+
+##############################################################################
+# 模式规则 / Pattern Rules
+##############################################################################
+
+# 编译规则 / Compilation rules
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# 链接规则 / Linking rule
+%: %.o
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+##############################################################################
+# 自动变量 / Automatic Variables
+##############################################################################
+
+# 常用自动变量 / Common automatic variables
+$@            # 目标文件名
+$<            # 第一个依赖文件
+$^            # 所有依赖文件
+$?            # 所有比目标新的依赖文件
+$*            # 目标文件的主干名
+
+# 示例 / Example
+program: main.o utils.o
+	$(CC) -o $@ $^          # $@ = program, $^ = main.o utils.o
+
+%.o: %.c
+	$(CC) -c $< -o $@        # $< = main.c, $@ = main.o
+
+##############################################################################
+# 条件编译 / Conditional Compilation
+##############################################################################
+
+# 条件语句 / Conditional statements
+ifdef DEBUG
+CFLAGS += -g -DDEBUG
+endif
+
+ifeq ($(CC),gcc)
+CFLAGS += -Wall
+endif
+
+ifndef PREFIX
+PREFIX = /usr/local
+endif
+
+# 示例Makefile / Example Makefile
+CC = gcc
+CFLAGS = -Wall
+
+ifdef DEBUG
+CFLAGS += -g -DDEBUG
+else
+CFLAGS += -O2
+endif
+
+all: program
+
+program: main.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+##############################################################################
+# 函数 / Functions
+##############################################################################
+
+# 文件名函数 / Filename functions
+$(wildcard pattern)                   # 匹配文件模式
+$(notdir names)                       # 去除目录路径
+$(addsuffix suffix, names)            # 添加后缀
+$(addprefix prefix, names)            # 添加前缀
+$(basename names)                     # 去除后缀
+$(suffix names)                       # 提取后缀
+
+# 示例 / Examples
+SRCS = $(wildcard *.c)               # 所有.c文件
+OBJS = $(SRCS:.c=.o)                 # 转换为.o文件
+DEPS = $(OBJS:.o=.d)                 # 依赖文件
+
+# 文本函数 / Text functions
+$(findstring find,in)                 # 查找字符串
+$(filter pattern...,text)             # 过滤匹配的词
+$(filter-out pattern...,text)         # 过滤不匹配的词
+$(sort list)                          # 排序并去重
+$(subst from,to,text)                 # 字符串替换
+$(patsubst pattern,replacement,text)  # 模式替换
+
+##############################################################################
+# 依赖管理 / Dependency Management
+##############################################################################
+
+# 自动依赖生成 / Automatic dependency generation
+%.d: %.c
+	$(CC) -MM $< > $@
+
+include $(DEPS)                       # 包含依赖文件
+
+# gcc依赖生成 / gcc dependency generation
+%.d: %.c
+	$(CC) -MMD -MP -MF $@ -c $<
+
+##############################################################################
+# 多目标 / Multiple Targets
+##############################################################################
+
+# 多目标规则 / Multiple targets rule
+debug release: program
+	@echo "Building $@ version"
+
+debug: CFLAGS += -g -DDEBUG
+release: CFLAGS += -O2 -DNDEBUG
+
+# 静态模式规则 / Static pattern rules
+OBJECTS = main.o utils.o parser.o
+$(OBJECTS): %.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+##############################################################################
+# 递归make / Recursive Make
+##############################################################################
+
+# 子目录构建 / Subdirectory builds
+all: lib src tests
+
+lib:
+	$(MAKE) -C lib
+
+src:
+	$(MAKE) -C src
+
+tests:
+	$(MAKE) -C tests
+
+# 变量传递 / Variable passing
+export CC CFLAGS                       # 导出变量到子make
+
+subdir:
+	$(MAKE) -C subdir CC=gcc           # 传递变量到子make
+
+##############################################################################
+# 实用技巧 / Useful Tips
+##############################################################################
+
+# 清理目标 / Clean targets
+clean:
+	rm -f *.o core
+
+distclean: clean
+	rm -f program
+
+mrproper: distclean
+	rm -f config.h config.log
+
+# 安装目标 / Install targets
+install: program
+	install -d $(PREFIX)/bin
+	install program $(PREFIX)/bin/
+
+uninstall:
+	rm -f $(PREFIX)/bin/program
+
+# 打包 / Packaging
+dist: clean
+	tar czf program-$(VERSION).tar.gz .
+
+##############################################################################
+# 调试make / Debugging Make
+##############################################################################
+
+# 调试选项 / Debug options
+make -n                               # 显示将要执行的命令
+make -d                               # 调试模式
+make -p                               # 显示数据库
+make -f - -f Makefile                 # 从stdin读取
+
+# 检查规则 / Check rules
+make -n -p | grep -A 10 target        # 检查特定目标
+make -p | grep -E "^[A-Z]"           # 显示所有变量
+
+##############################################################################
+# 性能优化 / Performance Optimization
+##############################################################################
+
+# 并行编译 / Parallel compilation
+make -j$(nproc)                       # 使用所有CPU核心
+make -j8                              # 使用8个并行任务
+
+# 增量编译 / Incremental compilation
+make -t target                        # 标记目标为最新
+make -W file target                   # 假装文件已修改
+
+##############################################################################
+# 常用模式 / Common Patterns
+##############################################################################
+
+# C项目模板 / C project template
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99
+TARGET = myprogram
+SRCS = $(wildcard *.c)
+OBJS = $(SRCS:.c=.o)
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean:
+	rm -f $(OBJS) $(TARGET)
+
+# C++项目模板 / C++ project template
+CXX = g++
+CXXFLAGS = -Wall -Wextra -std=c++11
+TARGET = myprogram
+SRCS = $(wildcard *.cpp)
+OBJS = $(SRCS:.cpp=.o)
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -f $(OBJS) $(TARGET)
+
+##############################################################################
+# 高级特性 / Advanced Features
+##############################################################################
+
+# 计算变量 / Computed variables
+COMPILE.c = $(CC) $(CFLAGS) $(CPPFLAGS) -c
+COMPILE.cc = $(CXX) $(CXXFLAGS) $(CPPFLAGS) -c
+
+%.o: %.c
+	$(COMPILE.c) -o $@ $<
+
+# 后缀规则 / Suffix rules
+.SUFFIXES: .c .o
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+# 假目标 / Phony targets
+.PHONY: all clean install uninstall test
+
+# 顺序依赖 / Order-only dependencies
+target: normal-deps | order-only-deps
+	command
+
+##############################################################################
+# 故障排除 / Troubleshooting
+##############################################################################
+
+# 常见错误 / Common errors
+# 1. Makefile格式错误：确保使用Tab而不是空格
+# 2. 变量未定义：检查拼写和作用域
+# 3. 循环依赖：检查目标间的依赖关系
+# 4. 权限问题：检查文件和目录权限
+
+# 调试命令 / Debug commands
+make -n target                        # 显示命令但不执行
+make -p | grep -i target              # 查找目标定义
+make --debug=v                        # 详细调试信息

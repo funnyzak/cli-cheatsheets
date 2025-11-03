@@ -1,0 +1,186 @@
+##############################################################################
+# fzf 速查表 (fzf Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PATTERN:    搜索模式或关键词 (Search pattern or keyword)
+#   - COMMAND:    要执行的命令 (Command to execute)
+#   - FILE:       文件路径或名称 (File path or name)
+#   - DIRECTORY:  目录路径 (Directory path)
+#   - OPTION:     命令选项 (Command option)
+#   - KEY:        键盘键或快捷键 (Keyboard key or shortcut)
+
+##############################################################################
+# 基本语法 (Basic Syntax)
+##############################################################################
+
+# 基础模糊搜索 / Basic fuzzy search
+fzf                                     # 交互式搜索文件
+ls | fzf                                # 从ls输出中选择
+find . -type f | fzf                    # 搜索所有文件
+
+# 带预览的搜索 / Search with preview
+fzf --preview 'cat {}'                  # 预览文件内容
+fzf --preview 'head -100 {}'            # 预览文件前100行
+fzf --preview 'bat --style=numbers --color=always {} | head -100'  # 使用bat预览
+
+##############################################################################
+# 文件搜索与操作 / File Search and Operations
+##############################################################################
+
+# 搜索并编辑文件 / Search and edit files
+fzf --preview 'bat --style=numbers --color=always {}' | xargs -r nvim
+vim $(fzf)                             # 使用vim打开选中的文件
+code $(fzf)                            # 使用VSCode打开选中的文件
+
+# 搜索并删除文件 / Search and delete files
+fzf --multi --preview 'ls -la {}' | xargs -r rm    # 删除选中的文件
+
+# 搜索目录 / Search directories
+find . -type d | fzf                   # 搜索所有目录
+ls -d */ | fzf                         # 搜索当前目录下的子目录
+
+##############################################################################
+# 命令历史搜索 / Command History Search
+##############################################################################
+
+# 搜索命令历史 / Search command history
+history | fzf                          # 搜索历史命令
+history | fzf +s | cut -c8-             # 搜索并去除历史编号
+
+# 与Ctrl-R集成 / Integration with Ctrl-R
+# (通常通过shell集成自动配置)
+# 通常在.bashrc或.zshrc中配置: source <(fzf --bash/completion)
+
+##############################################################################
+# 进程管理 / Process Management
+##############################################################################
+
+# 搜索并杀死进程 / Search and kill processes
+ps aux | fzf | awk '{print $2}' | xargs kill -9    # 选择并杀死进程
+ps -ef | fzf --header-lines 1         # 显示带标题的进程列表
+
+##############################################################################
+# Git集成 / Git Integration
+##############################################################################
+
+# Git分支选择 / Git branch selection
+git checkout $(git branch | fzf)       # 选择并切换分支
+git branch -d $(git branch | fzf)      # 选择并删除分支
+
+# Git文件选择 / Git file selection
+git add $(git status -s | fzf -m | awk '{print $2}')    # 选择文件并添加到暂存区
+git diff --staged $(git diff --name-only --cached | fzf -m)  # 查看选中文件的暂存差异
+
+# Git提交历史 / Git commit history
+git log --oneline | fzf                # 搜索提交历史
+git show $(git log --oneline | fzf | awk '{print $1}')  # 显示选中提交的详情
+
+##############################################################################
+# 高级选项 / Advanced Options
+##############################################################################
+
+# 多选模式 / Multi-select mode
+fzf --multi                            # 允许多选 (Tab键选择)
+fzf -m                                 # 多选的简写
+
+# 高度控制 / Height control
+fzf --height 40%                       # 设置界面高度为屏幕的40%
+fzf --height 10                        # 设置固定高度为10行
+
+# 搜索选项 / Search options
+fzf --exact                            # 精确匹配搜索
+fzf -e                                 # 精确匹配的简写
+fzf --i                                # 不区分大小写
+fzf --phony                            # 不读取输入，仅用于预览
+
+# 颜色和界面 / Colors and interface
+fzf --color 'hl:124,hl+:124'           # 自定义高亮颜色
+fzf --border                           # 添加边框
+fzf --border=rounded                   # 圆角边框
+fzf --reverse                          # 反向显示（从上到下）
+
+##############################################################################
+# 实用脚本示例 / Useful Script Examples
+##############################################################################
+
+# 函数：搜索并进入目录 / Function: search and cd to directory
+cdf() {
+    local dir
+    dir=$(find ${1:-.} -type d 2>/dev/null | fzf +m) && cd "$dir"
+}
+
+# 函数：搜索并打开文件 / Function: search and open file
+of() {
+    local file
+    file=$(fzf --query="$1" --select-1 --exit-0)
+    [ -n "$file" ] && ${EDITOR:-vim} "$file"
+}
+
+# 函数：搜索环境变量 / Function: search environment variables
+envf() {
+    printenv | fzf --preview 'echo {} | cut -d= -f2 | head -100'
+}
+
+# 函数：搜索Docker容器 / Function: search Docker containers
+dockerf() {
+    local container
+    container=$(docker ps | fzf --header-lines 1 | awk '{print $1}')
+    [ -n "$container" ] && docker logs -f "$container"
+}
+
+##############################################################################
+# Shell集成设置 / Shell Integration Setup
+##############################################################################
+
+# Bash集成 / Bash integration
+# 添加到 ~/.bashrc:
+#   source <(fzf --bash/completion)
+#   source <(fzf --bash/key-bindings)
+
+# Zsh集成 / Zsh integration
+# 添加到 ~/.zshrc:
+#   source <(fzf --zsh/completion)
+#   source <(fzf --zsh/key-bindings)
+
+# Fish集成 / Fish integration
+# 添加到 ~/.config/fish/config.fish:
+#   fzf_key_bindings
+
+##############################################################################
+# 常用组合键 / Common Key Bindings
+##############################################################################
+
+# 默认快捷键 / Default shortcuts
+#   Ctrl-J / Ctrl-K    : 上下移动
+#   Enter              : 确认选择
+#   Esc                : 退出
+#   Tab                : 多选
+#   Ctrl-A / Ctrl-E    : 移动到行首/行尾
+#   Alt-B / Alt-F      : 向前/向后移动单词
+#   Ctrl-P / Ctrl-N    : 上一条/下一条历史
+
+##############################################################################
+# 性能优化 / Performance Optimization
+##############################################################################
+
+# 大文件处理 / Large file handling
+find . -type f -printf '%T@ %p\n' | sort -n | cut -d' ' -f2- | fzf  # 按时间排序
+
+# 缓存结果 / Cache results
+FZF_DEFAULT_COMMAND='find . -type f'  # 设置默认命令
+FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'  # 设置默认选项
+
+##############################################################################
+# 与其他工具集成 / Integration with Other Tools
+##############################################################################
+
+# 与ripgrep集成 / Integration with ripgrep
+rg --files | fzf --preview 'bat --style=numbers --color=always {}'  # 搜索文件并预览
+
+# 与tree集成 / Integration with tree
+tree -I 'node_modules|.git' -f | fzf --preview 'bat --style=numbers --color=always $(echo {} | cut -d" " -f1) 2>/dev/null || echo {}'
+
+# 与exa集成 / Integration with exa
+exa --long --header --git | fzf --header-lines 1 --preview 'exa --long --header --git {2} 2>/dev/null'

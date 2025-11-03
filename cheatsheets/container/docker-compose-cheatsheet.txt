@@ -1,0 +1,321 @@
+##############################################################################
+# docker-compose Cheatsheet
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# Legend:
+#   <service>     : Service name
+#   <container>   : Container name or ID
+#   <image>       : Docker image name
+#   <file>        : File path
+#   <option>      : Command option
+
+##############################################################################
+# 基础命令 / Basic Commands
+##############################################################################
+
+# 服务管理 / Service management
+docker-compose up                       # 启动所有服务（前台运行）
+docker-compose up -d                    # 启动所有服务（后台运行）
+docker-compose down                     # 停止并删除容器、网络、卷
+docker-compose stop                     # 停止所有服务
+docker-compose start                    # 启动已停止的服务
+docker-compose restart                  # 重启所有服务
+
+# 指定服务 / Specify services
+docker-compose up <service>             # 启动指定服务
+docker-compose up <service1> <service2> # 启动多个指定服务
+docker-compose stop <service>           # 停止指定服务
+docker-compose restart <service>        # 重启指定服务
+
+##############################################################################
+# 生命周期管理 / Lifecycle Management
+##############################################################################
+
+# 重新构建和启动 / Rebuild and start
+docker-compose up --build              # 重新构建镜像并启动
+docker-compose up --build -d           # 重新构建并后台启动
+docker-compose build                   # 构建服务镜像
+docker-compose build <service>         # 构建指定服务镜像
+
+# 强制重新创建 / Force recreate
+docker-compose up --force-recreate     # 强制重新创建容器
+docker-compose up --no-deps <service>  # 不启动依赖服务
+docker-compose up --remove-orphans     # 删除孤立容器
+
+##############################################################################
+# 日志管理 / Log Management
+##############################################################################
+
+# 查看日志 / View logs
+docker-compose logs                     # 查看所有服务日志
+docker-compose logs <service>          # 查看指定服务日志
+docker-compose logs -f                 # 实时跟踪日志
+docker-compose logs -f <service>       # 实时跟踪指定服务日志
+docker-compose logs --tail 100        # 显示最后100行日志
+docker-compose logs --since 1h        # 显示最近1小时日志
+
+# 日志选项 / Log options
+docker-compose logs -t                 # 显示时间戳
+docker-compose logs --no-color         # 不显示颜色
+docker-compose logs -q                 # 静默模式（只显示容器ID）
+
+##############################################################################
+# 执行命令 / Command Execution
+##############################################################################
+
+# 进入容器 / Enter container
+docker-compose exec <service> <command> # 在指定服务中执行命令
+docker-compose exec <service> bash      # 进入容器的bash shell
+docker-compose exec <service> sh        # 进入容器的sh shell
+docker-compose exec -T <service> <cmd>  # 不分配TTY执行命令
+
+# 运行一次性命令 / Run one-off commands
+docker-compose run <service> <command>  # 运行一次性命令
+docker-compose run --rm <service> <cmd> # 运行后删除容器
+docker-compose run -d <service> <cmd>   # 后台运行一次性命令
+
+##############################################################################
+# 资源查看 / Resource Viewing
+##############################################################################
+
+# 容器状态 / Container status
+docker-compose ps                      # 查看所有服务状态
+docker-compose ps -q                   # 只显示容器ID
+docker-compose ps <service>           # 查看指定服务状态
+docker-compose top                     # 查看容器进程
+
+# 容器信息 / Container information
+docker-compose images                  # 查看服务镜像
+docker-compose config                  # 验证并查看配置
+docker-compose config --services       # 列出所有服务
+docker-compose config --volumes        # 列出所有卷
+
+##############################################################################
+# 数据管理 / Data Management
+##############################################################################
+
+# 数据卷管理 / Volume management
+docker-compose volume ls               # 列出所有卷
+docker-compose volume create <vol>     # 创建卷
+docker-compose volume rm <vol>         # 删除卷
+docker-compose down -v                 # 删除卷（谨慎使用）
+
+# 数据持久化 / Data persistence
+docker-compose down --volumes         # 删除命名的匿名卷
+docker-compose down --remove-orphans   # 删除孤立容器和卷
+
+##############################################################################
+# 网络管理 / Network Management
+##############################################################################
+
+# 网络操作 / Network operations
+docker-compose network ls              # 列出网络
+docker-compose network create <net>    # 创建网络
+docker-compose network rm <net>        # 删除网络
+
+# 网络隔离 / Network isolation
+docker-compose up --build --force-recreate --remove-orphans  # 完全重建环境
+
+##############################################################################
+# 扩展和缩放 / Scaling
+##############################################################################
+
+# 服务扩容 / Service scaling
+docker-compose up --scale <service>=N   # 扩展服务到N个实例
+docker-compose scale <service>=N        # 扩展指定服务
+docker-compose up --scale web=3 --scale db=2  # 扩展多个服务
+
+##############################################################################
+# 环境变量和配置 / Environment Variables and Configuration
+##############################################################################
+
+# 环境变量 / Environment variables
+docker-compose up --env-file <file>    # 使用环境变量文件
+docker-compose config                  # 显示解析后的配置
+docker-compose config --resolve-env-vars  # 解析环境变量
+
+# 配置验证 / Configuration validation
+docker-compose config --quiet          # 静默验证配置
+docker-compose config --services       # 列出服务
+docker-compose config --volumes        # 列出卷
+
+##############################################################################
+# 开发工作流 / Development Workflow
+##############################################################################
+
+# 开发模式 / Development mode
+docker-compose up --build              # 开发时构建
+docker-compose up --force-recreate     # 强制重建
+docker-compose down -v                 # 清理数据（开发环境）
+
+# 生产部署 / Production deployment
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d  # 多文件配置
+docker-compose --env-file .env.prod up -d  # 生产环境变量
+
+##############################################################################
+# 多环境配置 / Multi-environment Configuration
+##############################################################################
+
+# 多配置文件 / Multiple configuration files
+docker-compose -f docker-compose.yml -f docker-compose.override.yml up
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+# 环境覆盖 / Environment override
+COMPOSE_PROJECT_NAME=myapp docker-compose up  # 设置项目名称
+COMPOSE_FILE=docker-compose.yml:docker-compose.dev.yml docker-compose up
+
+##############################################################################
+# 监控和调试 / Monitoring and Debugging
+##############################################################################
+
+# 容器监控 / Container monitoring
+docker-compose ps                      # 查看状态
+docker-compose top                     # 查看进程
+docker-compose logs -f <service>       # 实时日志
+docker-compose exec <service> ps aux   # 查看容器内进程
+
+# 性能监控 / Performance monitoring
+docker-compose exec <service> top      # 查看容器资源使用
+docker stats $(docker-compose ps -q)   # 查看容器统计信息
+
+##############################################################################
+# 备份和恢复 / Backup and Restore
+##############################################################################
+
+# 数据备份 / Data backup
+docker-compose exec <service> mysqldump -u root -p database > backup.sql
+docker-compose run --rm backup tar czf /backup/data.tar.gz /data
+
+# 数据恢复 / Data restore
+docker-compose exec -T <service> mysql -u root -p database < backup.sql
+docker-compose run --rm restore tar xzf /backup/data.tar.gz -C /data
+
+##############################################################################
+# 故障排除 / Troubleshooting
+##############################################################################
+
+# 常见问题 / Common issues
+docker-compose down                    # 完全停止服务
+docker-compose down --remove-orphans   # 清理孤立容器
+docker-compose up --force-recreate     # 强制重建容器
+docker-compose system prune           # 清理Docker系统
+
+# 调试命令 / Debug commands
+docker-compose config                  # 验证配置
+docker-compose ps                      # 检查状态
+docker-compose logs <service>          # 查看日志
+docker-compose exec <service> bash     # 进入容器调试
+
+##############################################################################
+# 实用脚本示例 / Useful Script Examples
+##############################################################################
+
+# 启动开发环境 / Start development environment
+#!/bin/bash
+docker-compose down -v
+docker-compose up --build -d
+docker-compose logs -f
+
+# 生产部署 / Production deployment
+#!/bin/bash
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml ps
+
+# 数据备份脚本 / Backup script
+#!/bin/bash
+DATE=$(date +%Y%m%d_%H%M%S)
+docker-compose exec db mysqldump -u root -p appdb > backup_$DATE.sql
+echo "Backup created: backup_$DATE.sql"
+
+##############################################################################
+# 最佳实践 / Best Practices
+##############################################################################
+
+# 1. 使用特定版本 / Use specific versions
+# 不要使用latest标签，指定具体版本号
+
+# 2. 网络隔离 / Network isolation
+# 使用自定义网络，避免使用默认网络
+
+# 3. 资源限制 / Resource limits
+# 在docker-compose.yml中设置资源限制
+deploy:
+  resources:
+    limits:
+      memory: 512M
+      cpus: '0.5'
+
+# 4. 健康检查 / Health checks
+# 为服务添加健康检查
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+  interval: 30s
+  timeout: 10s
+  retries: 3
+
+# 5. 环境变量管理 / Environment variable management
+# 使用.env文件管理环境变量
+# 不要在配置文件中硬编码敏感信息
+
+##############################################################################
+# Docker Compose文件示例 / Docker Compose File Examples
+##############################################################################
+
+# 基础Web应用 / Basic web application
+version: '3.8'
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/mydb
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=mydb
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+
+# 多服务应用 / Multi-service application
+version: '3.8'
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - app
+
+  app:
+    build: .
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - redis
+      - db
+
+  redis:
+    image: redis:alpine
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=appdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

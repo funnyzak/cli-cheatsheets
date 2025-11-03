@@ -1,0 +1,264 @@
+##############################################################################
+# zoxide Cheatsheet
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# Legend:
+#   <directory>   : Directory path or name
+#   <pattern>     : Search pattern or keyword
+#   <score>       : Frequency score
+#   <option>      : Command option
+
+##############################################################################
+# 基础用法 / Basic Usage
+##############################################################################
+
+# 跳转到目录 / Jump to directory
+z <directory>                          # 跳转到最常访问的匹配目录
+z projects                            # 跳转到包含"projects"的目录
+z web                                 # 跳转到包含"web"的目录
+
+# 模糊搜索 / Fuzzy search
+z proj                                # 模糊匹配包含"proj"的目录
+z py                                  # 跳转到包含"py"的目录（如python、projects等）
+
+##############################################################################
+# 交互式选择 / Interactive Selection
+##############################################################################
+
+# 与fzf集成 / Integration with fzf
+zi <pattern>                          # 交互式选择目录
+zi web                                # 交互式选择包含"web"的目录
+zi                                    # 交互式选择所有已记录的目录
+
+# 带预览的交互式选择 / Interactive selection with preview
+zoxide query --list | fzf --preview 'ls -la {}' | xargs zoxide add
+z --interactive                       # 交互式选择模式
+
+##############################################################################
+# 目录管理 / Directory Management
+##############################################################################
+
+# 添加目录 / Add directory
+zoxide add <directory>                # 手动添加目录到数据库
+zoxide add .                          # 添加当前目录
+
+# 移除目录 / Remove directory
+zoxide remove <directory>             # 从数据库移除目录
+zoxide remove /path/to/old/project    # 移除不存在的目录
+
+# 导入现有数据库 / Import existing database
+zoxide import <file>                  # 导入目录列表文件
+
+##############################################################################
+# 查询和显示 / Query and Display
+##############################################################################
+
+# 显示评分 / Show scores
+zoxide query -ls                      # 显示所有目录及其评分
+zoxide query --list                    # 显示所有已记录的目录
+
+# 查询特定目录 / Query specific directory
+zoxide query <directory>              # 查询目录的访问频率和评分
+zoxide query --score /home/user/projects
+
+# 搜索模式 / Search patterns
+zoxide query 'projects.*web'          # 使用正则表达式搜索
+zoxide query --exact project          # 精确匹配
+
+##############################################################################
+# 高级选项 / Advanced Options
+##############################################################################
+
+# 分数计算 / Score calculation
+zoxide --score                        # 显示目标目录的分数
+zoxide query --score <directory>      # 查询特定目录的分数
+
+# 数据库管理 / Database management
+zoxide query --database               # 显示数据库路径
+zoxide query --database /path/to/db   # 指定自定义数据库路径
+
+# 排除目录 / Exclude directories
+zoxide add --exclude /tmp             # 添加排除规则
+zoxide query --exclude                # 显示排除的目录
+
+##############################################################################
+# Shell集成 / Shell Integration
+##############################################################################
+
+# Bash集成 / Bash integration
+# 添加到 ~/.bashrc:
+#   eval "$(zoxide init bash)"
+#   alias cd='z'                      # 用z替代cd
+
+# Zsh集成 / Zsh integration
+# 添加到 ~/.zshrc:
+#   eval "$(zoxide init zsh)"
+#   alias cd='z'
+
+# Fish集成 / Fish integration
+# 添加到 ~/.config/fish/config.fish:
+#   zoxide init fish | source
+#   alias cd z
+
+##############################################################################
+# 实用别名和函数 / Useful Aliases and Functions
+##############################################################################
+
+# 常用别名 / Common aliases
+alias cd='z'                          # 用z替代cd
+alias zi='z -i'                       # 交互式选择
+alias zz='z -'                        # 跳转到上一个目录
+
+# 高级函数 / Advanced functions
+zd() {
+    local dir=$(zoxide query -ls | fzf --preview 'ls -la {2}' | awk '{print $2}')
+    [ -n "$dir" ] && cd "$dir"
+}
+
+# 函数：跳转到项目目录 / Function: jump to project directory
+proj() {
+    z $(find ~/projects -maxdepth 2 -type d -name "*$1*" | head -1)
+}
+
+##############################################################################
+# 性能优化 / Performance Optimization
+##############################################################################
+
+# 数据库清理 / Database cleanup
+zoxide query --cleanup               # 清理不存在的目录
+zoxide remove --nonexistent          # 移除不存在的目录
+
+# 批量操作 / Batch operations
+find ~/projects -type d -exec zoxide add {} \;    # 批量添加项目目录
+zoxide query --score | head -20       # 显示访问最多的20个目录
+
+##############################################################################
+# 配置选项 / Configuration Options
+##############################################################################
+
+# 环境变量 / Environment variables
+export _ZO_DATA_DIR=~/.local/share/zoxide    # 自定义数据目录
+export _ZO_EXCLUDE_DIRS="/tmp:/var/tmp"       # 排除的目录
+export _ZO_MAX_SCORE=9000                     # 最大分数值
+export _ZO_FZF_OPTS="--height 40%"            # fzf选项
+
+# 初始化选项 / Initialization options
+eval "$(zoxide init bash --cmd cd)"  # 使用cd命令替代z
+eval "$(zoxide init zsh --hook pwd)"  # 每次pwd时更新数据库
+
+##############################################################################
+# 故障排除 / Troubleshooting
+##############################################################################
+
+# 调试模式 / Debug mode
+zoxide --debug                       # 显示调试信息
+zoxide query --debug <directory>     # 调试特定目录
+
+# 重置数据库 / Reset database
+zoxide query --reset                 # 重置数据库
+rm ~/.local/share/zoxide/database    # 手动删除数据库文件
+
+# 检查配置 / Check configuration
+zoxide --help                        # 显示帮助信息
+zoxide query --database              # 查看数据库路径
+
+##############################################################################
+# 与其他工具集成 / Integration with Other Tools
+##############################################################################
+
+# 与fzf集成 / Integration with fzf
+# 创建函数选择目录：
+fzf_zoxide() {
+    local dir=$(zoxide query -ls | fzf --with-nth 2.. --preview 'ls -la {2}' | awk '{print $2}')
+    [ -n "$dir" ] && zoxide add "$dir" && cd "$dir"
+}
+
+# 与tmux集成 / Integration with tmux
+tmux_zoxide() {
+    local dir=$(zoxide query -ls | fzf | awk '{print $2}')
+    [ -n "$dir" ] && tmux new-session -c "$dir"
+}
+
+# 与vim集成 / Integration with vim
+vim_zoxide() {
+    local dir=$(zoxide query -ls | fzf --preview 'ls -la {2}' | awk '{print $2}')
+    [ -n "$dir" ] && vim "$dir"
+}
+
+##############################################################################
+# 工作流示例 / Workflow Examples
+##############################################################################
+
+# 开发工作流 / Development workflow
+cd ~/projects/myapp                   # 工作目录
+z my                                  # 快速回到myapp项目
+zi app                                # 交互式选择app相关目录
+
+# 多项目管理 / Multi-project management
+z proj                                # 跳转到最常用的项目目录
+z web                                 # 跳转到web相关项目
+z api                                 # 跳转到API项目
+
+# 频繁访问模式 / Frequent access pattern
+# 初始阶段：
+cd ~/projects/website/frontend
+cd ~/projects/website/backend
+cd ~/projects/website/docs
+
+# 后续快速跳转：
+z web                                 # 自动跳转到最常用的web目录
+z front                               # 跳转到frontend目录
+z back                                # 跳转到backend目录
+
+##############################################################################
+# 统计和分析 / Statistics and Analysis
+##############################################################################
+
+# 访问统计 / Access statistics
+zoxide query -ls | head -10           # 显示最常访问的10个目录
+zoxide query -ls | sort -k1 -nr       # 按访问频率排序
+
+# 模式分析 / Pattern analysis
+zoxide query -ls | grep project       # 查看项目目录访问情况
+zoxide query -ls | awk '{print $2}' | xargs -I {} du -sh {}  # 查看目录大小
+
+##############################################################################
+# 最佳实践 / Best Practices
+##############################################################################
+
+# 1. 建立良好的命名习惯 / Good naming habits
+#    使用有意义且简短的关键词
+#    一致的命名约定
+
+# 2. 定期清理 / Regular cleanup
+#    定期运行 zoxide query --cleanup
+#    移除不再使用的项目目录
+
+# 3. 与shell别名结合 / Combine with shell aliases
+#    alias proj='cd ~/projects'
+#    alias work='cd ~/work'
+#    然后使用 z proj, z work
+
+# 4. 分层使用 / Layered usage
+#    使用 z 进行快速跳转
+#    使用 zi 进行精确选择
+#    使用 cd 进行绝对路径跳转
+
+##############################################################################
+# 迁移和备份 / Migration and Backup
+##############################################################################
+
+# 备份数据库 / Backup database
+cp ~/.local/share/zoxide/database ~/.zoxide_backup.db
+
+# 导出目录列表 / Export directory list
+zoxide query -ls | awk '{print $2}' > zoxide_dirs.txt
+
+# 从其他工具迁移 / Migrate from other tools
+# 从autojump迁移：
+autojump --stat > jump_log.txt
+awk '{print $2}' jump_log.txt | xargs -I {} zoxide add {}
+
+# 从z迁移（如果之前使用z.sh）：
+cat ~/.z | grep -E '^[0-9]+.*' | awk '{print $2}' | xargs -I {} zoxide add {}

@@ -1,0 +1,237 @@
+##############################################################################
+# fd Cheatsheet
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# Legend:
+#   <pattern>     : Search pattern or regex
+#   <path>        : Directory path
+#   <extension>   : File extension
+#   <option>      : Command option
+
+##############################################################################
+# 基础搜索 / Basic Search
+##############################################################################
+
+# 简单搜索 / Simple search
+fd <pattern>                            # 在当前目录搜索匹配的文件和目录
+fd <pattern> <path>                    # 在指定路径搜索
+fd                                     # 显示当前目录下所有文件和目录
+
+# 搜索文件扩展名 / Search file extensions
+fd -e <extension>                      # 搜索特定扩展名的文件
+fd -e txt -e md                        # 搜索多个扩展名
+fd -e py                               # 搜索Python文件
+
+##############################################################################
+# 高级搜索模式 / Advanced Search Patterns
+##############################################################################
+
+# 正则表达式 / Regular expressions
+fd '^[A-Z]'                           # 搜索以大写字母开头的文件
+fd '\d{4}-\d{2}-\d{2}'                # 搜索包含日期格式的文件
+fd '.*test.*'                          # 搜索包含"test"的文件
+
+# 模式匹配 / Pattern matching
+fd '*test*'                           # 通配符搜索（默认不区分大小写）
+fd --case-sensitive '*Test*'          # 区分大小写的通配符搜索
+fd --ignore-case 'Error'              # 忽略大小写搜索
+
+##############################################################################
+# 文件类型和属性 / File Types and Attributes
+##############################################################################
+
+# 按文件类型搜索 / Search by file type
+fd -t f                                # 只搜索文件
+fd -t d                                # 只搜索目录
+fd -t l                                # 只搜索符号链接
+fd -t x                                # 只搜索可执行文件
+
+# 按文件大小搜索 / Search by file size
+fd --size +1M                         # 搜索大于1MB的文件
+fd --size -100k                       # 搜索小于100KB的文件
+fd --size +1G                         # 搜索大于1GB的文件
+
+# 按修改时间搜索 / Search by modification time
+fd --changed-within 7d                # 搜索7天内修改的文件
+fd --changed-before 2023-01-01        # 搜索2023年1月1日前修改的文件
+fd --changed-within 1h                # 搜索1小时内修改的文件
+
+##############################################################################
+# 搜索控制和过滤 / Search Control and Filtering
+##############################################################################
+
+# 深度控制 / Depth control
+fd -d 2                               # 最多搜索2层深度
+fd --max-depth 3                      # 最多搜索3层深度
+fd -L 1                               # 搜索深度为1（当前目录）
+
+# 包含和排除 / Include and exclude
+fd -g '*.py'                          # 搜索Python文件（glob模式）
+fd -g '!node_modules'                 # 排除node_modules目录
+fd -g '*.py' -g '!test_*.py'          # 搜索Python文件但排除测试文件
+
+# 忽略规则 / Ignore rules
+fd --no-ignore                        # 忽略.gitignore和.fdignore
+fd --hidden                           # 包含隐藏文件
+fd --follow                           # 跟随符号链接
+
+##############################################################################
+# 输出控制和格式 / Output Control and Formatting
+##############################################################################
+
+# 输出格式 / Output format
+fd --print0                           # 使用null字符分隔（配合xargs -0）
+fd --absolute-path                    # 显示绝对路径
+fd --relative-path                    # 显示相对路径（默认）
+
+# 详细输出 / Verbose output
+fd -v                                 # 显示详细搜索信息
+fd --show-errors                      # 显示错误信息
+
+##############################################################################
+# 执行命令 / Execute Commands
+##############################################################################
+
+# 对结果执行命令 / Execute commands on results
+fd -e jpg -x convert {} {.png}        # 将所有jpg文件转换为png
+fd -e py -x vim {}                    # 在vim中打开每个Python文件
+fd -e log -x tail -f {}               # 跟踪所有日志文件
+
+# 批量处理 / Batch processing
+fd -e tmp -x rm                       # 删除所有tmp文件
+fd -e md -x pandoc {} -o {.pdf}       # 将markdown文件转换为PDF
+
+# 并行执行 / Parallel execution
+fd -e jpg -x -j 4 convert {} {.png}   # 使用4个并行进程转换jpg文件
+
+##############################################################################
+# 与其他工具集成 / Integration with Other Tools
+##############################################################################
+
+# 与fzf集成 / Integration with fzf
+fd | fzf --preview 'bat --style=numbers --color=always {}'  # 文件选择器
+fd -e py | fzf | xargs -r vim         # 选择Python文件并在vim中打开
+
+# 与ripgrep集成 / Integration with ripgrep
+fd -e py | xargs rg 'import numpy'    # 在Python文件中搜索numpy导入
+
+# 与vim集成 / Integration with vim
+fd | vim -c 'set nomodifiable' -      # 在vim中显示文件列表
+
+##############################################################################
+# 实用示例 / Useful Examples
+##############################################################################
+
+# 清理临时文件 / Clean temporary files
+fd -e tmp -e bak -e swp -x rm         # 删除临时和备份文件
+fd --changed-before 2022-01-01 -e log -x rm  # 删除2022年前的日志文件
+
+# 项目文件操作 / Project file operations
+fd -e js -e css -e html -x git add {}  # 添加web文件到git
+fd -e py -x black {}                  # 格式化Python文件
+
+# 开发工作流 / Development workflow
+fd -t d -x cd                         # 搜索目录并切换到选中的目录
+fd -e go -x go run {}                 # 搜索并运行Go程序
+
+##############################################################################
+# 配置和自定义 / Configuration and Customization
+##############################################################################
+
+# 配置文件 / Configuration file
+# 创建 ~/.config/fd/fd.toml:
+#   [search]
+#   ignore = true
+#   follow = false
+#   hidden = false
+#   max_depth = None
+
+# 环境变量 / Environment variables
+export FDFIND_DEFAULT_COMMAND='fd --hidden --follow'  # 默认选项
+export FD_DEFAULT_OPTS='--exclude=node_modules'       # 默认排除项
+
+# 自定义忽略规则 / Custom ignore rules
+# 创建 .fdignore 文件：
+#   node_modules
+#   *.log
+#   .git
+#   dist/
+#   build/
+
+##############################################################################
+# 性能优化 / Performance Optimization
+##############################################################################
+
+# 大项目搜索 / Large project search
+fd -d 3 -t f                          # 限制深度，只搜索文件
+fd --exclude node_modules --exclude .git  # 排除大目录
+
+# 网络驱动器 / Network drives
+fd --one-file-system                  # 不跨越文件系统边界
+fd --max-buffer-size 1M               # 限制缓冲区大小
+
+##############################################################################
+# 故障排除 / Troubleshooting
+##############################################################################
+
+# 调试模式 / Debug mode
+fd <pattern> --debug                  # 显示调试信息
+fd <pattern> --trace                  # 显示详细跟踪信息
+
+# 权限问题 / Permission issues
+fd --no-ignore-vcs                    # 不忽略版本控制系统文件
+fd --fixed-strings                    # 固定字符串搜索（非正则表达式）
+
+##############################################################################
+# 与find命令对比 / Comparison with find command
+##############################################################################
+
+# fd vs find
+fd pattern                            # fd: 简单语法，彩色输出
+find . -name "*pattern*"              # find: 复杂语法，单色输出
+
+# 等效命令 / Equivalent commands
+fd -e py                              # find . -name "*.py"
+fd -t d -d 2                          # find . -type d -maxdepth 2
+fd --size +1M                         # find . -size +1M
+fd --changed-within 7d                # find . -mtime -7
+
+##############################################################################
+# 脚本示例 / Script Examples
+##############################################################################
+
+# 函数：搜索并编辑文件 / Function: search and edit
+fe() {
+    local file
+    file=$(fd -t f | fzf --preview 'bat --style=numbers --color=always {}')
+    [ -n "$file" ] && ${EDITOR:-vim} "$file"
+}
+
+# 函数：搜索并删除文件 / Function: search and delete
+fdel() {
+    local pattern=$1
+    fd "$pattern" -0 | xargs -0 rm -v
+}
+
+# 函数：搜索并压缩文件 / Function: search and compress
+fzip() {
+    local pattern=$1
+    local output=${2:-archive.zip}
+    fd "$pattern" -0 | xargs -0 zip "$output"
+}
+
+##############################################################################
+# 别名建议 / Suggested Aliases
+##############################################################################
+
+# 常用别名 / Common aliases
+alias ff='fd -t f'                     # 只搜索文件
+alias fd='fd -t d'                     # 只搜索目录
+alias fl='fd -L'                       # 跟随符号链接
+alias fh='fd --hidden'                 # 包含隐藏文件
+
+# 项目特定别名 / Project-specific aliases
+alias pyfind='fd -e py'                # Python文件搜索
+alias jsfind='fd -e js -e jsx -e ts -e tsx'  # JavaScript/TypeScript搜索
+alias imgfind='fd -e jpg -e png -e gif -e svg'  # 图片文件搜索

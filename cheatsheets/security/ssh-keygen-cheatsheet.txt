@@ -1,0 +1,256 @@
+##############################################################################
+# ssh-keygen Cheatsheet
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# Legend:
+#   <file>        : File path
+#   <keytype>     : Key type (rsa, ecdsa, ed25519)
+#   <bits>        : Key size in bits
+#   <comment>     : Key comment
+#   <option>      : Command option
+
+##############################################################################
+# 基础密钥生成 / Basic Key Generation
+##############################################################################
+
+# 生成默认SSH密钥对 / Generate default SSH key pair
+ssh-keygen                              # 交互式生成密钥对（默认RSA）
+ssh-keygen -t rsa                        # 生成RSA密钥对
+ssh-keygen -t ecdsa                      # 生成ECDSA密钥对
+ssh-keygen -t ed25519                    # 生成ED25519密钥对（推荐）
+
+# 指定密钥长度 / Specify key size
+ssh-keygen -t rsa -b 2048               # 生成2048位RSA密钥
+ssh-keygen -t rsa -b 4096               # 生成4096位RSA密钥（更安全）
+
+# 指定密钥文件路径 / Specify key file path
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa_4096  # 指定密钥文件路径
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519     # 指定ED25519密钥路径
+
+##############################################################################
+# 密钥管理 / Key Management
+##############################################################################
+
+# 无密码密钥生成 / Generate key without passphrase
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ""  # 空密码短语
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N "mypassword"  # 设置密码短语
+
+# 添加注释 / Add comment
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -C "user@hostname"  # 添加注释
+ssh-keygen -t ed25519 -f ~/.ssh/work_key -C "work@example.com"  # 工作密钥注释
+
+# 更改密码短语 / Change passphrase
+ssh-keygen -p -f ~/.ssh/id_rsa          # 交互式更改密码短语
+ssh-keygen -p -f ~/.ssh/id_rsa -N "newpassphrase" -P "oldpassphrase"  # 直接指定密码
+
+##############################################################################
+# 密钥格式转换 / Key Format Conversion
+##############################################################################
+
+# PEM格式转换 / PEM format conversion
+ssh-keygen -p -m PEM -f ~/.ssh/id_rsa   # 转换为PEM格式
+ssh-keygen -p -m PKCS8 -f ~/.ssh/id_rsa  # 转换为PKCS8格式
+
+# RSA密钥格式转换 / RSA key format conversion
+ssh-keygen -e -m PEM -f ~/.ssh/id_rsa > id_rsa.pem      # 导出为PEM格式
+ssh-keygen -e -m DER -f ~/.ssh/id_rsa > id_rsa.der      # 导出为DER格式
+
+# 从私钥提取公钥 / Extract public key from private key
+ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub      # 从私钥提取公钥
+ssh-keygen -y -f private_key.pem > public_key.pem       # 从PEM私钥提取公钥
+
+##############################################################################
+# 密钥信息查看 / Key Information
+##############################################################################
+
+# 查看公钥信息 / View public key information
+ssh-keygen -l -f ~/.ssh/id_rsa.pub     # 显示公钥指纹信息
+ssh-keygen -l -E md5 -f ~/.ssh/id_rsa.pub  # 显示MD5格式指纹
+ssh-keygen -l -E sha256 -f ~/.ssh/id_rsa.pub  # 显示SHA256格式指纹
+
+# 查看私钥信息 / View private key information
+ssh-keygen -l -f ~/.ssh/id_rsa         # 显示私钥指纹信息
+ssh-keygen -y -f ~/.ssh/id_rsa         # 显示对应的公钥
+
+# 检查密钥有效性 / Check key validity
+ssh-keygen -f ~/.ssh/id_rsa -P         # 测试私钥密码
+ssh-keygen -F ~/.ssh/known_hosts       # 查找known_hosts中的条目
+
+##############################################################################
+# 证书和签名 / Certificates and Signatures
+##############################################################################
+
+# 生成CA签名密钥 / Generate CA signed keys
+ssh-keygen -s ca_key -I certificate_id -n user -V +52w user_key.pub  # 使用CA签名证书
+ssh-keygen -s ca_key -I certificate_id -h host_key.pub  # 签名主机密钥
+
+# 证书验证 / Certificate verification
+ssh-keygen -L -f user_key-cert.pub      # 查看证书信息
+ssh-keygen -Lf ~/.ssh/known_hosts       # 查看known_hosts中的证书信息
+
+##############################################################################
+# 实用工具功能 / Utility Functions
+##############################################################################
+
+# 生成随机数 / Generate random numbers
+ssh-keygen -O random=16                # 生成16字节随机数
+ssh-keygen -O random=32 -O hex         # 生成32字节十六进制随机数
+
+# 模块化密钥生成 / Modular key generation
+ssh-keygen -O check                    # 检查密钥算法支持
+ssh-keygen -Q                          # 查询支持的密钥类型
+
+##############################################################################
+# 批量操作 / Batch Operations
+##############################################################################
+
+# 批量生成密钥 / Batch key generation
+#!/bin/bash
+for user in alice bob charlie; do
+    ssh-keygen -t ed25519 -f "${user}_key" -C "${user}@example.com" -N ""
+    echo "Generated key for $user"
+done
+
+# 批量更改密码 / Batch passphrase change
+#!/bin/bash
+NEW_PASS="newsecurepassword"
+for key in ~/.ssh/id_*; do
+    if [[ -f "$key" && ! "$key" =~ \.pub$ ]]; then
+        ssh-keygen -p -f "$key" -N "$NEW_PASS"
+        echo "Changed passphrase for $key"
+    fi
+done
+
+##############################################################################
+# 安全实践 / Security Practices
+##############################################################################
+
+# 生成高强度密钥 / Generate high-strength keys
+ssh-keygen -t ed25519 -a 100 -f ~/.ssh/id_ed25519  # 100轮密钥派生（更安全）
+
+# 密钥权限设置 / Key permission settings
+chmod 600 ~/.ssh/id_rsa                # 私钥权限
+chmod 644 ~/.ssh/id_rsa.pub           # 公钥权限
+chmod 700 ~/.ssh                       # SSH目录权限
+
+# 密钥备份 / Key backup
+ssh-keygen -p -f ~/.ssh/id_rsa -N ""  # 临时移除密码进行备份
+cp ~/.ssh/id_rsa ~/backup/
+ssh-keygen -p -f ~/.ssh/id_rsa -N "securepassword"  # 恢复密码
+
+##############################################################################
+# SSH配置集成 / SSH Configuration Integration
+##############################################################################
+
+# 配置文件示例 / SSH config example
+# ~/.ssh/config:
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_github
+    IdentitiesOnly yes
+
+Host server.example.com
+    HostName server.example.com
+    User deploy
+    IdentityFile ~/.ssh/id_rsa_deploy
+    Port 2222
+
+# 密钥代理使用 / Key agent usage
+ssh-add ~/.ssh/id_rsa                  # 添加密钥到代理
+ssh-add -l                             # 列出代理中的密钥
+ssh-add -D                             # 删除代理中的所有密钥
+ssh-add -d ~/.ssh/id_rsa               # 删除特定密钥
+
+##############################################################################
+# 故障排除 / Troubleshooting
+##############################################################################
+
+# 权限问题 / Permission issues
+chmod 700 ~/.ssh                       # 修复SSH目录权限
+chmod 600 ~/.ssh/id_*                  # 修复私钥权限
+chmod 644 ~/.ssh/id_*.pub              # 修复公钥权限
+
+# 连接测试 / Connection testing
+ssh -T git@github.com                  # 测试GitHub连接
+ssh -v user@hostname                   # 详细连接信息
+ssh -i ~/.ssh/custom_key user@hostname # 使用特定密钥连接
+
+# 密钥格式问题 / Key format issues
+ssh-keygen -p -m PEM -f ~/.ssh/id_rsa  # 转换为PEM格式
+ssh-keygen -e -m PEM -f ~/.ssh/id_rsa  # 导出PEM格式
+
+##############################################################################
+# 自动化脚本示例 / Automation Script Examples
+##############################################################################
+
+# 自动化部署脚本 / Automated deployment script
+#!/bin/bash
+REMOTE_USER="deploy"
+REMOTE_HOST="server.example.com"
+KEY_PATH="~/.ssh/deploy_key"
+
+# 检查密钥是否存在
+if [[ ! -f "$KEY_PATH" ]]; then
+    echo "Generating new deployment key..."
+    ssh-keygen -t ed25519 -f "$KEY_PATH" -N "" -C "deploy@server"
+fi
+
+# 复制公钥到远程服务器
+ssh-copy-id -i "${KEY_PATH}.pub" ${REMOTE_USER}@${REMOTE_HOST}
+
+# 测试连接
+ssh -i "$KEY_PATH" ${REMOTE_USER}@${REMOTE_HOST} "echo 'Connection successful'"
+
+# 密钥轮换脚本 / Key rotation script
+#!/bin/bash
+KEY_DIR="$HOME/.ssh"
+BACKUP_DIR="$HOME/.ssh_backup_$(date +%Y%m%d)"
+KEY_TYPE="ed25519"
+
+# 创建备份目录
+mkdir -p "$BACKUP_DIR"
+
+# 备份现有密钥
+find "$KEY_DIR" -name "id_*" -not -name "*.pub" -exec cp {} "$BACKUP_DIR" \;
+
+# 生成新密钥
+ssh-keygen -t "$KEY_TYPE" -f "${KEY_DIR}/id_${KEY_TYPE}_$(date +%Y%m%d)" -C "rotated_key_$(date +%Y%m%d)"
+
+echo "Key rotation completed. Old keys backed up to $BACKUP_DIR"
+
+##############################################################################
+# 密钥类型比较 / Key Type Comparison
+##############################################################################
+
+# ED25519 (推荐) / ED25519 (Recommended)
+ssh-keygen -t ed25519 -a 100 -f ~/.ssh/id_ed25519
+# 优点：安全性高，性能好，密钥尺寸小
+# 缺点：较新的算法，部分老旧系统可能不支持
+
+# RSA (传统) / RSA (Traditional)
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa_4096
+# 优点：兼容性好，广泛支持
+# 缺点：密钥尺寸大，性能相对较差
+
+# ECDSA (椭圆曲线) / ECDSA (Elliptic Curve)
+ssh-keygen -t ecdsa -b 521 -f ~/.ssh/id_ecdsa
+# 优点：密钥尺寸小，安全性好
+# 缺点：需要好的随机数生成器
+
+##############################################################################
+# 高级用法 / Advanced Usage
+##############################################################################
+
+# 证书授权 / Certificate authority
+ssh-keygen -s ca_key -I user_id -n user -V +52w user_key.pub  # 签发用户证书
+ssh-keygen -s ca_key -I host_id -n hostname -V +365d host_key.pub  # 签发主机证书
+
+# 证书撤销 / Certificate revocation
+ssh-keygen -k -f revoked_keys user_key.pub  # 添加到撤销列表
+ssh-keygen -k -u -f revoked_keys known_hosts  # 更新撤销列表
+
+# 密钥指纹验证 / Key fingerprint verification
+ssh-keygen -lf ~/.ssh/id_rsa.pub         # 生成指纹
+ssh-keygen -lf /etc/ssh/ssh_host_rsa_key.pub  # 验证主机密钥指纹

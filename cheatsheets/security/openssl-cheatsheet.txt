@@ -1,0 +1,262 @@
+##############################################################################
+# openssl Cheatsheet
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# Legend:
+#   <file>        : File path
+#   <key>         : Key file path
+#   <cert>        : Certificate file path
+#   <domain>      : Domain name
+#   <algorithm>   : Encryption algorithm
+#   <option>      : Command option
+
+##############################################################################
+# 版本和信息 / Version and Information
+##############################################################################
+
+# 查看版本 / View version
+openssl version                         # 显示OpenSSL版本
+openssl version -a                      # 显示详细版本信息
+
+# 支持的算法 / Supported algorithms
+openssl ciphers -v                      # 列出支持的密码算法
+openssl dgst -list                      # 列出支持的摘要算法
+openssl list -cipher-algorithms         # 列出加密算法
+openssl list -digest-algorithms         # 列出摘要算法
+openssl list -public-key-algorithms     # 列出公钥算法
+
+##############################################################################
+# 证书操作 / Certificate Operations
+##############################################################################
+
+# 生成私钥 / Generate private key
+openssl genrsa -out private.key 2048    # 生成2048位RSA私钥
+openssl genrsa -out private.key 4096    # 生成4096位RSA私钥
+openssl ecparam -genkey -name secp256r1 -out ec_private.key  # 生成椭圆曲线私钥
+
+# 生成证书签名请求(CSR) / Generate Certificate Signing Request
+openssl req -new -key private.key -out certificate.csr  # 基于私钥生成CSR
+openssl req -new -key private.key -out certificate.csr -subj "/C=CN/ST=State/L=City/O=Organization/CN=domain.com"  # 带主题信息
+
+# 自签名证书 / Self-signed certificate
+openssl req -new -x509 -days 365 -key private.key -out certificate.crt  # 自签名证书
+openssl req -new -x509 -days 365 -key private.key -out certificate.crt -subj "/C=CN/ST=State/L=City/O=Organization/CN=domain.com"  # 带主题信息
+
+# 查看证书信息 / View certificate information
+openssl x509 -in certificate.crt -text -noout  # 显示证书详细信息
+openssl x509 -in certificate.crt -subject -noout  # 显示证书主题
+openssl x509 -in certificate.crt -issuer -noout  # 显示证书颁发者
+openssl x509 -in certificate.crt -dates -noout  # 显示证书有效期
+
+# 验证证书 / Verify certificate
+openssl verify certificate.crt          # 验证证书
+openssl verify -CAfile ca.crt certificate.crt  # 使用CA证书验证
+
+##############################################################################
+# 密钥操作 / Key Operations
+##############################################################################
+
+# RSA密钥操作 / RSA key operations
+openssl rsa -in private.key -text -noout  # 查看RSA私钥详情
+openssl rsa -in private.key -pubout -out public.key  # 从私钥提取公钥
+openssl rsa -in private.key -check  # 检查私钥一致性
+
+# 格式转换 / Format conversion
+openssl rsa -in private.key -outform PEM -out private.pem  # 转换为PEM格式
+openssl rsa -in private.key -outform DER -out private.der  # 转换为DER格式
+openssl pkcs8 -in private.key -topk8 -out private.pk8  # 转换为PKCS#8格式
+
+##############################################################################
+# 文件加密和摘要 / File Encryption and Digest
+##############################################################################
+
+# 文件摘要 / File digest
+openssl dgst -sha256 file.txt          # 计算SHA256摘要
+openssl dgst -sha512 file.txt          # 计算SHA512摘要
+openssl dgst -md5 file.txt             # 计算MD5摘要
+openssl dgst -sha256 -out hash.txt file.txt  # 输出摘要到文件
+
+# 文件加密 / File encryption
+openssl enc -aes-256-cbc -salt -in plaintext.txt -out encrypted.enc  # AES-256-CBC加密
+openssl enc -aes-256-cbc -d -in encrypted.enc -out decrypted.txt  # AES-256-CBC解密
+openssl enc -aes-256-gcm -salt -in file.txt -out file.enc  # AES-256-GCM加密
+
+# 对称加密算法 / Symmetric encryption algorithms
+openssl enc -aes-128-cbc -salt -in file.txt -out file.enc
+openssl enc -aes-192-cbc -salt -in file.txt -out file.enc
+openssl enc -des3 -salt -in file.txt -out file.enc
+openssl enc -rc4 -in file.txt -out file.enc
+
+##############################################################################
+# SSL/TLS连接测试 / SSL/TLS Connection Testing
+##############################################################################
+
+# 连接测试 / Connection testing
+openssl s_client -connect domain.com:443  # 连接HTTPS服务器
+openssl s_client -connect domain.com:443 -showcerts  # 显示服务器证书链
+openssl s_client -connect domain.com:443 -servername domain.com  # 指定SNI主机名
+
+# 证书信息检查 / Certificate information checking
+openssl s_client -connect domain.com:443 -servername domain.com | openssl x509 -text -noout  # 获取并显示服务器证书
+openssl s_client -connect domain.com:443 -starttls smtp  # SMTP STARTTLS测试
+openssl s_client -connect domain.com:443 -starttls imap  # IMAP STARTTLS测试
+
+##############################################################################
+# PKCS#12操作 / PKCS#12 Operations
+##############################################################################
+
+# 创建PKCS#12文件 / Create PKCS#12 file
+openssl pkcs12 -export -in certificate.crt -inkey private.key -out certificate.p12  # 创建PKCS#12文件
+openssl pkcs12 -export -in certificate.crt -inkey private.key -certfile ca.crt -out certificate.p12  # 包含CA证书
+openssl pkcs12 -export -in certificate.crt -inkey private.key -out certificate.p12 -password pass:mypassword  # 设置密码
+
+# 查看PKCS#12信息 / View PKCS#12 information
+openssl pkcs12 -info -in certificate.p12  # 查看PKCS#12文件信息
+openssl pkcs12 -info -in certificate.p12 -nodes  # 查看信息且不加密私钥
+
+##############################################################################
+# CRL和OCSP / CRL and OCSP
+##############################################################################
+
+# CRL操作 / CRL operations
+openssl ca -gencrl -out crl.pem         # 生成CRL
+openssl crl -in crl.pem -text -noout    # 查看CRL信息
+openssl crl -in crl.pem -inform PEM -outform DER -out crl.der  # 转换CRL格式
+
+# OCSP操作 / OCSP operations
+openssl ocsp -respout ocsp.der -issuer ca.crt -cert certificate.crt -url http://ocsp.domain.com  # 生成OCSP请求
+openssl ocsp -verify_other ca.crt -CAfile ca.crt -respin ocsp.der  # 验证OCSP响应
+
+##############################################################################
+# 随机数生成 / Random Number Generation
+##############################################################################
+
+# 生成随机数 / Generate random numbers
+openssl rand -hex 16                    # 生成16字节十六进制随机数
+openssl rand -base64 32                 # 生成32字节Base64编码随机数
+openssl rand -out random.bin 32         # 生成32字节二进制随机数
+openssl rand -rand /dev/urandom 16      # 从设备读取熵生成随机数
+
+##############################################################################
+# 密码学工具 / Cryptographic Tools
+##############################################################################
+
+# DH参数生成 / DH parameter generation
+openssl dhparam -out dhparam.pem 2048   # 生成2048位DH参数
+openssl dhparam -check -in dhparam.pem  # 检查DH参数
+
+# 哈希计算 / Hash calculation
+openssl passwd -1                       # 交互式生成密码哈希
+openssl passwd -1 password              # 生成密码哈希
+openssl passwd -apr1 password           # Apache MD5格式密码哈希
+
+# 基准测试 / Benchmarking
+openssl speed                           # 测试各种算法性能
+openssl speed aes-256-cbc               # 测试AES-256-CBC性能
+openssl speed sha256                    # 测试SHA256性能
+
+##############################################################################
+# 实用脚本示例 / Useful Script Examples
+##############################################################################
+
+# 生成自签名证书脚本 / Self-signed certificate generation script
+#!/bin/bash
+DOMAIN="example.com"
+KEY_FILE="${DOMAIN}.key"
+CERT_FILE="${DOMAIN}.crt"
+DAYS=365
+
+# 生成私钥
+openssl genrsa -out "$KEY_FILE" 2048
+
+# 生成自签名证书
+openssl req -new -x509 -key "$KEY_FILE" -out "$CERT_FILE" -days "$DAYS" \
+  -subj "/C=CN/ST=State/L=City/O=Organization/CN=$DOMAIN"
+
+echo "Certificate generated: $CERT_FILE"
+echo "Private key generated: $KEY_FILE"
+
+# SSL证书检查脚本 / SSL certificate check script
+#!/bin/bash
+DOMAIN="$1"
+PORT="${2:-443}"
+
+if [ -z "$DOMAIN" ]; then
+    echo "Usage: $0 <domain> [port]"
+    exit 1
+fi
+
+echo "Checking SSL certificate for $DOMAIN:$PORT"
+openssl s_client -connect "$DOMAIN:$PORT" -servername "$DOMAIN" -showcerts 2>/dev/null | \
+openssl x509 -text -noout
+
+# 批量文件加密 / Batch file encryption
+#!/bin/bash
+PASSWORD="your_password"
+for file in *.txt; do
+    openssl enc -aes-256-cbc -salt -in "$file" -out "${file}.enc" -pass pass:"$PASSWORD"
+    echo "Encrypted: $file -> ${file}.enc"
+done
+
+##############################################################################
+# 证书链验证 / Certificate Chain Verification
+##############################################################################
+
+# 验证证书链 / Verify certificate chain
+openssl verify -CAfile ca.crt -untrusted intermediate.crt certificate.crt  # 验证证书链
+openssl verify -CAfile ca-bundle.crt certificate.crt  # 使用CA包验证证书
+
+# 构建证书链 / Build certificate chain
+openssl s_client -connect domain.com:443 -showcerts 2>/dev/null | \
+awk '/BEGIN CERTIFICATE/,/END CERTIFICATE/{print > "cert-" ++n ".crt"}'
+
+##############################################################################
+# 格式转换工具 / Format Conversion Tools
+##############################################################################
+
+# PEM到DER转换 / PEM to DER conversion
+openssl x509 -in cert.pem -outform DER -out cert.der
+openssl rsa -in key.pem -outform DER -out key.der
+
+# DER到PEM转换 / DER to PEM conversion
+openssl x509 -in cert.der -inform DER -outform PEM -out cert.pem
+openssl rsa -in key.der -inform DER -outform PEM -out key.pem
+
+# PFX/PKCS#12到PEM转换 / PFX/PKCS#12 to PEM conversion
+openssl pkcs12 -in certificate.pfx -out certificate.pem -nodes
+
+# PEM到PFX/PKCS#12转换 / PEM to PFX/PKCS#12 conversion
+openssl pkcs12 -export -in certificate.pem -inkey private.key -out certificate.pfx
+
+##############################################################################
+# 安全检查和审计 / Security Checks and Auditing
+##############################################################################
+
+# 检查证书强度 / Check certificate strength
+openssl x509 -in certificate.crt -text -noout | grep -E "(Signature Algorithm|Public Key)"
+
+# 检查私钥安全性 / Check private key security
+openssl rsa -in private.key -check  # 验证私钥数学正确性
+openssl rsa -in private.key -text -noout | grep "Private-Key"
+
+# SSL/TLS配置检查 / SSL/TLS configuration check
+openssl ciphers -v 'ECDHE+AESGCM'      # 检查支持的强加密套件
+openssl ciphers -v | grep -E "(AES256|ECDHE)"  # 检查高强度加密算法
+
+##############################################################################
+# 故障排除 / Troubleshooting
+##############################################################################
+
+# 常见错误诊断 / Common error diagnosis
+openssl verify -CAfile ca.crt certificate.crt  # 证书链验证
+openssl rsa -in private.key -check  # 私钥验证
+openssl req -text -noout -in certificate.csr  # CSR内容检查
+
+# 调试SSL连接 / Debug SSL connection
+openssl s_client -connect domain.com:443 -debug  # 调试模式连接
+openssl s_client -connect domain.com:443 -tlsextdebug  # TLS扩展调试
+
+# 时间相关检查 / Time-related checks
+openssl x509 -in certificate.crt -noout -dates  # 检查证书有效期
+openssl asn1parse -inform PEM -in certificate.crt  # 解析证书ASN.1结构

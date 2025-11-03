@@ -1,0 +1,241 @@
+##############################################################################
+# ripgrep (rg) 速查表 (ripgrep Cheatsheet)
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# 图例 (Legend):
+#   - PATTERN:    搜索模式或正则表达式 (Search pattern or regex)
+#   - FILE:       文件路径或名称 (File path or name)
+#   - DIRECTORY:  目录路径 (Directory path)
+#   - OPTION:     命令选项 (Command option)
+#   - TYPE:       文件类型，如py、js等 (File type, py/js/etc.)
+
+##############################################################################
+# 基本语法 (Basic Syntax)
+##############################################################################
+
+# 简单文本搜索 / Simple text search
+rg <pattern>                            # 在当前目录搜索模式
+rg <pattern> <directory>               # 在指定目录搜索
+rg "hello world"                       # 搜索短语（带引号）
+rg 'error|warning'                     # 搜索多个模式（正则表达式）
+
+# 区分大小写 / Case sensitivity
+rg <pattern> --case-sensitive         # 区分大小写
+rg <pattern> --ignore-case             # 忽略大小写
+rg <pattern> --smart-case              # 智能大小写（包含大写字母时区分）
+
+##############################################################################
+# 文件类型搜索 / File Type Search
+##############################################################################
+
+# 按文件类型搜索 / Search by file type
+rg <pattern> -t py                     # 在Python文件中搜索
+rg <pattern> -t js -t ts               # 在JavaScript和TypeScript文件中搜索
+rg <pattern> -T notype                 # 排除特定文件类型
+
+# 常见文件类型 / Common file types
+rg <pattern> -t py                     # Python
+rg <pattern> -t js                     # JavaScript
+rg <pattern> -t ts                     # TypeScript
+rg <pattern> -t java                   # Java
+rg <pattern> -t cpp                    # C++
+rg <pattern> -t c                      # C
+rg <pattern> -t rust                   # Rust
+rg <pattern> -t go                     # Go
+rg <pattern> -t rb                     # Ruby
+rg <pattern> -t php                    # PHP
+rg <pattern> -t md                     # Markdown
+rg <pattern> -t json                   # JSON
+rg <pattern> -t xml                    # XML
+rg <pattern> -t yaml                   # YAML
+rg <pattern> -t toml                   # TOML
+
+##############################################################################
+# 文件名和路径搜索 / File Name and Path Search
+##############################################################################
+
+# 按文件名搜索 / Search by file name
+rg -g '*.py' <pattern>                 # 在.py文件中搜索
+rg -g 'test_*.py' <pattern>            # 在匹配模式的文件中搜索
+rg -g '!node_modules' <pattern>        # 排除node_modules目录
+rg -g '!*.min.js' <pattern>            # 排除压缩的JS文件
+
+# 全局文件模式 / Global file patterns
+rg --glob 'src/**/*.js' <pattern>      # 在src目录下的所有JS文件中搜索
+rg --glob '!*.{lock,log}' <pattern>    # 排除特定扩展名
+
+##############################################################################
+# 输出控制 / Output Control
+##############################################################################
+
+# 显示行号 / Show line numbers
+rg <pattern> -n                        # 显示行号（默认启用）
+
+# 显示文件名 / Show file names
+rg <pattern> -l                        # 只显示包含匹配的文件名
+rg <pattern> --files-with-matches      # 同上
+rg <pattern> --count                   # 显示每个文件的匹配次数
+
+# 上下文显示 / Context display
+rg <pattern> -C 3                      # 显示匹配前后各3行
+rg <pattern> -B 2                      # 显示匹配前2行
+rg <pattern> -A 2                      # 显示匹配后2行
+rg <pattern> --context 3               # 同-C 3
+
+##############################################################################
+# 替换功能 / Replacement
+##############################################################################
+
+# 替换文本 / Replace text
+rg <pattern> --replace <replacement>   # 替换匹配的文本
+rg 'old_text' --replace 'new_text'     # 将old_text替换为new_text
+rg '\d{4}-\d{2}-\d{2}' --replace '[DATE]'  # 用[DATE]替换日期格式
+
+##############################################################################
+# 高级搜索选项 / Advanced Search Options
+##############################################################################
+
+# 正则表达式 / Regular expressions
+rg '\berror\b'                         # 匹配整个单词"error"
+rg '\w+@\w+\.\w+'                     # 匹配邮箱地址
+rg 'https?://[^\s]+'                   # 匹配HTTP/HTTPS URL
+rg '\$\{[^}]+\}'                       # 匹配环境变量格式
+
+# Unicode和编码 / Unicode and encoding
+rg '[\u4e00-\u9fff]'                   # 搜索中文字符
+rg --encoding utf-8 <pattern>          # 指定编码
+
+# 多行搜索 / Multi-line search
+rg -U 'start.*end'                     # 跨行匹配
+rg --multiline 'function.*end'         # 多行模式匹配
+
+##############################################################################
+# 性能和并行 / Performance and Parallelism
+##############################################################################
+
+# 并行控制 / Parallel control
+rg <pattern> -j 4                      # 使用4个线程
+rg <pattern> --threads 8               # 使用8个线程
+
+# 内存和性能优化 / Memory and performance optimization
+rg <pattern> --max-filesize 1M         # 限制文件大小
+rg <pattern> --max-depth 3             # 限制搜索深度
+rg <pattern> --follow                  # 跟随符号链接
+
+##############################################################################
+# 忽略文件和目录 / Ignoring Files and Directories
+##############################################################################
+
+# 使用.gitignore / Use .gitignore
+rg <pattern> --no-ignore               # 忽略.gitignore文件
+rg <pattern> --hidden                  # 包含隐藏文件
+rg <pattern> --no-ignore-parent        # 不使用父目录的忽略规则
+
+# 自定义忽略规则 / Custom ignore rules
+rg <pattern> --ignore-file custom.ignore  # 使用自定义忽略文件
+rg <pattern> --type-not binary         # 忽略二进制文件
+
+##############################################################################
+# 输出格式和颜色 / Output Format and Colors
+##############################################################################
+
+# 颜色控制 / Color control
+rg <pattern> --color always            # 总是显示颜色
+rg <pattern> --color never             # 从不显示颜色
+rg <pattern> --color auto              # 自动检测（默认）
+
+# 输出格式 / Output format
+rg <pattern> --no-heading              # 不显示文件名标题
+rg <pattern> --with-filename           # 总是显示文件名
+rg <pattern> --path-separator :        # 使用:作为路径分隔符
+rg <pattern> --line-number             # 显示行号
+rg <pattern> --column                  # 显示列号
+
+##############################################################################
+# 实用示例和脚本 / Useful Examples and Scripts
+##############################################################################
+
+# 查找函数定义 / Find function definitions
+rg 'def \w+\(' -t py                  # Python函数定义
+rg 'function \w+\(' -t js             # JavaScript函数定义
+rg 'public \w+ \w+\(' -t java         # Java公共方法
+
+# 查找TODO和FIXME / Find TODO and FIXME
+rg -i 'todo|fixme|hack|xxx'            # 查找代码标记
+rg 'TODO:.*' -A 2                      # 查找TODO及后续两行
+
+# 查找导入和依赖 / Find imports and dependencies
+rg '^import .*' -t py                  # Python导入语句
+rg 'require\(|from ' -t js             # JavaScript依赖
+rg '#include <.*>' -t c -t cpp         # C/C++包含文件
+
+# 安全相关搜索 / Security related searches
+rg -i 'password|secret|key|token'     # 查找可能的敏感信息
+rg 'http://|https://' -i               # 查找硬编码的URL
+rg '\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b'  # 查找信用卡号格式
+
+##############################################################################
+# 与其他工具集成 / Integration with Other Tools
+##############################################################################
+
+# 与fzf集成 / Integration with fzf
+rg --files | fzf --preview 'bat --style=numbers --color=always {}'  # 文件选择器
+rg <pattern> | fzf                     # 从搜索结果中选择
+
+# 与vim集成 / Integration with vim
+rg <pattern> | vim -c 'copen' -        # 在vim中打开搜索结果
+:Rg <pattern>                          # vim插件命令（需要vim-ripgrep插件）
+
+# 与git集成 / Integration with git
+rg <pattern> $(git ls-files)           # 只在git跟踪的文件中搜索
+rg <pattern> --git-ignore              # 尊重git忽略规则
+
+##############################################################################
+# 性能比较 / Performance Comparison
+##############################################################################
+
+# ripgrep vs grep vs ack
+rg <pattern>                           # ripgrep - 默认并行，忽略.gitignore
+grep -r <pattern> .                    # grep - 递归，较慢
+ack <pattern>                          # ack - Perl编写，比ripgrep慢
+
+# 基准测试 / Benchmark
+time rg <pattern>                      # ripgrep时间
+time grep -r <pattern> .               # grep时间
+time ack <pattern>                     # ack时间
+
+##############################################################################
+# 配置和自定义 / Configuration and Customization
+##############################################################################
+
+# 配置文件 / Configuration file
+# 创建 ~/.ripgreprc 配置文件包含默认选项：
+#   --type-add 'config:*.{conf,config}'
+#   --type-add 'logs:*.{log,txt}'
+#   --smart-case
+#   --follow
+
+# 环境变量 / Environment variables
+export RIPGREP_CONFIG_PATH=~/.ripgreprc  # 指定配置文件路径
+export FZF_DEFAULT_COMMAND='rg --files'   # fzf默认使用rg
+
+# 自定义文件类型 / Custom file types
+rg --type-add 'docker:*.{yml,yaml,Dockerfile}' <pattern>  # Docker文件类型
+rg --type-add 'docs:*.{md,txt,rst}' <pattern>            # 文档文件类型
+
+##############################################################################
+# 故障排除 / Troubleshooting
+##############################################################################
+
+# 调试模式 / Debug mode
+rg <pattern> --debug                   # 显示调试信息
+rg <pattern> --stats                   # 显示统计信息
+
+# 处理大文件 / Handling large files
+rg <pattern> --max-filesize 10M        # 限制文件大小
+rg <pattern> --binary                   # 搜索二进制文件
+
+# 编码问题 / Encoding issues
+rg <pattern> --encoding latin1         # 指定文件编码
+rg <pattern> --no-unicode              # 禁用Unicode

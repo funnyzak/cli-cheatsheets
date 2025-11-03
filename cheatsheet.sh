@@ -113,6 +113,9 @@ COMMAND_DESCRIPTIONS["rsync"]="远程文件同步工具"
 COMMAND_CATEGORIES["ossutil"]="cloud"
 COMMAND_DESCRIPTIONS["ossutil"]="阿里云对象存储工具"
 
+COMMAND_CATEGORIES["terraform"]="cloud"
+COMMAND_DESCRIPTIONS["terraform"]="基础设施即代码工具"
+
 # 媒体处理类命令
 COMMAND_CATEGORIES["ffmpeg"]="media"
 COMMAND_DESCRIPTIONS["ffmpeg"]="音视频处理工具"
@@ -246,6 +249,12 @@ COMMAND_DESCRIPTIONS["acme.sh"]="获取和续订 Let's Encrypt 证书"
 
 COMMAND_CATEGORIES["certbot"]="security"
 COMMAND_DESCRIPTIONS["certbot"]="Let's Encrypt 证书管理工具"
+
+COMMAND_CATEGORIES["openssl"]="security"
+COMMAND_DESCRIPTIONS["openssl"]="加密工具箱"
+
+COMMAND_CATEGORIES["ssh-keygen"]="security"
+COMMAND_DESCRIPTIONS["ssh-keygen"]="SSH密钥管理工具"
 
 
 # 操作系统命令 (OS Commands)
@@ -454,9 +463,18 @@ COMMAND_DESCRIPTIONS["cut"]="文本列提取工具"
 COMMAND_CATEGORIES["git"]="version-control"
 COMMAND_DESCRIPTIONS["git"]="版本控制系统"
 
+COMMAND_CATEGORIES["gh"]="version-control"
+COMMAND_DESCRIPTIONS["gh"]="GitHub CLI工具"
+
 # 容器化工具类命令
 COMMAND_CATEGORIES["docker"]="container"
 COMMAND_DESCRIPTIONS["docker"]="容器化平台"
+
+COMMAND_CATEGORIES["docker-compose"]="container"
+COMMAND_DESCRIPTIONS["docker-compose"]="Docker多容器编排工具"
+
+COMMAND_CATEGORIES["kubectx-kubens"]="container"
+COMMAND_DESCRIPTIONS["kubectx-kubens"]="Kubernetes上下文和命名空间切换工具"
 
 COMMAND_CATEGORIES["podman"]="container"
 COMMAND_DESCRIPTIONS["podman"]="无根容器引擎"
@@ -488,6 +506,27 @@ COMMAND_DESCRIPTIONS["bat"]="现代化的 cat 替代品"
 
 COMMAND_CATEGORIES["exa"]="tools"
 COMMAND_DESCRIPTIONS["exa"]="现代化的 ls 替代品"
+
+COMMAND_CATEGORIES["fzf"]="tools"
+COMMAND_DESCRIPTIONS["fzf"]="命令行模糊查找器"
+
+COMMAND_CATEGORIES["ripgrep"]="tools"
+COMMAND_DESCRIPTIONS["ripgrep"]="超快速文本搜索工具 (rg)"
+
+COMMAND_CATEGORIES["fd"]="tools"
+COMMAND_DESCRIPTIONS["fd"]="现代文件查找工具"
+
+COMMAND_CATEGORIES["zoxide"]="tools"
+COMMAND_DESCRIPTIONS["zoxide"]="智能目录跳转工具"
+
+COMMAND_CATEGORIES["starship"]="tools"
+COMMAND_DESCRIPTIONS["starship"]="跨平台shell提示符"
+
+COMMAND_CATEGORIES["gdb"]="tools"
+COMMAND_DESCRIPTIONS["gdb"]="GNU调试器"
+
+COMMAND_CATEGORIES["make"]="tools"
+COMMAND_DESCRIPTIONS["make"]="构建工具"
 
 
 # 临时目录，用于缓存命令速查表

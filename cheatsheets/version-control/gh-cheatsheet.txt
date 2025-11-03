@@ -1,0 +1,321 @@
+##############################################################################
+# GitHub CLI (gh) Cheatsheet
+# https://github.com/funnyzak/cli-cheatsheets
+##############################################################################
+
+# Legend:
+#   <repo>        : Repository name (owner/repo)
+#   <issue>       : Issue number
+#   <pr>          : Pull request number
+#   <branch>      : Branch name
+#   <file>        : File path
+#   <option>      : Command option
+
+##############################################################################
+# 认证和配置 / Authentication and Configuration
+##############################################################################
+
+# 登录 / Login
+gh auth login                          # 交互式登录
+gh auth login --with-token <token>     # 使用token登录
+gh auth login --web                    # 使用浏览器登录
+
+# 检查认证状态 / Check authentication status
+gh auth status                         # 显示当前认证状态
+gh auth token                          # 显示当前token
+
+# 登出 / Logout
+gh auth logout                         # 登出当前账户
+
+##############################################################################
+# 仓库管理 / Repository Management
+##############################################################################
+
+# 创建仓库 / Create repository
+gh repo create <repo>                  # 创建新仓库
+gh repo create <repo> --public         # 创建公开仓库
+gh repo create <repo> --private        # 创建私有仓库
+gh repo create <repo> --clone          # 创建并克隆仓库
+
+# 克隆仓库 / Clone repository
+gh repo clone <repo>                   # 克隆仓库
+gh repo clone <repo> <directory>       # 克隆到指定目录
+
+# 查看仓库信息 / View repository information
+gh repo view                           # 查看当前仓库信息
+gh repo view <repo>                    # 查看指定仓库信息
+gh repo view <repo> --web              # 在浏览器中打开仓库
+
+# 仓库设置 / Repository settings
+gh repo edit --description <desc>      # 编辑仓库描述
+gh repo edit --homepage <url>          # 编辑仓库主页
+gh repo edit --visibility <public|private>  # 修改可见性
+
+##############################################################################
+# Issue管理 / Issue Management
+##############################################################################
+
+# 创建Issue / Create issue
+gh issue create                        # 创建新Issue
+gh issue create --title <title>        # 指定标题
+gh issue create --body <body>          # 指定内容
+gh issue create --assignee <user>      # 指定分配人
+gh issue create --label <label>        # 指定标签
+gh issue create --milestone <milestone>  # 指定里程碑
+
+# 查看Issue / View issues
+gh issue list                          # 列出所有Issue
+gh issue list --state open             # 列出开放的Issue
+gh issue list --state closed           # 列出关闭的Issue
+gh issue list --label <label>          # 按标签筛选
+gh issue list --assignee <user>        # 按分配人筛选
+
+# 查看特定Issue / View specific issue
+gh issue view <issue>                  # 查看Issue详情
+gh issue view <issue> --comments       # 查看Issue评论
+
+# 操作Issue / Operate on issues
+gh issue close <issue>                 # 关闭Issue
+gh issue reopen <issue>                # 重新打开Issue
+gh issue edit <issue>                  # 编辑Issue
+gh issue lock <issue>                  # 锁定Issue（禁止评论）
+
+##############################################################################
+# Pull Request管理 / Pull Request Management
+##############################################################################
+
+# 创建Pull Request / Create Pull Request
+gh pr create                           # 创建新的PR
+gh pr create --title <title>           # 指定标题
+gh pr create --body <body>             # 指定描述
+gh pr create --base <branch>           # 指定基础分支
+gh pr create --head <branch>           # 指定当前分支
+gh pr create --assignee <user>         # 指定审查人
+gh pr create --label <label>           # 指定标签
+
+# 查看Pull Request / View Pull Requests
+gh pr list                             # 列出所有PR
+gh pr list --state open                # 列出开放的PR
+gh pr list --state merged              # 列出已合并的PR
+gh pr list --state closed              # 列出关闭的PR
+gh pr list --author <user>             # 按作者筛选
+
+# 查看特定PR / View specific PR
+gh pr view <pr>                        # 查看PR详情
+gh pr view <pr> --web                  # 在浏览器中打开PR
+gh pr view <pr> --comments             # 查看PR评论
+
+# 操作Pull Request / Operate on PRs
+gh pr merge <pr>                       # 合并PR
+gh pr merge <pr> --merge               # 使用merge方式合并
+gh pr merge <pr> --squash              # 使用squash方式合并
+gh pr merge <pr> --rebase              # 使用rebase方式合并
+gh pr close <pr>                       # 关闭PR
+gh pr ready <pr>                       # 标记PR为准备就绪
+gh pr draft <pr>                       # 标记PR为草稿
+
+# 代码审查 / Code review
+gh pr diff <pr>                        # 查看PR差异
+gh pr diff <pr> --name-only            # 只显示修改的文件名
+gh pr checks <pr>                      # 查看PR的CI检查状态
+
+##############################################################################
+# 分支管理 / Branch Management
+##############################################################################
+
+# 创建分支 / Create branch
+gh repo sync                           # 同步远程仓库
+gh repo sync --branch <branch>         # 同步指定分支
+
+# 查看分支 / View branches
+gh api repos/:owner/:repo/branches     # 查看所有分支（API调用）
+gh pr list --head <branch>             # 查看分支相关的PR
+
+##############################################################################
+# Release管理 / Release Management
+##############################################################################
+
+# 创建Release / Create release
+gh release create <tag>                # 创建新Release
+gh release create <tag> --title <title>  # 指定标题
+gh release create <tag> --notes <notes>  # 指定说明
+gh release create <tag> --draft        # 创建草稿Release
+gh release create <tag> --prerelease   # 创建预发布版本
+
+# 查看Release / View releases
+gh release list                        # 列出所有Release
+gh release view <tag>                  # 查看特定Release
+gh release view <tag> --web            # 在浏览器中打开Release
+
+# 操作Release / Operate on releases
+gh release delete <tag>                # 删除Release
+gh release edit <tag>                  # 编辑Release
+
+##############################################################################
+# GitHub Actions / GitHub Actions
+##############################################################################
+
+# 查看工作流 / View workflows
+gh run list                            # 列出工作流运行记录
+gh run list --workflow <workflow>      # 列出特定工作流的运行
+gh run view <run-id>                   # 查看特定运行详情
+gh run view <run-id> --web             # 在浏览器中查看运行
+
+# 操作工作流 / Operate on workflows
+gh run watch <run-id>                  # 监控工作流运行
+gh run cancel <run-id>                 # 取消工作流运行
+gh run rerun <run-id>                  # 重新运行工作流
+gh run download <run-id>               # 下载工作流产物
+
+##############################################################################
+# Gist管理 / Gist Management
+##############################################################################
+
+# 创建Gist / Create gist
+gh gist create <file>                  # 创建新Gist
+gh gist create <file> --public         # 创建公开Gist
+gh gist create <file> --private        # 创建私有Gist
+gh gist create <file> --desc <desc>    # 添加描述
+
+# 查看Gist / View gists
+gh gist list                           # 列出所有Gist
+gh gist view <gist-id>                 # 查看特定Gist
+gh gist view <gist-id> --web           # 在浏览器中打开Gist
+
+# 操作Gist / Operate on gists
+gh gist edit <gist-id>                 # 编辑Gist
+gh gist delete <gist-id>               # 删除Gist
+
+##############################################################################
+# 搜索和浏览 / Search and Browse
+##############################################################################
+
+# 搜索仓库 / Search repositories
+gh search repos <query>                # 搜索仓库
+gh search repos <query> --limit 10     # 限制结果数量
+gh search repos <query> --language <lang>  # 按语言筛选
+
+# 搜索用户 / Search users
+gh search users <query>                # 搜索用户
+gh search users <query> --limit 20     # 限制结果数量
+
+# 搜索Issue / Search issues
+gh search issues <query>               # 搜索Issue
+gh search issues <query> --repo <repo>  # 在指定仓库中搜索
+
+##############################################################################
+# 配置管理 / Configuration Management
+##############################################################################
+
+# 查看配置 / View configuration
+gh config list                         # 列出所有配置
+gh config get <key>                    # 获取特定配置
+gh config get editor                   # 获取编辑器配置
+
+# 设置配置 / Set configuration
+gh config set editor <editor>          # 设置默认编辑器
+gh config set git_protocol <protocol>  # 设置Git协议
+gh config set prompt <enabled|disabled> # 启用/禁用集成提示
+
+##############################################################################
+# 扩展和插件 / Extensions and Plugins
+##############################################################################
+
+# 安装扩展 / Install extensions
+gh extension install <repo>            # 安装扩展
+gh extension list                      # 列出已安装的扩展
+gh extension remove <extension>        # 移除扩展
+
+# 常用扩展 / Popular extensions
+gh extension install github/gh-copilot # 安装GitHub Copilot CLI
+gh extension install dlvhdr/gh-dash    # 安装GitHub Dashboard
+
+##############################################################################
+# API调用 / API Calls
+##############################################################################
+
+# 直接API调用 / Direct API calls
+gh api /user                           # 获取当前用户信息
+gh api /user/repos                     # 获取用户仓库列表
+gh api /repos/<owner>/<repo>/issues    # 获取仓库Issue列表
+gh api --method POST /repos/<owner>/<repo>/issues -f title=<title> -f body=<body>  # 创建Issue
+
+# API参数 / API parameters
+gh api /search/repositories?q=<query>  # 搜索仓库
+gh api --jq '.items[].name' /search/repositories?q=<query>  # 使用jq过滤结果
+
+##############################################################################
+# 实用工作流 / Useful Workflows
+##############################################################################
+
+# 快速创建PR和审查 / Quick PR creation and review
+git checkout -b feature-branch
+# ... make changes ...
+git add .
+git commit -m "Add new feature"
+git push origin feature-branch
+gh pr create --title "New Feature" --body "Description of changes"
+
+# 批量操作Issue / Batch issue operations
+gh issue list --label "bug" --json number,title | jq '.[] | .number' | xargs -I {} gh issue close {}
+
+# 仓库健康检查 / Repository health check
+gh repo view --json name,description,stars,forks,openIssuesCount
+
+# 自动化工作流 / Automated workflows
+for repo in $(gh search repos topic:automation --limit 10 --json nameWithOwner | jq -r '.[].nameWithOwner'); do
+    gh repo view $repo --json name,stars,forks
+done
+
+##############################################################################
+# 别名和快捷方式 / Aliases and Shortcuts
+##############################################################################
+
+# 创建别名 / Create aliases
+gh alias set prc "pr create --title \"$1\" --body \"$2\""  # 快速创建PR
+gh alias set pv "pr view"                               # 简化pr view
+gh alias set il "issue list"                            # 简化issue list
+
+# 查看别名 / View aliases
+gh alias list                          # 列出所有别名
+gh alias delete <alias>               # 删除别名
+
+##############################################################################
+# 故障排除 / Troubleshooting
+##############################################################################
+
+# 调试模式 / Debug mode
+gh --version                          # 查看版本
+gh --help                             # 查看帮助
+gh <command> --help                   # 查看特定命令帮助
+
+# 网络问题 / Network issues
+gh auth status --verbose              # 详细认证状态
+gh config list                         # 检查配置
+
+# 权限问题 / Permission issues
+gh auth refresh                       # 刷新认证token
+gh auth login --scopes "repo,admin:org,read:org"  # 重新登录并指定权限
+
+##############################################################################
+# 高级技巧 / Advanced Tips
+##############################################################################
+
+# 脚本集成 / Script integration
+# 在脚本中使用gh进行自动化操作
+#!/bin/bash
+REPO="owner/repo"
+ISSUE_TITLE="Automated Issue"
+ISSUE_BODY="This issue was created automatically"
+
+gh issue create --repo $REPO --title "$ISSUE_TITLE" --body "$ISSUE_BODY" --label "automated"
+
+# 数据导出 / Data export
+gh issue list --repo <repo> --json number,title,state,labels > issues.json
+gh pr list --repo <repo> --json number,title,state,author > prs.json
+
+# 批量操作 / Batch operations
+gh search repos --limit 50 --json nameWithOwner | jq -r '.[].nameWithOwner' | while read repo; do
+    echo "Processing $repo"
+    gh repo view $repo --json name,stars
+done
