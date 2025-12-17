@@ -463,6 +463,9 @@ COMMAND_DESCRIPTIONS["cut"]="文本列提取工具"
 COMMAND_CATEGORIES["git"]="version-control"
 COMMAND_DESCRIPTIONS["git"]="版本控制系统"
 
+COMMAND_CATEGORIES["gitlogue"]="version-control"
+COMMAND_DESCRIPTIONS["gitlogue"]="Git 历史动画回放工具"
+
 COMMAND_CATEGORIES["gh"]="version-control"
 COMMAND_DESCRIPTIONS["gh"]="GitHub CLI工具"
 
@@ -515,6 +518,9 @@ COMMAND_DESCRIPTIONS["ripgrep"]="超快速文本搜索工具 (rg)"
 
 COMMAND_CATEGORIES["fd"]="tools"
 COMMAND_DESCRIPTIONS["fd"]="现代文件查找工具"
+
+COMMAND_CATEGORIES["f2"]="tools"
+COMMAND_DESCRIPTIONS["f2"]="跨平台批量重命名工具"
 
 COMMAND_CATEGORIES["zoxide"]="tools"
 COMMAND_DESCRIPTIONS["zoxide"]="智能目录跳转工具"

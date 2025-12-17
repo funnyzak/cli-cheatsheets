@@ -6,6 +6,8 @@
 
 **cli-cheatsheets** 是一个集中化的命令行工具速查表仓库，通过简单的 Shell 脚本，快速查询和查看各种常用命令速查表。
 
+贡献者可在 `AGENTS.md` 中查看最新的仓库协作规范与工作流指引。
+
 ## 📋 特性
 
 - **丰富的速查表:** 涵盖 Android, Build Tools, CLI Tools, Cloud Tools, Container Tools, Data Process Tools, Database, Media, Network, Notification, OS Commands, Package Managers, Runtime, Security, Tools, Version Control, Web Servers 等 17 个类别，共 155+ 个速查表，持续更新和扩充。
@@ -445,7 +447,7 @@ CLI 速查表按类别组织在以下目录中：
 
 ### Tools
 
-(`cheatsheets/tools/`) 其他实用工具 (10个工具)
+(`cheatsheets/tools/`) 其他实用工具 (11个工具)
 
 * `bat-cheatsheet.txt`: bat 增强的 cat 命令工具
 * `exa-cheatsheet.txt`: exa 现代化的 ls 命令工具
@@ -453,6 +455,7 @@ CLI 速查表按类别组织在以下目录中：
 * `fzf-cheatsheet.txt`: fzf 命令行模糊查找器命令
 * `ripgrep-cheatsheet.txt`: ripgrep (rg) 超快速文本搜索工具命令
 * `fd-cheatsheet.txt`: fd 现代文件查找工具命令
+* `f2-cheatsheet.txt`: f2 批量重命名工具命令
 * `zoxide-cheatsheet.txt`: zoxide 智能目录跳转工具命令
 * `starship-cheatsheet.txt`: starship 跨平台 shell 提示符命令
 * `gdb-cheatsheet.txt`: gdb GNU 调试器命令
@@ -460,10 +463,11 @@ CLI 速查表按类别组织在以下目录中：
 
 ### Version Control
 
-(`cheatsheets/version-control/`) 版本控制工具 (2个工具)
+(`cheatsheets/version-control/`) 版本控制工具 (3个工具)
 
 * `git-cheatsheet.txt`: git 版本控制系统命令
 * `gh-cheatsheet.txt`: gh GitHub CLI 工具命令
+* `gitlogue-cheatsheet.txt`: gitlogue Git 历史动画回放工具命令
 
 ### Web Servers
 

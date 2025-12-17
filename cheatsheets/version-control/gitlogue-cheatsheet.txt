@@ -1,0 +1,93 @@
+##############################################################################
+# Gitlogue 命令速查表 (Gitlogue Command Cheatsheet)
+# https://github.com/unhappychoice/gitlogue
+##############################################################################
+
+# 简介
+#   Gitlogue 是一个将 Git 提交历史以“电影式”动画方式回放的 CLI 工具，
+#   支持真实键入动画、Tree-sitter 高亮、项目树统计以及 screensaver 模式。
+
+##############################################################################
+# 安装 (Installation)
+##############################################################################
+
+curl -fsSL https://raw.githubusercontent.com/unhappychoice/gitlogue/main/install.sh | bash
+                                                # 官方安装脚本 (推荐)
+brew install gitlogue                           # Homebrew 安装 (macOS/Linux)
+cargo install gitlogue                          # Rust/cargo 安装
+pacman -S gitlogue                              # Arch Linux 官方仓库
+nix run github:unhappychoice/gitlogue            # 直接运行 (Nix)
+nix profile install github:unhappychoice/gitlogue
+                                                # 安装到 Nix profile
+# 源码安装
+# git clone https://github.com/unhappychoice/gitlogue.git
+# cd gitlogue && cargo install --path .
+
+##############################################################################
+# 快速开始 (Quick Start)
+##############################################################################
+
+gitlogue                                       # 启动默认的动画回放/屏保模式
+gitlogue --commit <hash>                       # 查看特定提交
+gitlogue --commit HEAD~5..HEAD                 # 回放一个提交区间
+gitlogue --order asc                           # 以时间升序回放
+gitlogue --commit <hash> --loop                # 持续循环播放单个提交
+gitlogue --commit HEAD~10..HEAD --loop         # 循环播放一个提交范围
+gitlogue diff                                  # 动画展示暂存区 (staged) 更改
+gitlogue diff --unstaged                       # 动画展示工作区未暂存更改
+
+##############################################################################
+# 过滤与范围 (Filtering & Range)
+##############################################################################
+
+gitlogue --author "john"                       # 仅播放作者/邮箱匹配 john 的提交
+gitlogue --after "2024-01-01"                  # 仅播放指定日期之后的提交
+gitlogue --before "1 week ago"                 # 仅播放指定日期之前的提交
+gitlogue --after "2024-06-01" --before "2024-07-01"
+                                                # 指定日期区间
+
+##############################################################################
+# 主题与速度 (Themes & Speed)
+##############################################################################
+
+gitlogue --theme dracula                       # 使用内置主题 (共9种)
+gitlogue theme list                            # 列出可用主题
+gitlogue theme set nord                        # 将主题设为默认
+gitlogue --speed 20                            # 设置统一打字速度 (ms/字符)
+gitlogue --speed-rule "*.java:50" --speed-rule "*.xml:5"
+                                                # 不同文件类型使用不同速度
+
+##############################################################################
+# 忽略规则与差异控制 (Ignore Rules)
+##############################################################################
+
+gitlogue --ignore "*.ipynb"                    # 忽略匹配的文件
+gitlogue --ignore "poetry.lock"                # 可重复指定多次
+gitlogue --ignore-file .gitlogue-ignore        # 从忽略文件读取规则
+
+##############################################################################
+# 组合示例 (Combined Example)
+##############################################################################
+
+gitlogue --commit HEAD~5 --author "john" --theme nord --speed 15 --ignore "*.ipynb"
+                                                # 同时过滤作者 / 提交范围 / 主题 / 速度 / 忽略
+
+gitlogue --commit HEAD~5..HEAD --order asc --loop --theme carbon --speed-rule "*.md:10"
+                                                # 指定范围、顺序、循环和速度规则
+
+##############################################################################
+# 配置文件 (Configuration)
+##############################################################################
+
+# 位置: ~/.config/gitlogue/config.toml
+# 常用字段: default_theme, typing_speed, background_style, speed_rules, ignore
+# 可集中设定基础行为，避免每次输入长命令。详见 docs/configuration.md。
+
+##############################################################################
+# 其他提示 (Tips)
+##############################################################################
+
+# - gitlogue diff 默认展示暂存区，可与 git add -p 结合检查提交内容。
+# - Screensaver 模式可配合 VHS/asciinema 录屏，或与 tmux 设置配合形成展示墙。
+# - 使用 gitlogue --commit <range> --screensaver(默认) 可在演示/会议中展示项目演进。
+# - OLED 屏幕长时间显示静态边框可能烧屏，建议定期移动窗口或切换主题。

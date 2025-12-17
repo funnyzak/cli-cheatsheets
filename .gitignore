@@ -45,6 +45,8 @@ Thumbs.db
 .bash_history
 .zsh_history
 
+/AGENTS.md
+
 # Personal preferences
 .config/karabiner/karabiner.json # Example: If you manage Karabiner config
 
